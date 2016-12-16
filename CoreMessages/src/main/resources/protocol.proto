@@ -1,7 +1,0 @@
-syntax = "proto3";
-
-package ru.ifmo.splat.messages;
-
-message RequestInfo {
-    map<string, string> properties = 1;
-}
