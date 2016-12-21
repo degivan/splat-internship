@@ -8,14 +8,17 @@ import org.apache.kafka.common.TopicPartition;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.splat.Shedule.SheduleCleaningDB;
 import ru.splat.feautures.BetInfo;
 import ru.splat.feautures.TransactionResult;
 import ru.splat.protobuf.PunterReq;
-import ru.splat.protobuf.PunterRes;
 
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import org.springframework.boot.SpringApplication;
+import ru.splat.protobuf.PunterRes;
 
 @Service
 public class PunterService extends ServiceFacade<PunterReq.Person, PunterRes.Person> {
@@ -34,13 +37,13 @@ public class PunterService extends ServiceFacade<PunterReq.Person, PunterRes.Per
 
         while (true) {
             try {
-                ConsumerRecords<String, PunterReq.Person> consumerRecords = punterService.consumer.poll(10);
+                ConsumerRecords<Long, PunterReq.Person> consumerRecords = punterService.consumer.poll(10);
                 Map<String, Set<TransactionResult>> map = punterService.processMessage(consumerRecords);
                 // punterService.sendResult(map, punterService.producer);
                 punterService.consumer.commitSync();
             } catch (Exception e) {
-                TopicPartition partition = new TopicPartition(TOPIC_REQUEST, 1);
-                punterService.consumer.seek(partition, punterService.consumer.committed(partition).offset());
+                 TopicPartition partition = new TopicPartition(TOPIC_REQUEST, 1);
+                 punterService.consumer.seek(partition, punterService.consumer.committed(partition).offset());
             }
         }
 
@@ -49,7 +52,7 @@ public class PunterService extends ServiceFacade<PunterReq.Person, PunterRes.Per
     private void sendResult(Map<String, Set<TransactionResult>> map, KafkaProducer producer) {
         for (Map.Entry<String, Set<TransactionResult>> entry : map.entrySet()) {
             for (TransactionResult transactionResult : entry.getValue()) {
-                PunterRes.Person pr = PunterRes.Person.newBuilder().setLocalTask(entry.getKey()).setTransactionID(transactionResult.getTransactionId()).setResult(transactionResult.getResult()).build();
+                PunterRes.Person pr = PunterRes.Person.newBuilder().setTransactionID(transactionResult.getTransactionId()).setResult(transactionResult.getResult()).build();
                 producer.send(new ProducerRecord<String, PunterRes.Person>(TOPIC_RESPONSE, entry.getKey(), pr));
             }
         }
@@ -57,16 +60,16 @@ public class PunterService extends ServiceFacade<PunterReq.Person, PunterRes.Per
 
     @Override
     @Transactional
-    protected Map<String, Set<TransactionResult>> processMessage(ConsumerRecords<String, PunterReq.Person> consumerRecords) {
+    protected Map<String, Set<TransactionResult>> processMessage(ConsumerRecords<Long, PunterReq.Person> consumerRecords) {
         Map<String, Set<BetInfo>> afterFirstFilter = filterSeen(consumerRecords);
 
-        HashMap<String, Set<TransactionResult>> results = new HashMap<>();
-        ArrayList<TransactionResult> intermediateTransactionResults;
+        Map<String, Set<TransactionResult>> results = new HashMap<>();
+        List<TransactionResult> intermediateTransactionResults;
 
         for (Map.Entry<String, Set<BetInfo>> entry : afterFirstFilter.entrySet()) {
-            intermediateTransactionResults = (ArrayList<TransactionResult>) punterRepository.filterByTable(new ArrayList<BetInfo>(entry.getValue()), entry.getKey());
+            intermediateTransactionResults = punterRepository.filterByTable(new ArrayList<BetInfo>(entry.getValue()));
 
-            HashSet<Long> intermediateResults2 = new HashSet<>();
+            Set<Long> intermediateResults2 = new HashSet<>();
             for (TransactionResult transactionResult : intermediateTransactionResults) {
                 intermediateResults2.add(transactionResult.getTransactionId());
             }
@@ -104,13 +107,13 @@ public class PunterService extends ServiceFacade<PunterReq.Person, PunterRes.Per
     private void writeIdemp(Map<String, Set<TransactionResult>> results) {
         if (results == null || results.isEmpty()) return;
         for (Map.Entry<String, Set<TransactionResult>> entry : results.entrySet()) {
-            punterRepository.insertFilterTable(entry.getValue().stream().collect(Collectors.toList()), entry.getKey());
+            punterRepository.insertFilterTable(entry.getValue().stream().collect(Collectors.toList()));
         }
     }
 
     @Override
     protected Map<String, Set<TransactionResult>> runTasks(Map<String, Set<BetInfo>> filter) {
-        HashMap<String, Set<TransactionResult>> result = new HashMap<>();
+        Map<String, Set<TransactionResult>> result = new HashMap<>();
         for (Map.Entry<String, Set<BetInfo>> entry : filter.entrySet()) {
             switch (entry.getKey()) {
                 case FIRST_PHASE:
@@ -125,15 +128,15 @@ public class PunterService extends ServiceFacade<PunterReq.Person, PunterRes.Per
     }
 
     @Override
-    protected Map<String, Set<BetInfo>> filterSeen(ConsumerRecords<String, PunterReq.Person> consumerRecords) {
+    protected Map<String, Set<BetInfo>> filterSeen(ConsumerRecords<Long, PunterReq.Person> consumerRecords) {
         Map<String, Set<BetInfo>> filter = new HashMap<>();
-        for (ConsumerRecord<String, PunterReq.Person> record : consumerRecords) {
+        for (ConsumerRecord<Long, PunterReq.Person> record : consumerRecords) {
             if (!filter.containsKey(record.value().getLocalTask())) {
-                filter.put(record.value().getLocalTask(), new HashSet<BetInfo>());
-            }
-            filter.get(record.value().getLocalTask()).add(new BetInfo(record.value().getPunterId(), record.value().getTrId()));
+                filter.put(record.value().getLocalTask(), new HashSet<>());
+        }
+        filter.get(record.value().getLocalTask()).add(new BetInfo(record.value().getPunterId(), record.value().getTrId()));
         }
         return filter;
-    }
+        }
 
-}
+        }

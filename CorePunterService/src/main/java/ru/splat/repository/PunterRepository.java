@@ -10,6 +10,7 @@ import ru.splat.PunterUtil;
 import ru.splat.feautures.*;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -29,27 +30,28 @@ public class PunterRepository {
     private static final String SQL_SELECT_PUNTER_LIMITS = "SELECT id, lim, limit_time FROM punter WHERE ID IN (?)";
     private static final String SQL_SELECT_PUNTER_BET_TIME = "SELECT id, punter_timestamp FROM punter_timestamps " +
             "WHERE id = ? ORDER BY punter_timestamp DESC LIMIT ?";
-    private static final String SQL_INSERT_PUNTER_IDEMP = "INSERT INTO punter_idemp (transaction_id, localtask, result, punter_timestamp) VALUES (?, ?, ?, ?)";
+    private static final String SQL_INSERT_PUNTER_IDEMP = "INSERT INTO punter_idemp (transaction_id, result, punter_timestamp) VALUES (?, ?, ?)";
     private static final String SQL_INSERT_PUNTER_TIMESTAMP = "INSERT INTO punter_timestamps " +
             "(id, punter_timestamp, transaction_id) VALUES (?, ?, ?)";
     private static final String SQL_DELETE_PUNTER_TIMESTAMP = "DELETE FROM punter_timestamps WHERE transaction_id = ?";
+    private static final String SQL_CHECK_IDEMPOTY = "SELECT transaction_id, result FROM PUNTER_IDEMP WHERE transaction_id IN (?)";
     /**
      * @param punterLimit макс кол-во ставок игрока за единицу времени
      * @return список времен последних ставок
      */
-    private ArrayList<PunterBetTime> getPunterBetTimes(PunterLimit punterLimit) {
+    private List<PunterBetTime> getPunterBetTimes(PunterLimit punterLimit) {
         RowMapper<PunterBetTime> rm = (rs, rowNum) ->
                 new PunterBetTime(rs.getInt("id"), rs.getLong("punter_timestamp"), true, punterLimit.getTimeLimit());
-        return (ArrayList<PunterBetTime>) jdbcTemplate.query(SQL_SELECT_PUNTER_BET_TIME, rm, punterLimit.getId(), punterLimit.getLimit());
+        return jdbcTemplate.query(SQL_SELECT_PUNTER_BET_TIME, rm, punterLimit.getId(), punterLimit.getLimit());
     }
 
-    private ArrayList<PunterBetTime> puntersArbiter(ArrayList<PunterLimit> punterLimits) {
+    private List<PunterBetTime> puntersArbiter(List<PunterLimit> punterLimits) {
         if (punterLimits == null || punterLimits.isEmpty())
             return null;
 
-        ArrayList<PunterBetTime> result = new ArrayList<>();
+        List<PunterBetTime> result = new ArrayList<>();
         for (PunterLimit punterLimit : punterLimits) {
-            ArrayList<PunterBetTime> punterBetTimes = getPunterBetTimes(punterLimit);
+            List<PunterBetTime> punterBetTimes = getPunterBetTimes(punterLimit);
 
             long currentTime = System.currentTimeMillis();
             boolean check = punterBetTimes == null || punterBetTimes.isEmpty() || punterBetTimes.size() < punterLimit.getLimit() ||
@@ -60,7 +62,7 @@ public class PunterRepository {
         return result;
     }
 
-    private ArrayList<PunterLimit> getPunterLimits(HashMap<Integer, Long> punterIdMap) {
+    private List<PunterLimit> getPunterLimits(Map<Integer, Long> punterIdMap) {
         if (punterIdMap == null || punterIdMap.isEmpty())
             return null;
         RowMapper<PunterLimit> rm = (rs, rowNum) -> {
@@ -72,7 +74,7 @@ public class PunterRepository {
             return punterLimit;
         };
 
-        return (ArrayList<PunterLimit>) jdbcTemplate.query(
+        return  jdbcTemplate.query(
                 PunterUtil.addSQLParametrs(punterIdMap.size(), SQL_SELECT_PUNTER_LIMITS), rm,
                 punterIdMap.keySet().toArray());
     }
@@ -113,7 +115,7 @@ public class PunterRepository {
         });
     }
 
-    private void insertPunter(ArrayList<BetInfo> punterIdList) {
+    private void insertPunter(List<BetInfo> punterIdList) {
         if (punterIdList == null || punterIdList.isEmpty())
             return;
         jdbcTemplate.batchUpdate(SQL_INSERT_PUNTER, new BatchPreparedStatementSetter() {
@@ -135,8 +137,8 @@ public class PunterRepository {
     public Set<TransactionResult> phase1(Set<BetInfo> punterIdSet) {
         if (punterIdSet == null || punterIdSet.isEmpty())
             return null;
-        HashMap<Integer, Long> punterIdMap = new HashMap<>();
-        ArrayList<BetInfo> punterIdList = new ArrayList<>();
+        Map<Integer, Long> punterIdMap = new HashMap<>();
+        List<BetInfo> punterIdList = new ArrayList<>();
         punterIdSet.parallelStream().forEach(i -> {
             punterIdMap.put(i.getPunterId(), i.getTransactionId());
             punterIdList.add(i);
@@ -144,8 +146,8 @@ public class PunterRepository {
 
         insertPunter(punterIdList);
 
-        ArrayList<PunterLimit> punterLimits = getPunterLimits(punterIdMap);
-        ArrayList<PunterBetTime> result = puntersArbiter(punterLimits);
+        List<PunterLimit> punterLimits = getPunterLimits(punterIdMap);
+        List<PunterBetTime> result = puntersArbiter(punterLimits);
 
         insertBatch(result.stream().filter(PunterBetTime::isCheckLimit).collect(Collectors.toList()));
         return result.stream().map((map) -> new TransactionResult(map.getTransactionId(), map.isCheckLimit())).collect(Collectors.toSet());
@@ -156,10 +158,9 @@ public class PunterRepository {
         return new HashSet<TransactionResult>(timestamps.stream().map((map) -> new TransactionResult(map.getTransactionId(), true)).collect(Collectors.toSet()));
     }
 
-    public List<TransactionResult> filterByTable(List<BetInfo> punterIdList, String localTask) {
+    public List<TransactionResult> filterByTable(List<BetInfo> punterIdList) {
         if (punterIdList == null || punterIdList.isEmpty())
             return null;
-        String sqlIdempoty = "SELECT transaction_id, result FROM PUNTER_IDEMP WHERE localTask = '" + localTask + "' and transaction_id IN (?)";
         RowMapper<TransactionResult> rm = (rs, rowNum) -> {
             TransactionResult transactionResult = new TransactionResult();
             transactionResult.setTransactionId(rs.getLong("transaction_id"));
@@ -167,11 +168,11 @@ public class PunterRepository {
             return transactionResult;
         };
         return jdbcTemplate.query(
-                PunterUtil.addSQLParametrs(punterIdList.size(), sqlIdempoty), rm,
+                PunterUtil.addSQLParametrs(punterIdList.size(), SQL_CHECK_IDEMPOTY), rm,
                 punterIdList.stream().map(BetInfo::getTransactionId).collect(Collectors.toList()).toArray());
     }
 
-    public void insertFilterTable(List<TransactionResult> transactionResults, String localTask) {
+    public void insertFilterTable(List<TransactionResult> transactionResults) {
         if (transactionResults == null || transactionResults.isEmpty())
             return;
         jdbcTemplate.batchUpdate(SQL_INSERT_PUNTER_IDEMP, new BatchPreparedStatementSetter() {
@@ -179,9 +180,8 @@ public class PunterRepository {
             public void setValues(PreparedStatement ps, int i) throws SQLException {
                 TransactionResult transactionResult = transactionResults.get(i);
                 ps.setLong(1, transactionResult.getTransactionId());
-                ps.setString(2, localTask);
-                ps.setBoolean(3, transactionResult.getResult());
-                ps.setLong(4,System.currentTimeMillis());
+                ps.setBoolean(2, transactionResult.getResult());
+                ps.setLong(3,System.currentTimeMillis());
             }
 
             public int getBatchSize() {

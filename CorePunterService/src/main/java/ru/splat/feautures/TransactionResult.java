@@ -7,7 +7,6 @@ public class TransactionResult {
 
     private long transactionId;
     private boolean result;
-    private String localTask;
 
     public TransactionResult() {
     }
@@ -25,10 +24,6 @@ public class TransactionResult {
         this.result = result;
     }
 
-    public void setLocalTask(String localTask) {
-        this.localTask = localTask;
-    }
-
     public long getTransactionId() {
         return transactionId;
     }
@@ -37,7 +32,4 @@ public class TransactionResult {
         return result;
     }
 
-    public String getLocalTask() {
-        return localTask;
-    }
 }
