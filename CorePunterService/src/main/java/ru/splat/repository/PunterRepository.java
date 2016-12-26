@@ -6,8 +6,12 @@ import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
+import ru.splat.Billing.feautures.TransactionResult;
 import ru.splat.PunterUtil;
-import ru.splat.feautures.*;
+import ru.splat.feautures.BetInfo;
+import ru.splat.feautures.PunterBetTime;
+import ru.splat.feautures.PunterLimit;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -25,16 +29,12 @@ public class PunterRepository {
     private static final int DEFAULT_LIMIT = 20;
     private static final int DEFAULT_LIMIT_TIME = 60 * 60 * 1000;
 
-    private static final String SQL_INSERT_PUNTER = "INSERT INTO punter (id,lim,types,limit_time) SELECT ?,?,?,? " +
-            "WHERE NOT EXISTS (SELECT 1 FROM punter WHERE punter.id = ?)";
+    private static final String SQL_INSERT_PUNTER = "INSERT INTO punter (id,lim,types,limit_time) SELECT ?,?,?,? WHERE NOT EXISTS (SELECT 1 FROM punter WHERE punter.id = ?)";
     private static final String SQL_SELECT_PUNTER_LIMITS = "SELECT id, lim, limit_time FROM punter WHERE ID IN (?)";
-    private static final String SQL_SELECT_PUNTER_BET_TIME = "SELECT id, punter_timestamp FROM punter_timestamps " +
-            "WHERE id = ? ORDER BY punter_timestamp DESC LIMIT ?";
-    private static final String SQL_INSERT_PUNTER_IDEMP = "INSERT INTO punter_idemp (transaction_id, result, punter_timestamp) VALUES (?, ?, ?)";
-    private static final String SQL_INSERT_PUNTER_TIMESTAMP = "INSERT INTO punter_timestamps " +
-            "(id, punter_timestamp, transaction_id) VALUES (?, ?, ?)";
+    private static final String SQL_SELECT_PUNTER_BET_TIME = "SELECT id, punter_timestamp FROM punter_timestamps WHERE id = ? ORDER BY punter_timestamp DESC LIMIT ?";
+    private static final String SQL_INSERT_PUNTER_TIMESTAMP = "INSERT INTO punter_timestamps (id, punter_timestamp, transaction_id) VALUES (?, ?, ?)";
     private static final String SQL_DELETE_PUNTER_TIMESTAMP = "DELETE FROM punter_timestamps WHERE transaction_id = ?";
-    private static final String SQL_CHECK_IDEMPOTY = "SELECT transaction_id, result FROM PUNTER_IDEMP WHERE transaction_id IN (?)";
+
     /**
      * @param punterLimit макс кол-во ставок игрока за единицу времени
      * @return список времен последних ставок
@@ -135,6 +135,7 @@ public class PunterRepository {
     }
 
     public Set<TransactionResult> phase1(Set<BetInfo> punterIdSet) {
+        System.out.println(TransactionSynchronizationManager.isActualTransactionActive());
         if (punterIdSet == null || punterIdSet.isEmpty())
             return null;
         Map<Integer, Long> punterIdMap = new HashMap<>();
@@ -150,44 +151,12 @@ public class PunterRepository {
         List<PunterBetTime> result = puntersArbiter(punterLimits);
 
         insertBatch(result.stream().filter(PunterBetTime::isCheckLimit).collect(Collectors.toList()));
-        return result.stream().map((map) -> new TransactionResult(map.getTransactionId(), map.isCheckLimit())).collect(Collectors.toSet());
+        return result.stream().map((map) -> new TransactionResult(map.getTransactionId(), map.isCheckLimit(),"Sucessefull")).collect(Collectors.toSet());
     }
 
     public Set<TransactionResult> cancel(List<BetInfo> timestamps) {
         deleteBetTimes(timestamps);
-        return new HashSet<TransactionResult>(timestamps.stream().map((map) -> new TransactionResult(map.getTransactionId(), true)).collect(Collectors.toSet()));
-    }
-
-    public List<TransactionResult> filterByTable(List<BetInfo> punterIdList) {
-        if (punterIdList == null || punterIdList.isEmpty())
-            return null;
-        RowMapper<TransactionResult> rm = (rs, rowNum) -> {
-            TransactionResult transactionResult = new TransactionResult();
-            transactionResult.setTransactionId(rs.getLong("transaction_id"));
-            transactionResult.setResult(rs.getBoolean("result"));
-            return transactionResult;
-        };
-        return jdbcTemplate.query(
-                PunterUtil.addSQLParametrs(punterIdList.size(), SQL_CHECK_IDEMPOTY), rm,
-                punterIdList.stream().map(BetInfo::getTransactionId).collect(Collectors.toList()).toArray());
-    }
-
-    public void insertFilterTable(List<TransactionResult> transactionResults) {
-        if (transactionResults == null || transactionResults.isEmpty())
-            return;
-        jdbcTemplate.batchUpdate(SQL_INSERT_PUNTER_IDEMP, new BatchPreparedStatementSetter() {
-
-            public void setValues(PreparedStatement ps, int i) throws SQLException {
-                TransactionResult transactionResult = transactionResults.get(i);
-                ps.setLong(1, transactionResult.getTransactionId());
-                ps.setBoolean(2, transactionResult.getResult());
-                ps.setLong(3,System.currentTimeMillis());
-            }
-
-            public int getBatchSize() {
-                return transactionResults.size();
-            }
-        });
+        return new HashSet<TransactionResult>(timestamps.stream().map((map) -> new TransactionResult(map.getTransactionId(), true, "Sucessefull")).collect(Collectors.toSet()));
     }
 
     public void deleteOldData(String tableName, long timeLimit){
