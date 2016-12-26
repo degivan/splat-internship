@@ -1,37 +1,58 @@
 package ru.splat.Billing;
 
-import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import ru.splat.Billing.feautures.BillingInfo;
 import ru.splat.Billing.feautures.TransactionResult;
 import ru.splat.Billing.protobuf.BallanceReq;
 import ru.splat.Billing.protobuf.BallanceRes;
-import ru.splat.Billing.repository.BillingIdempRepository;
-import ru.splat.Billing.repository.BillingRepository;
 import ru.splat.ServiceFacade;
-import ru.splat.feautures.BetInfo;
-import ru.splat.protobuf.PunterReq;
-import ru.splat.repository.IdempRepositoryInterface;
-import ru.splat.repository.PunterRepository;
-
+//import ru.splat.Billing.repository.BillingIdempRepository;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
-@Service
+
 public class BillingService extends ServiceFacade<BallanceReq.Billing,BallanceRes.Billing,BillingInfo>
 {
+    @Override
+    public void sendResult(Map<String, Set<TransactionResult>> map)
+    {
 
-    @Autowired
-    BillingIdempRepository idempRepository;
+    }
 
-    @Autowired
+
+    @Override
+    public void mainProcess()
+    {
+
+    }
+
+
+    @Override
+    public Map<String, Set<TransactionResult>> processMessage(
+            ConsumerRecords<Long, BallanceReq.Billing> consumerRecords)
+    {
+        return null;
+    }
+
+
+    @Override
+    public Map<String, Set<TransactionResult>> runTasks(Map<String, Set<BillingInfo>> filter)
+    {
+        return null;
+    }
+
+
+    @Override
+    public Map filterSeen(ConsumerRecords<Long, BallanceReq.Billing> consumerRecords)
+    {
+        return null;
+    }
+
+    //@Autowired
+    //BillingIdempRepository idempRepository;
+
+/*    @Autowired
     BillingRepository billingRepository;
 
 
@@ -128,5 +149,5 @@ public class BillingService extends ServiceFacade<BallanceReq.Billing,BallanceRe
             }
         }
         return result;
-    }
+    }*/
 }

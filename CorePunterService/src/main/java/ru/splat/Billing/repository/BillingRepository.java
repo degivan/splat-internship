@@ -22,7 +22,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 
-@Repository
 public class BillingRepository {
 
     private static int DEFAULT_ZERO = 0;

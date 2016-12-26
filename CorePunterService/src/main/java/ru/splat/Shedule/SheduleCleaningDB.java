@@ -1,6 +1,7 @@
 package ru.splat.Shedule;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import ru.splat.PunterService;
 import ru.splat.repository.PunterRepository;
 
 

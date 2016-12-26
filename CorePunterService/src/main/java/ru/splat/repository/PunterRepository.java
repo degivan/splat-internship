@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import ru.splat.Billing.feautures.TransactionResult;
 import ru.splat.PunterUtil;
@@ -20,7 +21,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 
-@Repository
 public class PunterRepository {
 
     @Autowired

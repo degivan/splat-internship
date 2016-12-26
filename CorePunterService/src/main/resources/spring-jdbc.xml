@@ -8,24 +8,16 @@
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
 
-    <!-- Определяем папку, в которой будем искать DAO компоненты (@Repository) -->
-    <!-- <context:component-scan base-package="ru.splat" />-->
-
-     <!-- Настраивает управление транзакциями с помощью аннотации @Transactional -->
-    <tx:annotation-driven transaction-manager="transactionManager" />
-
+    <!-- Настраивает управление транзакциями с помощью аннотации @Transactional -->
     <!-- Менеджер транзакций -->
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager"
-          p:dataSource-ref="dataSource" />
+          p:dataSource-ref="dataSource"/>
+
+    <tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true"/>
 
     <!-- Обычный JDBC шаблон -->
     <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate"
           p:dataSource-ref="dataSource" >
-    </bean>
-
-    <!-- JDBC шаблон с возможностью использования именованных параметров -->
-    <bean id="namedJdbcTemplate" class="org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate">
-        <constructor-arg type="javax.sql.DataSource" ref="dataSource"/>
     </bean>
 
     <!-- Бин для получения подключений -->
@@ -38,9 +30,23 @@
           p:maxActive="${jdbc.maxActive}"
     />
 
-    <!-- Настройки бина dataSource будем хранить в отдельном файле, определяем где именно -->
-    <bean id="placeholderConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"
-          p:location="classpath:jdbc.properties" />
+    <bean id="liquibase" class="liquibase.integration.spring.SpringLiquibase">
+        <property name="changeLog" value="${liquibase.change-log}"/>
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
 
+    <!-- Настройки бина dataSource будем хранить в отдельном файле, определяем где именно -->
+    <bean id="placeholderConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations">
+            <list>
+                <value>classpath:config/jdbc.properties</value>
+                <value>classpath:config/application.properties</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="idempRepository" class="ru.splat.repository.IdempRepository"/>
+    <bean id="punterRepository" class="ru.splat.repository.PunterRepository"/>
+    <bean id="punterService" class="ru.splat.PunterService"/>
 
 </beans>

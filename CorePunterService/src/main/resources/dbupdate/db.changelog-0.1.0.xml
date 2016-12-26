@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.2.xsd">
+
+    <changeSet logicalFilePath="changelog/db.changelog-0.1.0.xml" author="Kalugin Nikolay" id="version-0.1.0">
+        <createTable tableName="punter_idemp">
+            <column name="transaction_id" type="bigint"/>
+            <column name="result" type="boolean"/>
+            <column name="resultreason" type="character varying(30)"/>
+            <column name="punter_timestamp" type="bigint"/>
+        </createTable>
+
+        <addPrimaryKey tableName="punter_idemp" columnNames="transaction_id"/>
+
+        <createTable tableName="punter">
+            <column name="id" type="bigint"/>
+            <column name="lim" type="integer"/>
+            <column name="types" type="character varying(40)"/>
+            <column name="limit_time" type="integer"/>
+        </createTable>
+        
+        <addPrimaryKey tableName="punter" columnNames="id"/>
+        
+        <createTable tableName="punter_timestamps">
+            <column name="id" type="bigint"/>
+            <column name="punter_timestamp" type="bigint"/>
+            <column name="transaction_id" type="bigint"/>
+            <column name="limit_time" type="integer"/>
+        </createTable>
+    </changeSet>
+
+</databaseChangeLog>

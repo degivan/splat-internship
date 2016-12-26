@@ -12,24 +12,29 @@
        http://www.springframework.org/schema/task/spring-task-3.0.xsd
         http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
 
-    <context:component-scan base-package="ru.splat"/>
-    <context:annotation-config />
+    <context:annotation-config/>
+
     <import resource="spring-jdbc.xml" />
 
-    <bean id="CleaningTableIdemp" class="ru.splat.Shedule.SheduleCleaningDB">
+    <bean id="cleaningTableIdemp" class="ru.splat.Shedule.SheduleCleaningDB">
           <property name="tableName" value="punter_idemp"/>
           <property name="timeLimit" value="180000"/>
     </bean>
 
-    <bean id="CleaningTableTimestamps" class="ru.splat.Shedule.SheduleCleaningDB">
+    <bean id="cleaningTableTimestamps" class="ru.splat.Shedule.SheduleCleaningDB">
         <property name="tableName" value="punter_timestamps"/>
         <property name="timeLimit" value="180000"/>
     </bean>
 
-    <task:scheduler id="CleanerSheduler"/>
-    <task:scheduled-tasks scheduler="CleanerSheduler">
-        <task:scheduled ref="CleaningTableTimestamps" method="cleanTable" fixed-rate="60000"/>
-        <task:scheduled ref="CleaningTableIdemp" method="cleanTable" fixed-rate="60000"/>
+    <bean id="punterServiceWrapper" class="ru.splat.PunterServiceWrapper"/>
+
+    <task:scheduler id="cleanerSheduler"/>
+    <task:scheduled-tasks scheduler="cleanerSheduler">
+        <task:scheduled ref="cleaningTableTimestamps" method="cleanTable" fixed-rate="60000"/>
+        <task:scheduled ref="cleaningTableIdemp" method="cleanTable" fixed-rate="60000"/>
+        <task:scheduled ref="punterServiceWrapper" method="process" fixed-rate="1000"/>
     </task:scheduled-tasks>
+
+    <bean id="boot" class="ru.splat.Boot"/>
 
 </beans>
