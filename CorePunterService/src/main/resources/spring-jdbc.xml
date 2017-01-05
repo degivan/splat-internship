@@ -45,7 +45,7 @@
         </property>
     </bean>
 
-    <bean id="idempRepository" class="ru.splat.repository.IdempRepository"/>
+    <bean id="idempRepository" class="ru.splat.repository.ExactlyOnceRepository"/>
     <bean id="punterRepository" class="ru.splat.repository.PunterRepository"/>
     <bean id="punterService" class="ru.splat.PunterService"/>
 

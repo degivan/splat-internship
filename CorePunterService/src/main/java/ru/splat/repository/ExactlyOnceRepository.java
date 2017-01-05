@@ -2,16 +2,13 @@ package ru.splat.repository;
 
 
 import com.google.protobuf.InvalidProtocolBufferException;
-import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.transaction.annotation.Transactional;
 import ru.splat.Billing.feautures.TransactionResult;
 import ru.splat.PunterUtil;
-import ru.splat.feautures.BetInfo;
-import ru.splat.protobuf.PunterReq;
 import ru.splat.protobuf.PunterRes;
 
 
@@ -20,8 +17,8 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Transactional
-public class IdempRepository implements IdempRepositoryInterface<BetInfo, TransactionResult> {
+public class ExactlyOnceRepository implements ExactlyOnceRepositoryInterface<TransactionResult>
+{
 
     private static final String SQL_INSERT_IDEMP = "INSERT INTO punter_idemp (transaction_id, blob, punter_timestamp) VALUES (?, ?, ?)";
     private static final String SQL_CHECK_IDEMP = "SELECT transaction_id, blob FROM punter_idemp WHERE transaction_id IN (?)";
@@ -56,7 +53,7 @@ public class IdempRepository implements IdempRepositoryInterface<BetInfo, Transa
     }
 
     @Override
-    public List<TransactionResult> filterByTable(List<BetInfo> punterIdList) {
+    public List<TransactionResult> filterByTable(List<Long> punterIdList) {
         if (punterIdList == null || punterIdList.isEmpty())
             return null;
 
@@ -74,7 +71,7 @@ public class IdempRepository implements IdempRepositoryInterface<BetInfo, Transa
         };
         return jdbcTemplate.query(
                 PunterUtil.addSQLParametrs(punterIdList.size(), SQL_CHECK_IDEMP), rm,
-                punterIdList.stream().map(BetInfo::getTransactionId).collect(Collectors.toList()).toArray());
+                punterIdList.stream().collect(Collectors.toList()).toArray());
     }
 
 

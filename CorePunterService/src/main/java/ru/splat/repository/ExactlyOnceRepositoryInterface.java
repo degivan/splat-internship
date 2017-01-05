@@ -2,7 +2,7 @@ package ru.splat.repository;
 
 import java.util.List;
 
-public interface IdempRepositoryInterface<T,V> {
+public interface ExactlyOnceRepositoryInterface<V> {
     void insertFilterTable(List<V> transactionResults);
-    List<V> filterByTable(List<T> punterIdList);
+    List<V> filterByTable(List<Long> transactionIds);
 }

@@ -14,7 +14,7 @@ import java.util.Properties;
 /**
  * Created by Rustam on 1/3/2017.
  */
-public interface Kafka<T,V> {
+public interface Kafka<T> {
 
     default void init(Message consumerMessage, String topic) {
 
@@ -36,14 +36,15 @@ public interface Kafka<T,V> {
         propsProducer.put("linger.ms", 1);
         propsProducer.put("buffer.memory", 33554432);
 
-        KafkaProducer<Long, V> producer = new KafkaProducer(propsProducer, new LongSerializer(), new ProtoBufMessageSerializer());
+        KafkaProducer<Long, Message> producer = new KafkaProducer(propsProducer, new LongSerializer(), new ProtoBufMessageSerializer());
         setProducer(producer);
     }
 
+    // нам пофиг что писать в кафку, главное чтоб можно было сериализовать
     KafkaConsumer<Long,T> getConsumer();
-    KafkaProducer<Long,V> getProducer();
+    KafkaProducer<Long, Message> getProducer();
     void setConsumer(KafkaConsumer<Long,T> consumer);
-    void setProducer(KafkaProducer<Long,V> producer);
+    void setProducer(KafkaProducer<Long, Message> producer);
     String getTopicRequest();
     String getTopicResponse();
 

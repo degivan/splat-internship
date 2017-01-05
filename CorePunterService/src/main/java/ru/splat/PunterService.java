@@ -7,12 +7,12 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.splat.Billing.feautures.TransactionResult;
 import ru.splat.Kafka.PunterKafka;
 import ru.splat.feautures.BetInfo;
-import ru.splat.feautures.RepAnswer;
 import ru.splat.protobuf.PunterReq;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import ru.splat.protobuf.PunterRes;
-import ru.splat.repository.IdempRepositoryInterface;
+import ru.splat.repository.ExactlyOnceRepositoryInterface;
 import ru.splat.repository.PunterRepository;
 
 
@@ -20,7 +20,7 @@ import ru.splat.repository.PunterRepository;
 public class PunterService implements ServiceFacade<PunterReq.Punter, PunterRes.Punter, BetInfo>
 {
     @Autowired
-    private IdempRepositoryInterface<BetInfo, TransactionResult> idempRepository;
+    private ExactlyOnceRepositoryInterface<TransactionResult> idempRepository;
 
     @Autowired
     private PunterRepository punterRepository;
@@ -41,11 +41,16 @@ public class PunterService implements ServiceFacade<PunterReq.Punter, PunterRes.
         }
     }
 
+
     @Override
     @Transactional
     public Map<String, Set<TransactionResult>> processMessage(ConsumerRecords<Long, PunterReq.Punter> consumerRecords)  {
 
         //System.out.println("Tx : " + TransactionSynchronizationManager.isActualTransactionActive());
+
+        // Отказать. Нельзя из упорядоченного лога делать неупорядоченные сеты.
+        // или доказать, что можно (ничего не будет сломано от переупорядочивания (например прочитаешь
+        // CANCEL, PHASE_ONE для одной и той же ставки)
 
         Map<String, Set<BetInfo>> afterFirstFilter = filterSeen(consumerRecords);
 
@@ -53,7 +58,9 @@ public class PunterService implements ServiceFacade<PunterReq.Punter, PunterRes.
         List<TransactionResult> intermediateTransactionResults;
 
         for (Map.Entry<String, Set<BetInfo>> entry : afterFirstFilter.entrySet()) {
-            intermediateTransactionResults = idempRepository.filterByTable(new ArrayList<BetInfo>(entry.getValue()));
+            intermediateTransactionResults = idempRepository.filterByTable(
+                    entry.getValue().stream().map(BetInfo::getTransactionId).collect(Collectors.toList())
+            );
 
             Set<Long> intermediateResults2 = new HashSet<>();
             for (TransactionResult transactionResult : intermediateTransactionResults) {

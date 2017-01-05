@@ -1,6 +1,7 @@
 package ru.splat;
 
 import com.google.common.base.Throwables;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.common.TopicPartition;
 import org.slf4j.Logger;
@@ -8,13 +9,14 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.splat.Billing.feautures.TransactionResult;
 import ru.splat.Kafka.Kafka;
 import java.util.*;
-
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
 
 
-public interface ServiceFacade<T,V,X> {
+public interface ServiceFacade<T,V extends TransactionRequest,X> {
 
     String FIRST_PHASE = "phase1";
     String SECOND_PHASE = "phase2";
@@ -41,6 +43,7 @@ public interface ServiceFacade<T,V,X> {
 
         }
     }
+
 
     void writeIdemp(Map<String, Set<TransactionResult>> results);
 
