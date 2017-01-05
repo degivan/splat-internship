@@ -27,12 +27,12 @@
     </bean>
 
     <bean id="punterServiceWrapper" class="ru.splat.PunterServiceWrapper"/>
+    <bean id="punterKafka" class="ru.splat.Kafka.PunterKafka" init-method="init"/>
 
     <task:scheduler id="cleanerSheduler"/>
     <task:scheduled-tasks scheduler="cleanerSheduler">
         <task:scheduled ref="cleaningTableTimestamps" method="cleanTable" fixed-rate="60000"/>
         <task:scheduled ref="cleaningTableIdemp" method="cleanTable" fixed-rate="60000"/>
-        <task:scheduled ref="punterServiceWrapper" method="process" fixed-rate="1000"/>
     </task:scheduled-tasks>
 
     <bean id="boot" class="ru.splat.Boot"/>

@@ -7,26 +7,25 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 import ru.splat.Billing.feautures.TransactionResult;
 import ru.splat.PunterUtil;
 import ru.splat.feautures.BetInfo;
 import ru.splat.feautures.PunterBetTime;
 import ru.splat.feautures.PunterLimit;
+import ru.splat.feautures.RepAnswer;
 
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-
+@Transactional
 public class PunterRepository {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    private static final int DEFAULT_LIMIT = 20;
+    private static final int DEFAULT_LIMIT = 3;
     private static final int DEFAULT_LIMIT_TIME = 60 * 60 * 1000;
 
     private static final String SQL_INSERT_PUNTER = "INSERT INTO punter (id,lim,types,limit_time) SELECT ?,?,?,? WHERE NOT EXISTS (SELECT 1 FROM punter WHERE punter.id = ?)";
@@ -134,8 +133,8 @@ public class PunterRepository {
         });
     }
 
-    public Set<TransactionResult> phase1(Set<BetInfo> punterIdSet) {
-        System.out.println(TransactionSynchronizationManager.isActualTransactionActive());
+    public Set<RepAnswer> phase1(Set<BetInfo> punterIdSet) {
+       // System.out.println(TransactionSynchronizationManager.isActualTransactionActive());
         if (punterIdSet == null || punterIdSet.isEmpty())
             return null;
         Map<Integer, Long> punterIdMap = new HashMap<>();
@@ -151,12 +150,12 @@ public class PunterRepository {
         List<PunterBetTime> result = puntersArbiter(punterLimits);
 
         insertBatch(result.stream().filter(PunterBetTime::isCheckLimit).collect(Collectors.toList()));
-        return result.stream().map((map) -> new TransactionResult(map.getTransactionId(), map.isCheckLimit(),"Sucessefull")).collect(Collectors.toSet());
+        return result.stream().map((map) -> new RepAnswer(map.getTransactionId(), map.isCheckLimit(),"Sucessefull")).collect(Collectors.toSet());
     }
 
-    public Set<TransactionResult> cancel(List<BetInfo> timestamps) {
+    public Set<RepAnswer> cancel(List<BetInfo> timestamps) {
         deleteBetTimes(timestamps);
-        return new HashSet<TransactionResult>(timestamps.stream().map((map) -> new TransactionResult(map.getTransactionId(), true, "Sucessefull")).collect(Collectors.toSet()));
+        return new HashSet<RepAnswer>(timestamps.stream().map((map) -> new RepAnswer(map.getTransactionId(), true, "Sucessefull")).collect(Collectors.toSet()));
     }
 
     public void deleteOldData(String tableName, long timeLimit){

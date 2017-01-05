@@ -14,6 +14,7 @@ import ru.splat.PunterUtil;
 import ru.splat.feautures.BetInfo;
 import ru.splat.feautures.PunterBetTime;
 import ru.splat.feautures.PunterLimit;
+import ru.splat.feautures.RepAnswer;
 
 
 import java.sql.PreparedStatement;
@@ -45,30 +46,30 @@ public class BillingRepository {
 
     private static final String SQL_SELECT_FILTER_BALLANCE = "SELECT punter_id, sum FROM ballance WHERE punter_id IN (?)";
 
-    public Set<TransactionResult> phase1(List<BillingInfo> punterIdList) {
+    public Set<RepAnswer> phase1(List<BillingInfo> punterIdList) {
         insertPunterBallance(punterIdList.stream().map(billingInfo -> billingInfo.getPunterID()).collect(Collectors.toList()));
         boolean check=true;
         List<PunterBallance> ballance = getPunterBallance(punterIdList.stream().map(billingInfo -> billingInfo.getPunterID()).collect(Collectors.toList()));
         Map<Integer,Integer> map = new HashMap<>();
         ballance.stream().forEach(punterBallance -> map.put(punterBallance.getPunterId(),punterBallance.getSum()));
-        Set<TransactionResult> transactionResults = new HashSet<>();
+        Set<RepAnswer> repAnswer = new HashSet<>();
         List<BillingInfo> forPay = new ArrayList<>();
         for (BillingInfo billingInfo:punterIdList) {
             if (map.get(billingInfo.getPunterID())>=billingInfo.getSum()){
-                transactionResults.add(new TransactionResult(billingInfo.getTransactionId(),true,"Sucessefull"));
+                repAnswer.add(new RepAnswer(billingInfo.getTransactionId(),true,"Sucessefull"));
                 forPay.add(billingInfo);
             }
             else {
-                transactionResults.add(new TransactionResult(billingInfo.getTransactionId(),false,"No money"));
+                repAnswer.add(new RepAnswer(billingInfo.getTransactionId(),false,"No money"));
             }
         }
         pay(forPay,check);
-        return transactionResults;
+        return repAnswer;
     }
-    public Set<TransactionResult> cancel(List<BillingInfo> punterIdList){
+    public Set<RepAnswer> cancel(List<BillingInfo> punterIdList){
         boolean check = false;
         pay(punterIdList,check);
-        return punterIdList.stream().map(billingInfo -> new TransactionResult(billingInfo.getTransactionId(),true,"Sucessefull")).collect(Collectors.toSet());
+        return punterIdList.stream().map(billingInfo -> new RepAnswer(billingInfo.getTransactionId(),true,"Sucessefull")).collect(Collectors.toSet());
     }
 
     private void insertPunterBallance(List<Integer> billingInfoList) {

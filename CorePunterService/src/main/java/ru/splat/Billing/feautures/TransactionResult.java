@@ -1,51 +1,35 @@
 package ru.splat.Billing.feautures;
 
 
+import ru.splat.protobuf.PunterRes;
+
 public class TransactionResult {
-
-    private long transactionId;
-    private boolean result;
-    private String resultReason;
-
-
 
     public TransactionResult() {
     }
 
-    public TransactionResult(long transactionId, boolean result, String resultReason) {
+    public TransactionResult(long transactionId, PunterRes.Punter punter) {
         this.transactionId = transactionId;
-        this.result = result;
-        this.resultReason = resultReason;
+        this.punter = punter;
     }
+
+    private long transactionId;
+    private PunterRes.Punter punter;
 
     public void setTransactionId(long transactionId) {
         this.transactionId = transactionId;
     }
 
-    public void setResult(boolean result) {
-        this.result = result;
+    public void setPunter(PunterRes.Punter punter) {
+        this.punter = punter;
     }
 
     public long getTransactionId() {
+
         return transactionId;
     }
 
-    public boolean getResult() {
-        return result;
+    public PunterRes.Punter getPunter() {
+        return punter;
     }
-
-    public boolean isResult() {
-        return result;
-    }
-
-    public String getResultReason() {
-        return resultReason;
-    }
-
-    public void setResultReason(String resultReason) {
-        this.resultReason = resultReason;
-    }
-
-
-
 }

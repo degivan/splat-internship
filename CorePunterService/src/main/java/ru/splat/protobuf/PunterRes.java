@@ -8,23 +8,23 @@ public final class PunterRes {
   public static void registerAllExtensions(
       com.google.protobuf.ExtensionRegistry registry) {
   }
-  public interface PersonOrBuilder
+  public interface PunterOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
 
-    // required string localTask = 1;
+    // required string resultReason = 1;
     /**
-     * <code>required string localTask = 1;</code>
+     * <code>required string resultReason = 1;</code>
      */
-    boolean hasLocalTask();
+    boolean hasResultReason();
     /**
-     * <code>required string localTask = 1;</code>
+     * <code>required string resultReason = 1;</code>
      */
-    String getLocalTask();
+    String getResultReason();
     /**
-     * <code>required string localTask = 1;</code>
+     * <code>required string resultReason = 1;</code>
      */
     com.google.protobuf.ByteString
-        getLocalTaskBytes();
+        getResultReasonBytes();
 
     // required int64 transactionID = 2;
     /**
@@ -47,24 +47,24 @@ public final class PunterRes {
     boolean getResult();
   }
   /**
-   * Protobuf type {@code tutorial.Person}
+   * Protobuf type {@code tutorial.Punter}
    */
-  public static final class Person extends
+  public static final class Punter extends
       com.google.protobuf.GeneratedMessage
-      implements PersonOrBuilder {
-    // Use Person.newBuilder() to construct.
-    private Person(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+      implements PunterOrBuilder {
+    // Use Punter.newBuilder() to construct.
+    private Punter(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
       super(builder);
       this.unknownFields = builder.getUnknownFields();
     }
-    private Person(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
+    private Punter(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
 
-    private static final Person defaultInstance;
-    public static Person getDefaultInstance() {
+    private static final Punter defaultInstance;
+    public static Punter getDefaultInstance() {
       return defaultInstance;
     }
 
-    public Person getDefaultInstanceForType() {
+    public Punter getDefaultInstanceForType() {
       return defaultInstance;
     }
 
@@ -74,7 +74,7 @@ public final class PunterRes {
         getUnknownFields() {
       return this.unknownFields;
     }
-    private Person(
+    private Punter(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -99,7 +99,7 @@ public final class PunterRes {
             }
             case 10: {
               bitField0_ |= 0x00000001;
-              localTask_ = input.readBytes();
+              resultReason_ = input.readBytes();
               break;
             }
             case 16: {
@@ -126,46 +126,46 @@ public final class PunterRes {
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return PunterRes.internal_static_tutorial_Person_descriptor;
+      return PunterRes.internal_static_tutorial_Punter_descriptor;
     }
 
     protected FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return PunterRes.internal_static_tutorial_Person_fieldAccessorTable
+      return PunterRes.internal_static_tutorial_Punter_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              Person.class, Builder.class);
+              Punter.class, Builder.class);
     }
 
-    public static com.google.protobuf.Parser<Person> PARSER =
-        new com.google.protobuf.AbstractParser<Person>() {
-      public Person parsePartialFrom(
+    public static com.google.protobuf.Parser<Punter> PARSER =
+        new com.google.protobuf.AbstractParser<Punter>() {
+      public Punter parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new Person(input, extensionRegistry);
+        return new Punter(input, extensionRegistry);
       }
     };
 
     @Override
-    public com.google.protobuf.Parser<Person> getParserForType() {
+    public com.google.protobuf.Parser<Punter> getParserForType() {
       return PARSER;
     }
 
     private int bitField0_;
-    // required string localTask = 1;
-    public static final int LOCALTASK_FIELD_NUMBER = 1;
-    private Object localTask_;
+    // required string resultReason = 1;
+    public static final int RESULTREASON_FIELD_NUMBER = 1;
+    private Object resultReason_;
     /**
-     * <code>required string localTask = 1;</code>
+     * <code>required string resultReason = 1;</code>
      */
-    public boolean hasLocalTask() {
+    public boolean hasResultReason() {
       return ((bitField0_ & 0x00000001) == 0x00000001);
     }
     /**
-     * <code>required string localTask = 1;</code>
+     * <code>required string resultReason = 1;</code>
      */
-    public String getLocalTask() {
-      Object ref = localTask_;
+    public String getResultReason() {
+      Object ref = resultReason_;
       if (ref instanceof String) {
         return (String) ref;
       } else {
@@ -173,22 +173,22 @@ public final class PunterRes {
             (com.google.protobuf.ByteString) ref;
         String s = bs.toStringUtf8();
         if (bs.isValidUtf8()) {
-          localTask_ = s;
+          resultReason_ = s;
         }
         return s;
       }
     }
     /**
-     * <code>required string localTask = 1;</code>
+     * <code>required string resultReason = 1;</code>
      */
     public com.google.protobuf.ByteString
-        getLocalTaskBytes() {
-      Object ref = localTask_;
+        getResultReasonBytes() {
+      Object ref = resultReason_;
       if (ref instanceof String) {
         com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
                 (String) ref);
-        localTask_ = b;
+        resultReason_ = b;
         return b;
       } else {
         return (com.google.protobuf.ByteString) ref;
@@ -228,7 +228,7 @@ public final class PunterRes {
     }
 
     private void initFields() {
-      localTask_ = "";
+      resultReason_ = "";
       transactionID_ = 0L;
       result_ = false;
     }
@@ -237,7 +237,7 @@ public final class PunterRes {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized != -1) return isInitialized == 1;
 
-      if (!hasLocalTask()) {
+      if (!hasResultReason()) {
         memoizedIsInitialized = 0;
         return false;
       }
@@ -253,7 +253,7 @@ public final class PunterRes {
                         throws java.io.IOException {
       getSerializedSize();
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        output.writeBytes(1, getLocalTaskBytes());
+        output.writeBytes(1, getResultReasonBytes());
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         output.writeInt64(2, transactionID_);
@@ -272,7 +272,7 @@ public final class PunterRes {
       size = 0;
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(1, getLocalTaskBytes());
+          .computeBytesSize(1, getResultReasonBytes());
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.CodedOutputStream
@@ -294,53 +294,53 @@ public final class PunterRes {
       return super.writeReplace();
     }
 
-    public static Person parseFrom(
+    public static Punter parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static Person parseFrom(
+    public static Punter parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static Person parseFrom(byte[] data)
+    public static Punter parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static Person parseFrom(
+    public static Punter parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static Person parseFrom(java.io.InputStream input)
+    public static Punter parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return PARSER.parseFrom(input);
     }
-    public static Person parseFrom(
+    public static Punter parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return PARSER.parseFrom(input, extensionRegistry);
     }
-    public static Person parseDelimitedFrom(java.io.InputStream input)
+    public static Punter parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return PARSER.parseDelimitedFrom(input);
     }
-    public static Person parseDelimitedFrom(
+    public static Punter parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return PARSER.parseDelimitedFrom(input, extensionRegistry);
     }
-    public static Person parseFrom(
+    public static Punter parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return PARSER.parseFrom(input);
     }
-    public static Person parseFrom(
+    public static Punter parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -349,7 +349,7 @@ public final class PunterRes {
 
     public static Builder newBuilder() { return Builder.create(); }
     public Builder newBuilderForType() { return newBuilder(); }
-    public static Builder newBuilder(Person prototype) {
+    public static Builder newBuilder(Punter prototype) {
       return newBuilder().mergeFrom(prototype);
     }
     public Builder toBuilder() { return newBuilder(this); }
@@ -361,24 +361,24 @@ public final class PunterRes {
       return builder;
     }
     /**
-     * Protobuf type {@code tutorial.Person}
+     * Protobuf type {@code tutorial.Punter}
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessage.Builder<Builder>
-       implements PersonOrBuilder {
+       implements PunterOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return PunterRes.internal_static_tutorial_Person_descriptor;
+        return PunterRes.internal_static_tutorial_Punter_descriptor;
       }
 
       protected FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return PunterRes.internal_static_tutorial_Person_fieldAccessorTable
+        return PunterRes.internal_static_tutorial_Punter_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                Person.class, Builder.class);
+                Punter.class, Builder.class);
       }
 
-      // Construct using ru.ru.splat.protobuf.PunterRes.Person.newBuilder()
+      // Construct using ru.splat.protobuf.PunterRes.Punter.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -398,7 +398,7 @@ public final class PunterRes {
 
       public Builder clear() {
         super.clear();
-        localTask_ = "";
+        resultReason_ = "";
         bitField0_ = (bitField0_ & ~0x00000001);
         transactionID_ = 0L;
         bitField0_ = (bitField0_ & ~0x00000002);
@@ -413,29 +413,29 @@ public final class PunterRes {
 
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return PunterRes.internal_static_tutorial_Person_descriptor;
+        return PunterRes.internal_static_tutorial_Punter_descriptor;
       }
 
-      public Person getDefaultInstanceForType() {
-        return Person.getDefaultInstance();
+      public Punter getDefaultInstanceForType() {
+        return Punter.getDefaultInstance();
       }
 
-      public Person build() {
-        Person result = buildPartial();
+      public Punter build() {
+        Punter result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
         return result;
       }
 
-      public Person buildPartial() {
-        Person result = new Person(this);
+      public Punter buildPartial() {
+        Punter result = new Punter(this);
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
           to_bitField0_ |= 0x00000001;
         }
-        result.localTask_ = localTask_;
+        result.resultReason_ = resultReason_;
         if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
           to_bitField0_ |= 0x00000002;
         }
@@ -450,19 +450,19 @@ public final class PunterRes {
       }
 
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof Person) {
-          return mergeFrom((Person)other);
+        if (other instanceof Punter) {
+          return mergeFrom((Punter)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(Person other) {
-        if (other == Person.getDefaultInstance()) return this;
-        if (other.hasLocalTask()) {
+      public Builder mergeFrom(Punter other) {
+        if (other == Punter.getDefaultInstance()) return this;
+        if (other.hasResultReason()) {
           bitField0_ |= 0x00000001;
-          localTask_ = other.localTask_;
+          resultReason_ = other.resultReason_;
           onChanged();
         }
         if (other.hasTransactionID()) {
@@ -476,7 +476,7 @@ public final class PunterRes {
       }
 
       public final boolean isInitialized() {
-        if (!hasLocalTask()) {
+        if (!hasResultReason()) {
           
           return false;
         }
@@ -491,11 +491,11 @@ public final class PunterRes {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        Person parsedMessage = null;
+        Punter parsedMessage = null;
         try {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (Person) e.getUnfinishedMessage();
+          parsedMessage = (Punter) e.getUnfinishedMessage();
           throw e;
         } finally {
           if (parsedMessage != null) {
@@ -506,76 +506,76 @@ public final class PunterRes {
       }
       private int bitField0_;
 
-      // required string localTask = 1;
-      private Object localTask_ = "";
+      // required string resultReason = 1;
+      private Object resultReason_ = "";
       /**
-       * <code>required string localTask = 1;</code>
+       * <code>required string resultReason = 1;</code>
        */
-      public boolean hasLocalTask() {
+      public boolean hasResultReason() {
         return ((bitField0_ & 0x00000001) == 0x00000001);
       }
       /**
-       * <code>required string localTask = 1;</code>
+       * <code>required string resultReason = 1;</code>
        */
-      public String getLocalTask() {
-        Object ref = localTask_;
+      public String getResultReason() {
+        Object ref = resultReason_;
         if (!(ref instanceof String)) {
           String s = ((com.google.protobuf.ByteString) ref)
               .toStringUtf8();
-          localTask_ = s;
+          resultReason_ = s;
           return s;
         } else {
           return (String) ref;
         }
       }
       /**
-       * <code>required string localTask = 1;</code>
+       * <code>required string resultReason = 1;</code>
        */
       public com.google.protobuf.ByteString
-          getLocalTaskBytes() {
-        Object ref = localTask_;
+          getResultReasonBytes() {
+        Object ref = resultReason_;
         if (ref instanceof String) {
           com.google.protobuf.ByteString b = 
               com.google.protobuf.ByteString.copyFromUtf8(
                   (String) ref);
-          localTask_ = b;
+          resultReason_ = b;
           return b;
         } else {
           return (com.google.protobuf.ByteString) ref;
         }
       }
       /**
-       * <code>required string localTask = 1;</code>
+       * <code>required string resultReason = 1;</code>
        */
-      public Builder setLocalTask(
+      public Builder setResultReason(
           String value) {
         if (value == null) {
     throw new NullPointerException();
   }
   bitField0_ |= 0x00000001;
-        localTask_ = value;
+        resultReason_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>required string localTask = 1;</code>
+       * <code>required string resultReason = 1;</code>
        */
-      public Builder clearLocalTask() {
+      public Builder clearResultReason() {
         bitField0_ = (bitField0_ & ~0x00000001);
-        localTask_ = getDefaultInstance().getLocalTask();
+        resultReason_ = getDefaultInstance().getResultReason();
         onChanged();
         return this;
       }
       /**
-       * <code>required string localTask = 1;</code>
+       * <code>required string resultReason = 1;</code>
        */
-      public Builder setLocalTaskBytes(
+      public Builder setResultReasonBytes(
           com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
   }
   bitField0_ |= 0x00000001;
-        localTask_ = value;
+        resultReason_ = value;
         onChanged();
         return this;
       }
@@ -646,22 +646,22 @@ public final class PunterRes {
         return this;
       }
 
-      // @@protoc_insertion_point(builder_scope:tutorial.Person)
+      // @@protoc_insertion_point(builder_scope:tutorial.Punter)
     }
 
     static {
-      defaultInstance = new Person(true);
+      defaultInstance = new Punter(true);
       defaultInstance.initFields();
     }
 
-    // @@protoc_insertion_point(class_scope:tutorial.Person)
+    // @@protoc_insertion_point(class_scope:tutorial.Punter)
   }
 
   private static com.google.protobuf.Descriptors.Descriptor
-    internal_static_tutorial_Person_descriptor;
+    internal_static_tutorial_Punter_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_tutorial_Person_fieldAccessorTable;
+      internal_static_tutorial_Punter_fieldAccessorTable;
 
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -671,22 +671,22 @@ public final class PunterRes {
       descriptor;
   static {
     String[] descriptorData = {
-      "\n\017PunterRes.proto\022\010tutorial\"B\n\006Person\022\021\n" +
-      "\tlocalTask\030\001 \002(\t\022\025\n\rtransactionID\030\002 \002(\003\022" +
-      "\016\n\006result\030\003 \001(\010B\036\n\021ru.ru.splat.protobufB\tPu" +
-      "nterRes"
+      "\n\017PunterRes.proto\022\010tutorial\"E\n\006Punter\022\024\n" +
+      "\014resultReason\030\001 \002(\t\022\025\n\rtransactionID\030\002 \002" +
+      "(\003\022\016\n\006result\030\003 \001(\010B\036\n\021ru.splat.protobufB" +
+      "\tPunterRes"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
         public com.google.protobuf.ExtensionRegistry assignDescriptors(
             com.google.protobuf.Descriptors.FileDescriptor root) {
           descriptor = root;
-          internal_static_tutorial_Person_descriptor =
+          internal_static_tutorial_Punter_descriptor =
             getDescriptor().getMessageTypes().get(0);
-          internal_static_tutorial_Person_fieldAccessorTable = new
+          internal_static_tutorial_Punter_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_tutorial_Person_descriptor,
-              new String[] { "LocalTask", "TransactionID", "Result", });
+              internal_static_tutorial_Punter_descriptor,
+              new String[] { "ResultReason", "TransactionID", "Result", });
           return null;
         }
       };

@@ -12,13 +12,13 @@
    <appender name="fileAppender" class="org.apache.log4j.RollingFileAppender">
       <param name="Threshold" value="INFO" />
       <param name="MaxBackupIndex" value="100" />
-      <param name="File" value="/tmp/agna-LogFile.log" />
+      <param name="File" value="logs/LogFile.log" />
       <layout class="org.apache.log4j.PatternLayout">
          <param name="ConversionPattern" value="%d  %-5p  [%c{1}] %m %n" />
       </layout>
    </appender>
    <appender name="kafkaAppender" class="org.apache.kafka.log4jappender.KafkaLog4jAppender">
-      <param name="Topic" value="mytopic2" />
+      <param name="Topic" value="mytopic3" />
       <param name="BrokerList" value="localhost:9092" />
       <param name="syncSend" value="true" />
       <layout class="org.apache.log4j.PatternLayout">
@@ -30,7 +30,7 @@
       <appender-ref ref="console" />
    </logger>
    <root>
-      <priority value="debug" />
-      <appender-ref ref="console" />
+      <priority value="INFO" />
+      <appender-ref ref="fileAppender" />
    </root>
 </log4j:configuration>

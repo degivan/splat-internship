@@ -6,8 +6,7 @@
     <changeSet logicalFilePath="changelog/db.changelog-0.1.0.xml" author="Kalugin Nikolay" id="version-0.1.0">
         <createTable tableName="punter_idemp">
             <column name="transaction_id" type="bigint"/>
-            <column name="result" type="boolean"/>
-            <column name="resultreason" type="character varying(30)"/>
+            <column name="blob" type="bytea"/>
             <column name="punter_timestamp" type="bigint"/>
         </createTable>
 

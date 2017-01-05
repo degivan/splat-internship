@@ -1,16 +1,18 @@
 package ru.splat.repository;
 
 
+import com.google.protobuf.InvalidProtocolBufferException;
+import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.stereotype.Repository;
+import org.springframework.jdbc.core.RowMapper;;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 import ru.splat.Billing.feautures.TransactionResult;
 import ru.splat.PunterUtil;
 import ru.splat.feautures.BetInfo;
+import ru.splat.protobuf.PunterReq;
+import ru.splat.protobuf.PunterRes;
 
 
 import java.sql.PreparedStatement;
@@ -18,31 +20,33 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Transactional
 public class IdempRepository implements IdempRepositoryInterface<BetInfo, TransactionResult> {
 
-    private static final String SQL_INSERT_IDEMP = "INSERT INTO punter_idemp (transaction_id, result, resultreason,  punter_timestamp) VALUES (?, ?, ?, ?)";
-    private static final String SQL_CHECK_IDEMP = "SELECT transaction_id, result, resultreason FROM punter_idemp WHERE transaction_id IN (?)";
+    private static final String SQL_INSERT_IDEMP = "INSERT INTO punter_idemp (transaction_id, blob, punter_timestamp) VALUES (?, ?, ?)";
+    private static final String SQL_CHECK_IDEMP = "SELECT transaction_id, blob FROM punter_idemp WHERE transaction_id IN (?)";
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
 
 
+    @Transactional
     @Override
     public void insertFilterTable(List<TransactionResult> transactionResults) {
-
-        System.out.println("Tx : " + TransactionSynchronizationManager.isActualTransactionActive());
         if (transactionResults == null || transactionResults.isEmpty())
             return;
+
 
         jdbcTemplate.batchUpdate(SQL_INSERT_IDEMP, new BatchPreparedStatementSetter() {
 
             public void setValues(PreparedStatement ps, int i) throws SQLException {
                 TransactionResult transactionResult = transactionResults.get(i);
+             //   PunterRes.Punter punter = PunterRes.Punter.newBuilder().setResultReason(transactionResult.getResultReason()).setResult(transactionResult.getResult()).setTransactionID(transactionResult.getTransactionId()).build();
                 ps.setLong(1, transactionResult.getTransactionId());
-                ps.setBoolean(2, transactionResult.getResult());
-                ps.setString(3, transactionResult.getResultReason());
-                ps.setLong(4,System.currentTimeMillis());
+                ps.setBytes(2, transactionResult.getPunter().toByteArray());
+               // System.out.println(punter.toString());
+                ps.setLong(3,System.currentTimeMillis());
             }
 
             public int getBatchSize() {
@@ -56,11 +60,16 @@ public class IdempRepository implements IdempRepositoryInterface<BetInfo, Transa
         if (punterIdList == null || punterIdList.isEmpty())
             return null;
 
+
         RowMapper<TransactionResult> rm = (rs, rowNum) -> {
             TransactionResult transactionResult = new TransactionResult();
             transactionResult.setTransactionId(rs.getLong("transaction_id"));
-            transactionResult.setResult(rs.getBoolean("result"));
-            transactionResult.setResultReason(rs.getString("resultreason"));
+            try {
+                PunterRes.Punter punter = PunterRes.Punter.parseFrom(rs.getBytes("blob"));
+                transactionResult.setPunter(punter);
+            } catch (InvalidProtocolBufferException e) {
+                e.printStackTrace();
+            }
             return transactionResult;
         };
         return jdbcTemplate.query(

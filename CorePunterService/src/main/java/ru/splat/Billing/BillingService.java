@@ -12,8 +12,13 @@ import ru.splat.ServiceFacade;
 import java.util.*;
 
 
-public class BillingService extends ServiceFacade<BallanceReq.Billing,BallanceRes.Billing,BillingInfo>
+public class BillingService implements ServiceFacade<BallanceReq.Billing,BallanceRes.Billing,BillingInfo>
 {
+    @Override
+    public void writeIdemp(Map<String, Set<TransactionResult>> results) {
+
+    }
+
     @Override
     public void sendResult(Map<String, Set<TransactionResult>> map)
     {
@@ -21,7 +26,6 @@ public class BillingService extends ServiceFacade<BallanceReq.Billing,BallanceRe
     }
 
 
-    @Override
     public void mainProcess()
     {
 

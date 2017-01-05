@@ -1,26 +1,23 @@
 package ru.splat;
 
-import javax.annotation.PostConstruct;
-
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 import ru.splat.Billing.feautures.TransactionResult;
+import ru.splat.Kafka.PunterKafka;
 import ru.splat.feautures.BetInfo;
-
+import ru.splat.feautures.RepAnswer;
 import ru.splat.protobuf.PunterReq;
-
 import java.util.*;
 import java.util.stream.Collectors;
-
 import ru.splat.protobuf.PunterRes;
 import ru.splat.repository.IdempRepositoryInterface;
 import ru.splat.repository.PunterRepository;
 
 
-public class PunterService extends ServiceFacade<PunterReq.Punter, PunterRes.Person, BetInfo>
+@Transactional
+public class PunterService implements ServiceFacade<PunterReq.Punter, PunterRes.Punter, BetInfo>
 {
     @Autowired
     private IdempRepositoryInterface<BetInfo, TransactionResult> idempRepository;
@@ -28,21 +25,17 @@ public class PunterService extends ServiceFacade<PunterReq.Punter, PunterRes.Per
     @Autowired
     private PunterRepository punterRepository;
 
-    private static final String TOPIC_REQUEST = "mytopic3";
-    private static final String TOPIC_RESPONSE = "mytopic4";
 
+    @Autowired
+    private PunterKafka punterKafka;
 
-    @PostConstruct
-    void init()
-    {
-        init(PunterReq.Punter.getDefaultInstance());
-    }
+    public static final String TOPIC_REQUEST = "mytopic3";
 
     @Override
     public void sendResult(Map<String, Set<TransactionResult>> map) {
         for (Map.Entry<String, Set<TransactionResult>> entry : map.entrySet()) {
             for (TransactionResult transactionResult : entry.getValue()) {
-                PunterRes.Person pr = PunterRes.Person.newBuilder().setTransactionID(transactionResult.getTransactionId()).setResult(transactionResult.getResult()).build();
+             //   PunterRes.Punter pr = PunterRes.PunternewBuilder().setTransactionID(transactionResult.getTransactionId()).setResult(transactionResult.getResult()).build();
                // producer.send(new ProducerRecord<Long, PunterRes.Person>(TOPIC_RESPONSE, 1l, pr));
             }
         }
@@ -50,9 +43,9 @@ public class PunterService extends ServiceFacade<PunterReq.Punter, PunterRes.Per
 
     @Override
     @Transactional
-    public Map<String, Set<TransactionResult>> processMessage(ConsumerRecords<Long, PunterReq.Punter> consumerRecords) {
+    public Map<String, Set<TransactionResult>> processMessage(ConsumerRecords<Long, PunterReq.Punter> consumerRecords)  {
 
-        System.out.println("Tx : " + TransactionSynchronizationManager.isActualTransactionActive());
+        //System.out.println("Tx : " + TransactionSynchronizationManager.isActualTransactionActive());
 
         Map<String, Set<BetInfo>> afterFirstFilter = filterSeen(consumerRecords);
 
@@ -85,7 +78,10 @@ public class PunterService extends ServiceFacade<PunterReq.Punter, PunterRes.Per
 
         Map<String, Set<TransactionResult>> results2 = runTasks(afterFirstFilter);
 
-        if (!results2.isEmpty()) throw new RuntimeException();
+        // 4.1. Поведение при Exceptions
+      // if (!results2.isEmpty()) throw new RuntimeException();
+        // 4.2. Поведение при отключении сервера.
+       // System.exit(0);
         writeIdemp(results2);
         for (Map.Entry<String, Set<TransactionResult>> entry : results.entrySet()) {
             if (results2.containsKey(entry.getKey()))
@@ -96,23 +92,27 @@ public class PunterService extends ServiceFacade<PunterReq.Punter, PunterRes.Per
         return results2;
 }
 
-    private void writeIdemp(Map<String, Set<TransactionResult>> results) {
+    @Override
+    public void writeIdemp(Map<String, Set<TransactionResult>> results) {
         if (results == null || results.isEmpty()) return;
         for (Map.Entry<String, Set<TransactionResult>> entry : results.entrySet()) {
             idempRepository.insertFilterTable(entry.getValue().stream().collect(Collectors.toList()));
         }
     }
 
+    //вынести в фасад?
     @Override
     public Map<String, Set<TransactionResult>> runTasks(Map<String, Set<BetInfo>> filter) {
         Map<String, Set<TransactionResult>> result = new HashMap<>();
         for (Map.Entry<String, Set<BetInfo>> entry : filter.entrySet()) {
             switch (entry.getKey()) {
                 case FIRST_PHASE:
-                    result.put(FIRST_PHASE, punterRepository.phase1(entry.getValue()));
+                    result.put(FIRST_PHASE, punterRepository.phase1(entry.getValue()).stream().
+                              map((map) -> new TransactionResult(map.getTransactionId(), PunterRes.Punter.newBuilder().setTransactionID(map.getTransactionId()).setResult(map.isResult()).setResultReason(map.getResultReason()).build())).collect(Collectors.toSet()));
                     break;
                 case CANCEL_PHASE:
-                    result.put(CANCEL_PHASE, punterRepository.cancel(new ArrayList<BetInfo>(entry.getValue())));
+                    result.put(CANCEL_PHASE, punterRepository.cancel(new ArrayList<BetInfo>(entry.getValue())).stream().
+                            map((map) -> new TransactionResult(map.getTransactionId(), PunterRes.Punter.newBuilder().setTransactionID(map.getTransactionId()).setResult(map.isResult()).setResultReason(map.getResultReason()).build())).collect(Collectors.toSet()));
                     break;
             }
         }
@@ -129,6 +129,11 @@ public class PunterService extends ServiceFacade<PunterReq.Punter, PunterRes.Per
             filter.get(record.value().getLocalTask()).add(new BetInfo(record.value().getPunterId(), record.key()));
         }
         return filter;
+    }
+
+
+    public PunterKafka getPunterKafka() {
+        return punterKafka;
     }
 
 }
