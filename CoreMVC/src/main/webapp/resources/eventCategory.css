@@ -1,0 +1,18 @@
+.event-section{
+    background-color: gold;
+    margin: 50px 10px;
+}
+.event-name{
+    background-color: aqua;
+    text-align: center;
+}
+.market-section{
+    display: inline-block;
+    margin: 20px;
+}
+.market-name{
+    text-align: center;
+}
+.main-info{
+    text-align: center;
+}
