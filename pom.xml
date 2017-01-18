@@ -7,7 +7,7 @@
     <version>0.1-SNAPSHOT</version>
     <modules>
         <module>CoreMessages</module>
-        <module>CorePunterService</module>
+        <module>CoreServices</module>
     </modules>
     <packaging>pom</packaging>
 
@@ -35,6 +35,12 @@
             <dependency>
                 <groupId>ru.ifmo.splat</groupId>
                 <artifactId>CoreMessages</artifactId>
+                <version>0.1-SNAPSHOT</version>
+            </dependency>
+
+            <dependency>
+                <groupId>ru.ifmo.splat</groupId>
+                <artifactId>CoreServices</artifactId>
                 <version>0.1-SNAPSHOT</version>
             </dependency>
 

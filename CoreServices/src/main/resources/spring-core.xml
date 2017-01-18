@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/task
+       http://www.springframework.org/schema/task/spring-task-3.0.xsd
+        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+    <context:annotation-config/>
+
+    <import resource="spring-jdbc.xml" />
+
+    <bean id="taskRepository" class="ru.splat.facade.shedule.repository.TaskRepository"/>
+
+    <bean id="cleaningTablePunterIdemp" class="ru.splat.facade.shedule.SheduleCleaningDB">
+          <property name="tableName" value="punter_idemp"/>
+          <property name="timeLimit" value="180000"/>
+    </bean>
+
+    <bean id="cleaningTablePunterTimestamps" class="ru.splat.facade.shedule.SheduleCleaningDB">
+        <property name="tableName" value="punter_timestamps"/>
+        <property name="timeLimit" value="180000"/>
+    </bean>
+
+    <bean id="cleaningTableBillingIdemp" class="ru.splat.facade.shedule.SheduleCleaningDB">
+        <property name="tableName" value="billing_idemp"/>
+        <property name="timeLimit" value="180000"/>
+    </bean>
+
+    <task:scheduler id="cleanerSheduler"/>
+    <task:scheduled-tasks scheduler="cleanerSheduler">
+        <task:scheduled ref="cleaningTablePunterIdemp" method="cleanTable" fixed-rate="60000"/>
+        <task:scheduled ref="cleaningTablePunterTimestamps" method="cleanTable" fixed-rate="60000"/>
+        <task:scheduled ref="cleaningTableBillingIdemp" method="cleanTable" fixed-rate="60000"/>
+    </task:scheduled-tasks>
+
+    <bean id="boot" class="ru.splat.facade.Boot"/>
+
+</beans>

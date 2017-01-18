@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.2.xsd">
+
+    <changeSet logicalFilePath="changelog/db.changelog-0.1.0.xml" author="Sajfutdinov Ilnar" id="version-0.1.0">
+
+        <sql>CREATE TYPE status AS ENUM ('WON','NOT DESIGNED','LOSED','CANCELED')</sql>
+
+        <createTable tableName="punter_idemp">
+            <column name="transaction_id" type="bigint"/>
+            <column name="blob" type="bytea"/>
+            <column name="record_timestamp" type="bigint"/>
+        </createTable>
+
+
+        <createTable tableName="punter">
+            <column name="id" type="bigint"/>
+            <column name="lim" type="integer"/>
+            <column name="types" type="character varying(40)"/>
+            <column name="limit_time" type="integer"/>
+        </createTable>
+        
+        <addPrimaryKey tableName="punter" columnNames="id"/>
+        
+        <createTable tableName="punter_timestamps">
+            <column name="id" type="bigint"/>
+            <column name="record_timestamp" type="bigint"/>
+            <column name="transaction_id" type="bigint"/>
+            <column name="limit_time" type="integer"/>
+        </createTable>
+
+        <createTable tableName="event">
+            <column name="id" type="integer"/>
+            <column name="name" type="character varying(250)"/>
+            <column name="status" type="character varying(250)"/>
+        </createTable>
+
+        <addPrimaryKey tableName="event" columnNames="id"/>
+
+        <createTable tableName="market">
+            <column name="id" type="integer"/>
+            <column name="name" type="character varying(250)"/>
+            <column name="event_id" type="integer"/>
+        </createTable>
+
+        <addPrimaryKey tableName="market" columnNames="id"/>
+
+        <addForeignKeyConstraint baseColumnNames="event_id"
+                                 baseTableName="market"
+                                 constraintName="fk_event_id"
+                                 deferrable="true"
+                                 initiallyDeferred="true"
+                                 onDelete="RESTRICT"
+                                 onUpdate="RESTRICT"
+                                 referencedColumnNames="id"
+                                 referencedTableName="event"/>
+
+
+        <createTable tableName="outcome">
+            <column name="id" type="integer"/>
+            <column name="name" type="character varying(250)"/>
+            <column name="current_koef" type="double"/>
+            <column name="status" type="status"/>
+            <column name="market_id" type="integer"/>
+        </createTable>
+
+        <addPrimaryKey tableName="outcome" columnNames="id"/>
+
+        <addForeignKeyConstraint baseColumnNames="market_id"
+                                 baseTableName="outcome"
+                                 constraintName="fk_market_id"
+                                 deferrable="true"
+                                 initiallyDeferred="true"
+                                 onDelete="RESTRICT"
+                                 onUpdate="RESTRICT"
+                                 referencedColumnNames="id"
+                                 referencedTableName="market"/>
+
+        <createTable tableName="history_of_koef">
+            <column name="outcome_id" type="integer"/>
+            <column name="koef" type="double"/>
+        </createTable>
+
+        <addForeignKeyConstraint baseColumnNames="outcome_id"
+                                 baseTableName="history_of_koef"
+                                 constraintName="fk_outcome_id"
+                                 deferrable="true"
+                                 initiallyDeferred="true"
+                                 onDelete="RESTRICT"
+                                 onUpdate="RESTRICT"
+                                 referencedColumnNames="id"
+                                 referencedTableName="outcome"/>
+
+        <createTable tableName="ballance">
+            <column name="sum" type="integer"/>
+            <column name="bets_count" type="integer"/>
+            <column name="bets_sum" type="integer"/>
+            <column name="punter_id" type="integer"/>
+        </createTable>
+        <addPrimaryKey tableName="ballance" columnNames="punter_id"/>
+
+        <createTable tableName="billing_idemp">
+            <column name="transaction_id" type="bigint"/>
+            <column name="blob" type="bytea"/>
+            <column name="record_timestamp" type="bigint"/>
+        </createTable>
+
+
+
+        <createTable tableName="bet">
+            <column  name="punter_id" type="int"/>
+            <column autoIncrement="true" name="id" type="int"/>
+            <column name="bet_sum" type="int"/>
+            <column name="outcomes_list" type="int"/>
+            <column name="bet_time" type="bigint"/>
+            <column name="status" type="status"/>
+        </createTable>
+
+        <addPrimaryKey tableName="bet" columnNames="id"/>
+
+        <createTable tableName="bet_idemp">
+            <column name="transaction_id" type="bigint"/>
+            <column name="blob" type="bytea"/>
+            <column name="record_timestamp" type="bigint"/>
+        </createTable>
+
+        <createTable tableName="bet_outcomes">
+            <column name="id" type="int"/>
+            <column name="event_id" type="int"/>
+            <column name="koef" type="double"/>
+            <column name="status" type="status"/>
+            <column name="bet_id" type="int"/>
+        </createTable>
+
+        <addPrimaryKey tableName="bet_outcomes" columnNames="id"/>
+
+        <addForeignKeyConstraint baseColumnNames="bet_id"
+                                 baseTableName="bet_outcomes"
+                                 constraintName="fk_bet_id"
+                                 deferrable="true"
+                                 initiallyDeferred="true"
+                                 onDelete="RESTRICT"
+                                 onUpdate="RESTRICT"
+                                 referencedColumnNames="id"
+                                 referencedTableName="bet"/>
+
+    </changeSet>
+
+</databaseChangeLog>
