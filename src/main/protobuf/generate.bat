@@ -1,0 +1,1 @@
+.\protoc.exe Message.proto --java_out=.\
