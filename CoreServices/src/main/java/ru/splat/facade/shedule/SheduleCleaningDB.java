@@ -1,7 +1,6 @@
 package ru.splat.facade.shedule;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.splat.Punter.facade.repository.PunterRepository;
 import ru.splat.facade.shedule.repository.TaskRepository;
 
 import static org.apache.log4j.LogManager.getLogger;

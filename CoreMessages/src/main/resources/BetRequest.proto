@@ -1,0 +1,20 @@
+syntax = "proto3";
+option java_package = "ru.splat.messages";
+option java_outer_classname = "BetRequest";
+
+message Bet {
+  int32 punterId = 1;  
+  int32 sum = 2;
+  int32 localTask = 3;
+  string services = 4;
+  int64 id = 5;
+    
+  message BetOutcome {
+    int32 eventId = 1;
+    int32 id = 2;
+    double coefficient = 3;
+  }
+
+  repeated BetOutcome betOutcome = 6;
+}
+

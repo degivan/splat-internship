@@ -6,6 +6,7 @@
     <changeSet logicalFilePath="changelog/db.changelog-0.1.0.xml" author="Sajfutdinov Ilnar" id="version-0.1.0">
 
         <sql>CREATE TYPE status AS ENUM ('WON','NOT DESIGNED','LOSED','CANCELED')</sql>
+        <sql>CREATE TYPE state AS ENUM ('UNDEFINED','SUCESSEFULL','FAILED')</sql>
 
         <createTable tableName="punter_idemp">
             <column name="transaction_id" type="bigint"/>
@@ -109,12 +110,9 @@
 
 
         <createTable tableName="bet">
-            <column  name="punter_id" type="int"/>
             <column autoIncrement="true" name="id" type="int"/>
-            <column name="bet_sum" type="int"/>
-            <column name="outcomes_list" type="int"/>
-            <column name="bet_time" type="bigint"/>
-            <column name="status" type="status"/>
+            <column name="blob" type="bytea"/>
+            <column name="bet_state" type="state"/>
         </createTable>
 
         <addPrimaryKey tableName="bet" columnNames="id"/>
@@ -124,26 +122,6 @@
             <column name="blob" type="bytea"/>
             <column name="record_timestamp" type="bigint"/>
         </createTable>
-
-        <createTable tableName="bet_outcomes">
-            <column name="id" type="int"/>
-            <column name="event_id" type="int"/>
-            <column name="koef" type="double"/>
-            <column name="status" type="status"/>
-            <column name="bet_id" type="int"/>
-        </createTable>
-
-        <addPrimaryKey tableName="bet_outcomes" columnNames="id"/>
-
-        <addForeignKeyConstraint baseColumnNames="bet_id"
-                                 baseTableName="bet_outcomes"
-                                 constraintName="fk_bet_id"
-                                 deferrable="true"
-                                 initiallyDeferred="true"
-                                 onDelete="RESTRICT"
-                                 onUpdate="RESTRICT"
-                                 referencedColumnNames="id"
-                                 referencedTableName="bet"/>
 
     </changeSet>
 

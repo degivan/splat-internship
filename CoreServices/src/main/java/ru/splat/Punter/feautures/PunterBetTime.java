@@ -23,13 +23,23 @@ public class PunterBetTime
      * ID транзакции
      */
     private long transactionId;
+    private String services;
 
-    public PunterBetTime(int id, long betTime, boolean checkLimit, long transactionId)
+    public PunterBetTime(int id, long betTime, boolean checkLimit, long transactionId,String services)
     {
         this.id = id;
         this.betTime = betTime;
         this.checkLimit = checkLimit;
         this.transactionId = transactionId;
+        this.services = services;
+    }
+
+    public String getServices() {
+        return services;
+    }
+
+    public void setServices(String services) {
+        this.services = services;
     }
 
     public void setTransactionId(long transactionId) {

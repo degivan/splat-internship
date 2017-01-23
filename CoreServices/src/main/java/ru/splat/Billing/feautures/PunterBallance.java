@@ -1,7 +1,8 @@
 package ru.splat.Billing.feautures;
 
 
-public class PunterBallance {
+public class PunterBallance
+{
     private int sum;
     private int punterId;
 

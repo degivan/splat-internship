@@ -3,23 +3,27 @@ package ru.splat.Billing.feautures;
 
 import ru.splat.facade.feautures.TransactionRequest;
 
-public class BillingInfo implements TransactionRequest{
+public class BillingInfo implements TransactionRequest
+{
 
     private int punterId;
     private int sum;
     private long transactionId;
-    private String localTask;
+    private int localTask;
+    private String services;
 
-    public BillingInfo(int punterID, int sum, long transactionId, String localTask)
+    public BillingInfo(int punterID, int sum, long transactionId, int localTask, String services)
     {
         this.punterId = punterID;
         this.sum = sum;
         this.transactionId = transactionId;
         this.localTask = localTask;
+        this.services = services;
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(Object o)
+    {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
@@ -27,6 +31,15 @@ public class BillingInfo implements TransactionRequest{
 
         return transactionId == that.transactionId;
 
+    }
+
+    @Override
+    public String getServices() {
+        return services;
+    }
+
+    public void setServices(String services) {
+        this.services = services;
     }
 
     @Override
@@ -47,7 +60,7 @@ public class BillingInfo implements TransactionRequest{
     }
 
     @Override
-    public String getLocalTask()
+    public int getLocalTask()
     {
         return localTask;
     }

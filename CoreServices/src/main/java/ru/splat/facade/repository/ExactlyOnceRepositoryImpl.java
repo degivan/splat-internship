@@ -6,10 +6,9 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.transaction.annotation.Transactional;
-import ru.splat.Punter.protobuf.PunterRes;
-import ru.splat.facade.feautures.TransactionResult;
+import ru.splat.kafka.feautures.TransactionResult;
 import ru.splat.facade.util.PunterUtil;
+import ru.splat.messages.Response;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -17,7 +16,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 
-public class ExactlyOnceRepositoryImpl implements ExactlyOnceRepositoryInterface<TransactionResult> {
+public class ExactlyOnceRepositoryImpl implements ExactlyOnceRepositoryInterface<TransactionResult>
+{
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -25,7 +25,7 @@ public class ExactlyOnceRepositoryImpl implements ExactlyOnceRepositoryInterface
 
     private String tableName;
 
-    @Transactional
+//    @Transactional
     @Override
     public void insertFilterTable(List<TransactionResult> transactionResults)
     {
@@ -33,7 +33,7 @@ public class ExactlyOnceRepositoryImpl implements ExactlyOnceRepositoryInterface
             return;
 
 
-        String SQL_INSERT_IDEMP = "INSERT INTO" + tableName + " (transaction_id, blob, record_timestamp) VALUES (?, ?, ?)";
+        String SQL_INSERT_IDEMP = "INSERT INTO " + tableName + " (transaction_id, blob, record_timestamp) VALUES (?, ?, ?)";
         jdbcTemplate.batchUpdate(SQL_INSERT_IDEMP, new BatchPreparedStatementSetter()
         {
 
@@ -63,7 +63,7 @@ public class ExactlyOnceRepositoryImpl implements ExactlyOnceRepositoryInterface
             transactionResult.setTransactionId(rs.getLong("transaction_id"));
             try
             {
-                PunterRes.Punter punter = PunterRes.Punter.parseFrom(rs.getBytes("blob"));
+                Response.ServiceResponse punter = Response.ServiceResponse.parseFrom(rs.getBytes("blob"));
                 transactionResult.setResult(punter);
             } catch (InvalidProtocolBufferException e)
             {
@@ -72,7 +72,7 @@ public class ExactlyOnceRepositoryImpl implements ExactlyOnceRepositoryInterface
             return transactionResult;
         };
 
-        String SQL_CHECK_IDEMP = "SELECT transaction_id, blob FROM" + tableName + " WHERE transaction_id IN (?)";
+        String SQL_CHECK_IDEMP = "SELECT transaction_id, blob FROM " + tableName + " WHERE transaction_id IN (?)";
 
         return jdbcTemplate.query(
                 PunterUtil.addSQLParametrs(punterIdList.size(), SQL_CHECK_IDEMP), rm,

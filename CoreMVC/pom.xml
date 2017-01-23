@@ -5,11 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>ru.ifmo.splat</groupId>
+        <groupId>ru.splat</groupId>
         <artifactId>parent</artifactId>
         <version>0.1-SNAPSHOT</version>
     </parent>
-    <modelVersion>4.0.0</modelVersion>
+
 
     <artifactId>CoreMVC</artifactId>
     <packaging>war</packaging>

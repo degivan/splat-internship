@@ -24,12 +24,22 @@ public class PunterLimit
      */
     private long transactionId;
 
+    private String services;
+
     public PunterLimit()
     {
         id = 0;
         limit = 0;
         timeLimit = 0;
         transactionId = 0;
+    }
+
+    public String getServices() {
+        return services;
+    }
+
+    public void setServices(String services) {
+        this.services = services;
     }
 
     public void setTransactionId(long transactionId) {

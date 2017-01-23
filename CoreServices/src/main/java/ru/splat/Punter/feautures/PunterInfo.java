@@ -5,9 +5,10 @@ import ru.splat.facade.feautures.TransactionRequest;
 public class PunterInfo implements TransactionRequest
 {
 
-    private String localTask;
+    private int localTask;
     private int punterId;
     private long transactionId;
+    private String services;
 
     public PunterInfo()
     {
@@ -18,6 +19,15 @@ public class PunterInfo implements TransactionRequest
         this.punterId = punterId;
         this.transactionId = transactionId;
     }
+
+    public PunterInfo(int punterId, long transactionId, int localTask,String services)
+    {
+        this.punterId = punterId;
+        this.transactionId = transactionId;
+        this.localTask = localTask;
+        this.services = services;
+    }
+
 
     @Override
     public boolean equals(Object o) {
@@ -35,11 +45,14 @@ public class PunterInfo implements TransactionRequest
         return (int) (transactionId ^ (transactionId >>> 32));
     }
 
-    public PunterInfo(int punterId, long transactionId, String localTask)
-    {
-        this.punterId = punterId;
-        this.transactionId = transactionId;
-        this.localTask = localTask;
+
+    @Override
+    public String getServices() {
+        return services;
+    }
+
+    public void setServices(String services) {
+        this.services = services;
     }
 
     public int getPunterId() {
@@ -58,11 +71,11 @@ public class PunterInfo implements TransactionRequest
         this.transactionId = transactionId;
     }
 
-    public String getLocalTask() {
+    public int getLocalTask() {
         return localTask;
     }
 
-    public void setLocalTask(String localTask) {
+    public void setLocalTask(int localTask) {
         this.localTask = localTask;
     }
 

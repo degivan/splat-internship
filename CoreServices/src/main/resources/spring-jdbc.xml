@@ -2,10 +2,8 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:p="http://www.springframework.org/schema/p"
-       xmlns:context="http://www.springframework.org/schema/context"
        xmlns:tx="http://www.springframework.org/schema/tx"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
 
     <!-- Настраивает управление транзакциями с помощью аннотации @Transactional -->
@@ -13,7 +11,7 @@
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager"
           p:dataSource-ref="dataSource"/>
 
-    <tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true"/>
+    <tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="false"/>
 
     <!-- Обычный JDBC шаблон -->
     <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate"
@@ -43,34 +41,6 @@
                 <value>classpath:config/application.properties</value>
             </list>
         </property>
-    </bean>
-
-    <bean id="punterIdempRepository" class="ru.splat.facade.repository.ExactlyOnceRepositoryImpl">
-        <property name="tableName" value="punter_idemp"/>
-    </bean>
-
-    <bean id="punterRepository" class="ru.splat.Punter.facade.repository.PunterRepository"/>
-
-    <bean id="businessService" class="ru.splat.Punter.facade.business.BusinessServiceImpl"/>
-    <bean id="punterService" class="ru.splat.Punter.PunterService">
-        <property name="businessService" ref="businessService"/>
-        <property name="exactlyOnceRepository" ref="punterIdempRepository"/>
-    </bean>
-
-    <bean id="billingRepository" class="ru.splat.Billing.repository.BillingRepository"/>
-    <bean id="billingBusinessService" class="ru.splat.Billing.BillingBusinessService"/>
-    <bean id="billingIdempRepository" class="ru.splat.facade.repository.ExactlyOnceRepositoryImpl">
-        <property name="tableName" value="billing_idemp"/>
-    </bean>
-
-    <bean id="billingService" class="ru.splat.Billing.BillingService">
-        <property name="businessService" ref="billingBusinessService"/>
-        <property name="exactlyOnceRepository" ref="billingIdempRepository"/>
-    </bean>
-
-
-    <bean id="betIdempRepository" class="ru.splat.facade.repository.ExactlyOnceRepositoryImpl">
-        <property name="tableName" value="bet_idemp"/>
     </bean>
 
 </beans>

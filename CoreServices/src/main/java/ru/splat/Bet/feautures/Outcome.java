@@ -7,7 +7,8 @@ public class Outcome
     private int eventId;
     private double koef;
 
-    public Outcome(int id, int eventId, double koef) {
+    public Outcome(int id, int eventId, double koef)
+    {
         this.id = id;
         this.eventId = eventId;
         this.koef = koef;

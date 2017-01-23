@@ -1,0 +1,10 @@
+syntax = "proto3";
+option java_package = "ru.splat.messages";
+option java_outer_classname = "BillingRequest";
+
+message Billing {
+  int32 punterId = 1;  
+  int32 sum = 2;
+  int32 localTask = 3;
+  string services = 4;
+}

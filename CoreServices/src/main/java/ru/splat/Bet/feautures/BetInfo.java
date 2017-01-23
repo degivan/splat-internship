@@ -1,28 +1,39 @@
 package ru.splat.Bet.feautures;
 
+
 import ru.splat.facade.feautures.TransactionRequest;
+import ru.splat.messages.BetRequest;
 
-import java.util.List;
 
-
-public class BetInfo implements TransactionRequest {
+public class BetInfo implements TransactionRequest
+{
 
     private long transactionId;
-    private String localTask;
-    private int punterId;
-    private int betSum;
-    private List<Outcome> outcomeList;
+    private int localTask;
+    private BetRequest.Bet blob;
+    private String services;
+    private long id;
 
-    public BetInfo(long transactionId, String localTask, int punterId, int betSum, List<Outcome> outcomeList) {
+    public BetInfo(long transactionId, int localTask, BetRequest.Bet blob, String services)
+    {
         this.transactionId = transactionId;
         this.localTask = localTask;
-        this.punterId = punterId;
-        this.betSum = betSum;
-        this.outcomeList = outcomeList;
+        this.blob = blob;
+        this.services = services;
+    }
+
+    public BetInfo(long transactionId, int localTask, BetRequest.Bet blob, String services, long id)
+    {
+        this.transactionId = transactionId;
+        this.localTask = localTask;
+        this.blob = blob;
+        this.services = services;
+        this.id = id;
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(Object o)
+    {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
@@ -37,39 +48,9 @@ public class BetInfo implements TransactionRequest {
         return (int) (transactionId ^ (transactionId >>> 32));
     }
 
-    public void setTransactionId(long transactionId) {
-        this.transactionId = transactionId;
+    public BetRequest.Bet getBlob() {
+        return blob;
     }
-
-    public void setLocalTask(String localTask) {
-        this.localTask = localTask;
-    }
-
-    public int getPunterId() {
-        return punterId;
-    }
-
-    public void setPunterId(int punterId) {
-        this.punterId = punterId;
-    }
-
-    public int getBetSum() {
-        return betSum;
-    }
-
-    public void setBetSum(int betSum) {
-        this.betSum = betSum;
-    }
-
-    public List<Outcome> getOutcomeList() {
-        return outcomeList;
-    }
-
-    public void setOutcomeList(List<Outcome> outcomeList) {
-        this.outcomeList = outcomeList;
-    }
-
-
 
     @Override
     public long getTransactionId() {
@@ -77,7 +58,16 @@ public class BetInfo implements TransactionRequest {
     }
 
     @Override
-    public String getLocalTask() {
+    public int getLocalTask() {
         return localTask;
+    }
+
+    @Override
+    public String getServices() {
+        return services;
+    }
+
+    public long getId() {
+        return id;
     }
 }
