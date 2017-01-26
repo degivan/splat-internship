@@ -11,6 +11,7 @@
         <module>CoreServices</module>
         <module>CoreMVC</module>
         <module>CoreKafka</module>
+        <module>CoreTM</module>
     </modules>
 
 
