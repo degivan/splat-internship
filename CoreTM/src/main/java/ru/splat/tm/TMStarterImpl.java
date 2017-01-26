@@ -8,6 +8,7 @@ import ru.splat.protobuf.*;
 import ru.splat.trmetadata.*;
 
 import java.util.*;
+import java.util.concurrent.Future;
 
 /**
  * Created by Дмитрий on 11.12.2016.
@@ -29,20 +30,32 @@ public class TMStarterImpl implements TMStarter {
             taskNames.add(task.getType().toString());
         });
         taskList.forEach(task->{
+
+            Message message = null;
             try {
-                writeToKafka(task.getService(), transactionId, ProtobufBuilder.buildProtobuf(transactionId, task, taskNames));
+                message = ProtobufBuilder.buildProtobuf(transactionId, task, taskNames);
+                String topic = task.getService();
+                ProducerRecord<Long, Message> record = new ProducerRecord<Long, Message>(topic, transactionId, message);
+                writeToKafka(task.getService(), transactionId, message);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-            catch (Exception e) {
-                System.out.println(e.getMessage());
-            }
+
+
+
         });
     }
 
-
+    //отправка одного сообщения
     private void writeToKafka(String topic, Long transactionId,  Message message) {
-        ProducerRecord<Long, Message> producerRecord = new ProducerRecord<Long, Message>(topic, transactionId, message);
         //дописать переотправку и батч
-        producer.send(new ProducerRecord<Long, Message>(topic, transactionId, message));
+        Future isSend = producer.send(new ProducerRecord<Long, Message>(topic, transactionId, message));
+        try {
+            isSend.get();
+        }
+        catch (Exception e) {
+            writeToKafka(topic, transactionId, message);
+        }
         producer.flush();
     }
 
