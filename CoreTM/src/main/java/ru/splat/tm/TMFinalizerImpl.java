@@ -5,6 +5,7 @@ import akka.actor.UntypedActor;
 import com.google.protobuf.Message;
 import ru.splat.conventions.LocalStatesEnum;
 import ru.splat.conventions.TaskTypesEnum;
+import ru.splat.trmetadata.LocalTask;
 import ru.splat.trmetadata.TransactionMetadata;
 import ru.splat.trstate.TransactionState;
 
