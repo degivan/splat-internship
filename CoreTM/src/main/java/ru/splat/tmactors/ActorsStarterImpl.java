@@ -1,4 +1,4 @@
-package ru.splat.actors;
+package ru.splat.tmactors;
 
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;

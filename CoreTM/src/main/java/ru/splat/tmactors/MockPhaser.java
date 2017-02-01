@@ -1,8 +1,8 @@
-package ru.splat.actors;
+package ru.splat.tmactors;
 
 import akka.actor.ActorRef;
 import akka.actor.UntypedActor;
-import ru.splat.conventions.TaskTypesEnum;
+import ru.splat.messages.conventions.TaskTypesEnum;
 import ru.splat.trmetadata.LocalTask;
 import ru.splat.trmetadata.PunterTask;
 import ru.splat.trmetadata.TransactionMetadata;

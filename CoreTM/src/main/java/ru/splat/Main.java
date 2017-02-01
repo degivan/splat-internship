@@ -2,7 +2,6 @@ package ru.splat;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import ru.splat.actors.ActorsStarter;
 
 /**
  * Created by Дмитрий on 07.01.2017.

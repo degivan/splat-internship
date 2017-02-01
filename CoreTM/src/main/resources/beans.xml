@@ -26,7 +26,7 @@
 
     </bean>
 
-    <bean id="ActorsStarter" class="ru.splat.actors.ActorsStarterImpl" >
+    <bean id="ActorsStarter" class="ru.splat.tmactors.ActorsStarterImpl" >
         <property name="tmStarter" ref="TMStarter"/>
         <property name="tmConsumer" ref="TMConsumer"/>
     </bean>

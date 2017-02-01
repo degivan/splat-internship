@@ -1,6 +1,7 @@
-package ru.splat.trmetadata;
+package ru.splat.messages.uptm.trmetadata;
 
-import ru.splat.conventions.TaskTypesEnum;
+import ru.splat.messages.conventions.ServicesEnum;
+import ru.splat.messages.conventions.TaskTypesEnum;
 
 import java.util.List;
 
@@ -11,7 +12,7 @@ public class EventTask extends LocalTask {
     private final List<Long> eventIdList;
     private final List<Long> selectionIdList;
     private final Long punterId;
-    private final String service = "EventService"; //это поле должно указывать на топик, с которого читает нужный сервис
+    private final ServicesEnum service = ServicesEnum.EventService;
 
     public EventTask(TaskTypesEnum type,
                      List<Long> eventIdList, List<Long> selectionIdList, Long punterId) {
@@ -30,12 +31,11 @@ public class EventTask extends LocalTask {
         return punterId;
     }
 
-    public String getService() {
+    public ServicesEnum getService() {
         return service;
     }
 
     public List<Long> getSelectionIdList() {
-
         return selectionIdList;
     }
 

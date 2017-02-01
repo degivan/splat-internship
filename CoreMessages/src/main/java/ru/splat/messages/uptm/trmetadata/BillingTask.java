@@ -1,6 +1,7 @@
-package ru.splat.trmetadata;
+package ru.splat.messages.uptm.trmetadata;
 
-import ru.splat.conventions.TaskTypesEnum;
+import ru.splat.messages.conventions.ServicesEnum;
+import ru.splat.messages.conventions.TaskTypesEnum;
 
 /**
  * Created by Дмитрий on 22.12.2016.
@@ -8,7 +9,7 @@ import ru.splat.conventions.TaskTypesEnum;
 public class BillingTask extends LocalTask {
     private final Long punterId;
     private final Integer sum;
-    private final String service = "BillingService"; //это поле должно указывать на топик, с которого читает нужный сервис
+    private final ServicesEnum service = ServicesEnum.BillingService;
 
     public BillingTask(TaskTypesEnum type, Long _punterId, Integer sum) {
         super(type);
@@ -20,7 +21,7 @@ public class BillingTask extends LocalTask {
     }
 
     @Override
-    public String getService() {
+    public ServicesEnum getService() {
         return service;
     }
 

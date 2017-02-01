@@ -1,6 +1,7 @@
-package ru.splat.trmetadata;
+package ru.splat.messages.uptm.trmetadata;
 
-import ru.splat.conventions.TaskTypesEnum;
+import ru.splat.messages.conventions.ServicesEnum;
+import ru.splat.messages.conventions.TaskTypesEnum;
 
 /**
  * Created by Дмитрий on 11.12.2016.
@@ -15,8 +16,5 @@ public abstract class LocalTask {
     public TaskTypesEnum getType() {
         return type;
     }
-    public abstract String getService();
-
-
-
+    public abstract ServicesEnum getService();
 }

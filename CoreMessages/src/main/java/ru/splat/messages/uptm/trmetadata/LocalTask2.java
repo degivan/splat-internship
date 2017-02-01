@@ -1,4 +1,4 @@
-package ru.splat.trmetadata;
+package ru.splat.messages.uptm.trmetadata;
 
 import java.util.HashMap;
 import java.util.Map;

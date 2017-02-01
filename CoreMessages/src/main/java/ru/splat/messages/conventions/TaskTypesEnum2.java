@@ -1,4 +1,4 @@
-package ru.splat.conventions;
+package ru.splat.messages.conventions;
 
 /**
  * Created by Дмитрий on 14.01.2017.
