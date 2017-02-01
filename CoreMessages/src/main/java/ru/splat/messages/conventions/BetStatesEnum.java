@@ -5,5 +5,8 @@ package ru.splat.messages.conventions;
  */
 //возможные "состояния" ставок для записи в БД BetService
 public enum BetStatesEnum {
-    CANDIDATE, SUCCESS, CANCELED, TIMEOUT
+    CANDIDATE, //0
+    SUCCESS,    //1
+    CANCELED, //2
+    TIMEOUT //3
 }

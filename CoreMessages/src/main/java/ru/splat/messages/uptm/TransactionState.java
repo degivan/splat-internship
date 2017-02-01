@@ -8,6 +8,7 @@ import java.util.Map;
 /**
  * Created by Дмитрий on 22.12.2016.
  */
+//ответ от TMFinalizer об выполненной транзакции - посылается registry
 public class TransactionState {
     private final Long transactionId;
     private Map<TaskTypesEnum, LocalStatesEnum> localStates;
