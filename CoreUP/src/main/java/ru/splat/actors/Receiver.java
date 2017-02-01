@@ -114,11 +114,11 @@ public class Receiver extends UntypedActor {
     }
 
     private void createPhaser(Transaction transaction) {
-        ActorRef phaser = newActor(PhaserActor.class, "phaser" + transaction.getTransactionId(), tmActor, getSelf());
+        ActorRef phaser = newActor(PhaserActor.class, "phaser" + transaction.getLowerBound(), tmActor, getSelf());
         ActorRef receiver = getSelf();
 
         Future<Object> future = Patterns.ask(registry,
-                new RegisterRequest(transaction.getTransactionId(), phaser),
+                new RegisterRequest(transaction.getLowerBound(), phaser),
                 Timeout.apply(10L, TimeUnit.MINUTES));
 
         future.onSuccess(new OnSuccess<Object>() {
@@ -134,7 +134,7 @@ public class Receiver extends UntypedActor {
     }
 
     private void saveState(Transaction transaction) {
-        results.put(transaction.getTransactionId(), transaction.getState());
+        results.put(transaction.getLowerBound(), transaction.getState());
     }
 
     private void answer(Object msg) {

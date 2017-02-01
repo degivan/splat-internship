@@ -13,16 +13,16 @@ import com.mongodb.async.client.MongoDatabase;
 import com.mongodb.client.model.Projections;
 import org.bson.Document;
 import ru.splat.messages.Transaction;
-import ru.splat.messages.proxyup.bet.BetInfo;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.ne;
-import static ru.splat.messages.Transaction.State.CREATED;
 
 /**
  * Wrapper class for database.
@@ -32,16 +32,18 @@ public class DBConnection {
     private static MongoCollection<Document> transactions;
     private static final MongoCollection<Document> counter;
     private static final Document searchQuery;
-    private static final Document updateQuery;
+    private static final Document rangeQuery;
     private static ObjectMapper mapper;
+
+    private static final Logger log = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 
     static {
         db = MongoClients.create()
                 .getDatabase("test");
         transactions = db.getCollection("transactions");
-        counter = db.getCollection("counter");
+        counter = db.getCollection("bounds");
         searchQuery = Document.parse("{ _id : \"tr_id\" } ");
-        updateQuery = Document.parse("{$inc: { \"seq\" : 1 } }");
+        rangeQuery = Document.parse("{ $inc: { lower : 10000 , upper : 10000 } }");
         mapper = new ObjectMapper();
     }
 
@@ -54,35 +56,53 @@ public class DBConnection {
         List<Transaction> list = new ArrayList<>();
         findUnfinishedTransactions()
                 .forEach(processResult(list), createCallback(processData, after, list));
+
+        log.log(Level.INFO, "Unfinished transactions processed.");
     }
 
     /**
      * Put new transaction in database.
-     * @param betInfo information about bet
+     * @param transaction information about bet
      * @param after what to do with transaction after inserting
      */
-    public static void newTransaction(BetInfo betInfo, Consumer<Transaction> after) {
-        Transaction transaction = Transaction.statelessTransaction(betInfo);
-
-        counter.findOneAndUpdate(searchQuery, updateQuery, (document, throwable) -> {
-                Long trId = document.getLong("seq");
-                transaction.setTransactionId(trId);
-                transaction.setState(CREATED);
-                insertNewTransaction(transaction, after);
-        });
-    }
-
-    private static void insertNewTransaction(Transaction transaction, Consumer<Transaction> after) {
+    public static void newTransaction(Transaction transaction, Consumer<Transaction> after) {
         try {
             transactions.insertOne(Document.parse(mapper.writeValueAsString(transaction)),
-                    (aVoid, throwable) -> after.accept(transaction));
+                    (aVoid, throwable) -> {
+                        after.accept(transaction);
+
+                        log.log(Level.INFO, "New transaction in the database:"
+                                + transaction.toString());
+                    });
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
     }
 
+    public static void resaveTransaction(Transaction transaction, Procedure procedure) {
+        //TODO: resave transaction with a new state
+    }
+
+    /**
+     * Create new identifiers for transactions.
+     * @param after processing transactions after creating
+     */
+    public static void createIdentifiers(Consumer<Bounds> after) {
+        counter.findOneAndUpdate(searchQuery, rangeQuery, ((document, throwable) -> {
+            Long lower = document.getLong("lower");
+            Long upper = document.getLong("upper");
+
+            after.accept(new Bounds(lower, upper));
+
+            log.log(Level.INFO, "Indexes created from " + lower + " to " + upper);
+        }));
+
+    }
+
     private static FindIterable<Document> findUnfinishedTransactions() {
-        return transactions.find(and(ne("state", "COMPLETED"), ne("state", "DENIED")))
+        return transactions.find(
+                and(ne("state", "COMPLETED"),
+                    ne("state", "DENIED")))
                 .projection(Projections.excludeId());
     }
 
@@ -105,9 +125,5 @@ public class DBConnection {
             e.printStackTrace();
             throw new RuntimeJsonMappingException("Document is in inappropriate state: " + document.toString());
         }
-    }
-
-    public static void resaveTransaction(Transaction transaction, Procedure procedure) {
-        //TODO: resave transaction with a new state
     }
 }
