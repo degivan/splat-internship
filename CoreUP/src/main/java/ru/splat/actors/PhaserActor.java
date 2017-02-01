@@ -144,7 +144,7 @@ public class PhaserActor extends UntypedActor {
 
         //TODO
         boolean checkIdCorrect(TMResponse o, Transaction transaction) {
-            return (o.getTransactionId()).equals(transaction.getTransactionId());
+            return (o.getTransactionId()).equals(transaction.getCurrent());
         }
 
         abstract void processTMResponse(TMResponse o);
