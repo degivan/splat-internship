@@ -1,4 +1,4 @@
-package ru.ifmo.splat.messages.proxyup.bet;
+package ru.splat.messages.proxyup.bet;
 
 import java.util.List;
 

@@ -6,11 +6,11 @@ import akka.actor.UntypedActor;
 import akka.japi.Procedure;
 import ru.splat.db.DBConnection;
 import ru.splat.message.PhaserRequest;
-import ru.ifmo.splat.messages.Transaction;
-import ru.ifmo.splat.messages.uptm.TMConfirm;
-import ru.ifmo.splat.messages.uptm.TMResponse;
-import ru.ifmo.splat.messages.uptm.trmetadata.MetadataPatterns;
-import ru.ifmo.splat.messages.uptm.trmetadata.TransactionMetadata;
+import ru.splat.messages.Transaction;
+import ru.splat.messages.uptm.TMConfirm;
+import ru.splat.messages.uptm.TMResponse;
+import ru.splat.messages.uptm.trmetadata.MetadataPatterns;
+import ru.splat.messages.uptm.trmetadata.TransactionMetadata;
 import scala.concurrent.duration.Duration;
 
 import java.util.concurrent.TimeUnit;

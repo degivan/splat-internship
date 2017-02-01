@@ -1,4 +1,4 @@
-package ru.ifmo.splat.messages.proxyup;
+package ru.splat.messages.proxyup;
 
 /**
  * Identifies class as a message between Proxy and UP.

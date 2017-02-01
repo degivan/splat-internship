@@ -11,9 +11,9 @@ import com.mongodb.async.client.MongoClients;
 import com.mongodb.async.client.MongoCollection;
 import com.mongodb.async.client.MongoDatabase;
 import com.mongodb.client.model.Projections;
-import ru.ifmo.splat.messages.Transaction;
 import org.bson.Document;
-import ru.ifmo.splat.messages.proxyup.bet.BetInfo;
+import ru.splat.messages.Transaction;
+import ru.splat.messages.proxyup.bet.BetInfo;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -22,7 +22,7 @@ import java.util.function.Consumer;
 
 import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.ne;
-import static ru.ifmo.splat.messages.Transaction.State.CREATED;
+import static ru.splat.messages.Transaction.State.CREATED;
 
 /**
  * Wrapper class for database.

@@ -1,6 +1,6 @@
-package ru.ifmo.splat.messages;
+package ru.splat.messages;
 
-import ru.ifmo.splat.messages.proxyup.bet.BetInfo;
+import ru.splat.messages.proxyup.bet.BetInfo;
 
 /**
  * Wrapper class for Transaction.

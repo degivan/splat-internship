@@ -1,6 +1,6 @@
-package ru.ifmo.splat.messages.uptm.trmetadata;
+package ru.splat.messages.uptm.trmetadata;
 
-import ru.ifmo.splat.messages.Transaction;
+import ru.splat.messages.Transaction;
 
 /**
  * TODO:

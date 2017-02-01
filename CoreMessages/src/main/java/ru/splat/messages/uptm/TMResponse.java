@@ -1,4 +1,4 @@
-package ru.ifmo.splat.messages.uptm;
+package ru.splat.messages.uptm;
 
 /**
  * Response from TM to UP after request processing.

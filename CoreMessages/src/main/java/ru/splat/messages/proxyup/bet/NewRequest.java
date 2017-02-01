@@ -1,6 +1,6 @@
-package ru.ifmo.splat.messages.proxyup.bet;
+package ru.splat.messages.proxyup.bet;
 
-import ru.ifmo.splat.messages.proxyup.ProxyUPMessage;
+import ru.splat.messages.proxyup.ProxyUPMessage;
 
 /**
  * ProxyUPMessage for UP asking to place a new bet.

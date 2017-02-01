@@ -6,11 +6,11 @@ import akka.actor.UntypedActor;
 import akka.dispatch.OnSuccess;
 import akka.pattern.Patterns;
 import akka.util.Timeout;
-import ru.ifmo.splat.messages.Transaction;
-import ru.ifmo.splat.messages.proxyup.ProxyUPMessage;
-import ru.ifmo.splat.messages.proxyup.bet.BetInfo;
-import ru.ifmo.splat.messages.proxyup.bet.NewRequest;
-import ru.ifmo.splat.messages.proxyup.check.CheckRequest;
+import ru.splat.messages.Transaction;
+import ru.splat.messages.proxyup.ProxyUPMessage;
+import ru.splat.messages.proxyup.bet.BetInfo;
+import ru.splat.messages.proxyup.bet.NewRequest;
+import ru.splat.messages.proxyup.check.CheckRequest;
 import ru.splat.message.*;
 import scala.concurrent.Future;
 
@@ -20,7 +20,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import static ru.ifmo.splat.messages.Transaction.State;
+import static ru.splat.messages.Transaction.State;
 
 /**
  * Actor which receives messages from users and from id_generator.

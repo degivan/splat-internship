@@ -1,6 +1,6 @@
-package ru.ifmo.splat.messages.proxyup.check;
+package ru.splat.messages.proxyup.check;
 
-import ru.ifmo.splat.messages.proxyup.IdMessage;
+import ru.splat.messages.proxyup.IdMessage;
 
 /**
  * ProxyUPMessage for UP asking for bet state.

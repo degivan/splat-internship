@@ -1,13 +1,13 @@
 import akka.actor.ActorSystem;
 import akka.testkit.JavaTestKit;
-import ru.ifmo.splat.messages.proxyup.bet.NewRequest;
 import ru.splat.UP;
-import ru.ifmo.splat.messages.Transaction;
+import ru.splat.messages.Transaction;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import ru.ifmo.splat.messages.proxyup.ProxyUPMessage;
-import ru.ifmo.splat.messages.proxyup.bet.BetInfo;
+import ru.splat.messages.proxyup.ProxyUPMessage;
+import ru.splat.messages.proxyup.bet.BetInfo;
+import ru.splat.messages.proxyup.bet.NewRequest;
 
 import java.util.ArrayList;
 

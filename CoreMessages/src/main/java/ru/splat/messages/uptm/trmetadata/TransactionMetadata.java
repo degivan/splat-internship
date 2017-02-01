@@ -1,4 +1,4 @@
-package ru.ifmo.splat.messages.uptm.trmetadata;
+package ru.splat.messages.uptm.trmetadata;
 
 /**
  * TODO:

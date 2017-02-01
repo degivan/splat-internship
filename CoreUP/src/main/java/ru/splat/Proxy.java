@@ -4,12 +4,12 @@ import akka.actor.ActorRef;
 import akka.dispatch.OnSuccess;
 import akka.pattern.Patterns;
 import akka.util.Timeout;
-import ru.ifmo.splat.messages.proxyup.bet.BetInfo;
-import ru.ifmo.splat.messages.proxyup.bet.NewRequest;
-import ru.ifmo.splat.messages.proxyup.bet.NewResponse;
-import ru.ifmo.splat.messages.proxyup.check.CheckRequest;
-import ru.ifmo.splat.messages.proxyup.check.CheckResponse;
-import ru.ifmo.splat.messages.proxyup.check.CheckResult;
+import ru.splat.messages.proxyup.bet.BetInfo;
+import ru.splat.messages.proxyup.bet.NewRequest;
+import ru.splat.messages.proxyup.bet.NewResponse;
+import ru.splat.messages.proxyup.check.CheckRequest;
+import ru.splat.messages.proxyup.check.CheckResponse;
+import ru.splat.messages.proxyup.check.CheckResult;
 import scala.concurrent.Future;
 
 import java.util.concurrent.TimeUnit;

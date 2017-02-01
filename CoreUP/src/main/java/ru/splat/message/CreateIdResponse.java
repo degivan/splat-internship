@@ -1,6 +1,6 @@
 package ru.splat.message;
 
-import ru.ifmo.splat.messages.Transaction;
+import ru.splat.messages.Transaction;
 
 /**
  * Response from id_generator to receiver.

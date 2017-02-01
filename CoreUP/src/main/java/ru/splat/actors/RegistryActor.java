@@ -4,7 +4,7 @@ import akka.actor.ActorRef;
 import akka.actor.UntypedActor;
 import ru.splat.message.RegisterRequest;
 import ru.splat.message.RegisterResponse;
-import ru.ifmo.splat.messages.uptm.TMResponse;
+import ru.splat.messages.uptm.TMResponse;
 
 import java.util.HashMap;
 import java.util.Map;

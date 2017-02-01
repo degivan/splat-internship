@@ -1,4 +1,4 @@
-package ru.ifmo.splat.messages.proxyup.check;
+package ru.splat.messages.proxyup.check;
 
 /**
  * Created by Иван on 15.01.2017.

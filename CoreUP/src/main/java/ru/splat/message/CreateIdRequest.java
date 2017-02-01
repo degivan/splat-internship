@@ -1,6 +1,6 @@
 package ru.splat.message;
 
-import ru.ifmo.splat.messages.proxyup.bet.BetInfo;
+import ru.splat.messages.proxyup.bet.BetInfo;
 
 /**
  * Message from receiver to id_generator.

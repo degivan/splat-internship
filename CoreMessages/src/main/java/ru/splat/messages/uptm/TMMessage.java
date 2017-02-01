@@ -1,4 +1,4 @@
-package ru.ifmo.splat.messages.uptm;
+package ru.splat.messages.uptm;
 
 /**
  * Identifies as a message between UP and TM.

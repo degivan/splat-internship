@@ -1,6 +1,6 @@
-package ru.ifmo.splat.messages.proxyup.bet;
+package ru.splat.messages.proxyup.bet;
 
-import ru.ifmo.splat.messages.proxyup.IdMessage;
+import ru.splat.messages.proxyup.IdMessage;
 
 /**
  * Answer for NewRequest message.

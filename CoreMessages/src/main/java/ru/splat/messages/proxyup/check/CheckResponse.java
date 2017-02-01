@@ -1,6 +1,6 @@
-package ru.ifmo.splat.messages.proxyup.check;
+package ru.splat.messages.proxyup.check;
 
-import ru.ifmo.splat.messages.proxyup.ProxyUPMessage;
+import ru.splat.messages.proxyup.ProxyUPMessage;
 
 /**
  * Answer for CheckRequest message.
