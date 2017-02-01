@@ -6,6 +6,15 @@ public class PunterBallance
     private int sum;
     private int punterId;
 
+    @Override
+    public String toString()
+    {
+        return "PunterBallance{" +
+                "sum=" + sum +
+                ", punterId=" + punterId +
+                '}';
+    }
+
     public int getSum() {
         return sum;
     }

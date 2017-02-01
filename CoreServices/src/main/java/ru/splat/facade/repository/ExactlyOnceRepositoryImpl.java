@@ -6,10 +6,10 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.transaction.annotation.Transactional;
 import ru.splat.kafka.feautures.TransactionResult;
 import ru.splat.facade.util.PunterUtil;
 import ru.splat.messages.Response;
-
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;

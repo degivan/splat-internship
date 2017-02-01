@@ -1,0 +1,10 @@
+syntax = "proto3";
+option java_package = "ru.splat.messages";
+option java_outer_classname = "EventRequest";
+
+message Event {
+  int32 localTask = 1;
+  repeated int32 services = 2;
+  int64 time = 3;
+  repeated int32 selections  = 4;
+}

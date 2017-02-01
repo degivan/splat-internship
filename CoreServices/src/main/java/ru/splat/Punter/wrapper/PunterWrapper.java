@@ -1,11 +1,9 @@
-package ru.splat.Punter;
+package ru.splat.Punter.wrapper;
 
 import ru.splat.Punter.feautures.PunterInfo;
-import ru.splat.facade.AbstractWrapper;
-
+import ru.splat.facade.wrapper.AbstractWrapper;
 import ru.splat.kafka.KafkaImpl;
 import ru.splat.messages.PunterRequest;
-
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -23,7 +21,8 @@ public class PunterWrapper extends AbstractWrapper<PunterRequest.Punter, PunterI
                 consumerRecord.value().getPunterId(),
                 consumerRecord.key(),
                 consumerRecord.value().getLocalTask(),
-                consumerRecord.value().getServices()
+                consumerRecord.value().getServicesList(),
+                consumerRecord.value().getTime()
         )));
         thread.execute(this::mainProcess);
     }

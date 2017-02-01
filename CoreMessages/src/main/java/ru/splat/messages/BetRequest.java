@@ -34,14 +34,17 @@ public final class BetRequest {
     int getLocalTask();
 
     /**
-     * <code>optional string services = 4;</code>
+     * <code>repeated int32 services = 4;</code>
      */
-    String getServices();
+    java.util.List<Integer> getServicesList();
     /**
-     * <code>optional string services = 4;</code>
+     * <code>repeated int32 services = 4;</code>
      */
-    com.google.protobuf.ByteString
-        getServicesBytes();
+    int getServicesCount();
+    /**
+     * <code>repeated int32 services = 4;</code>
+     */
+    int getServices(int index);
 
     /**
      * <code>optional int64 id = 5;</code>
@@ -87,7 +90,7 @@ public final class BetRequest {
       punterId_ = 0;
       sum_ = 0;
       localTask_ = 0;
-      services_ = "";
+      services_ = java.util.Collections.emptyList();
       id_ = 0L;
       betOutcome_ = java.util.Collections.emptyList();
     }
@@ -132,10 +135,25 @@ public final class BetRequest {
               localTask_ = input.readInt32();
               break;
             }
+            case 32: {
+              if (!((mutable_bitField0_ & 0x00000008) == 0x00000008)) {
+                services_ = new java.util.ArrayList<Integer>();
+                mutable_bitField0_ |= 0x00000008;
+              }
+              services_.add(input.readInt32());
+              break;
+            }
             case 34: {
-              String s = input.readStringRequireUtf8();
-
-              services_ = s;
+              int length = input.readRawVarint32();
+              int limit = input.pushLimit(length);
+              if (!((mutable_bitField0_ & 0x00000008) == 0x00000008) && input.getBytesUntilLimit() > 0) {
+                services_ = new java.util.ArrayList<Integer>();
+                mutable_bitField0_ |= 0x00000008;
+              }
+              while (input.getBytesUntilLimit() > 0) {
+                services_.add(input.readInt32());
+              }
+              input.popLimit(limit);
               break;
             }
             case 40: {
@@ -160,6 +178,9 @@ public final class BetRequest {
         throw new com.google.protobuf.InvalidProtocolBufferException(
             e).setUnfinishedMessage(this);
       } finally {
+        if (((mutable_bitField0_ & 0x00000008) == 0x00000008)) {
+          services_ = java.util.Collections.unmodifiableList(services_);
+        }
         if (((mutable_bitField0_ & 0x00000020) == 0x00000020)) {
           betOutcome_ = java.util.Collections.unmodifiableList(betOutcome_);
         }
@@ -765,38 +786,27 @@ public final class BetRequest {
     }
 
     public static final int SERVICES_FIELD_NUMBER = 4;
-    private volatile Object services_;
+    private java.util.List<Integer> services_;
     /**
-     * <code>optional string services = 4;</code>
+     * <code>repeated int32 services = 4;</code>
      */
-    public String getServices() {
-      Object ref = services_;
-      if (ref instanceof String) {
-        return (String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
-        services_ = s;
-        return s;
-      }
+    public java.util.List<Integer>
+        getServicesList() {
+      return services_;
     }
     /**
-     * <code>optional string services = 4;</code>
+     * <code>repeated int32 services = 4;</code>
      */
-    public com.google.protobuf.ByteString
-        getServicesBytes() {
-      Object ref = services_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (String) ref);
-        services_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
+    public int getServicesCount() {
+      return services_.size();
     }
+    /**
+     * <code>repeated int32 services = 4;</code>
+     */
+    public int getServices(int index) {
+      return services_.get(index);
+    }
+    private int servicesMemoizedSerializedSize = -1;
 
     public static final int ID_FIELD_NUMBER = 5;
     private long id_;
@@ -854,6 +864,7 @@ public final class BetRequest {
 
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
+      getSerializedSize();
       if (punterId_ != 0) {
         output.writeInt32(1, punterId_);
       }
@@ -863,8 +874,12 @@ public final class BetRequest {
       if (localTask_ != 0) {
         output.writeInt32(3, localTask_);
       }
-      if (!getServicesBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 4, services_);
+      if (getServicesList().size() > 0) {
+        output.writeUInt32NoTag(34);
+        output.writeUInt32NoTag(servicesMemoizedSerializedSize);
+      }
+      for (int i = 0; i < services_.size(); i++) {
+        output.writeInt32NoTag(services_.get(i));
       }
       if (id_ != 0L) {
         output.writeInt64(5, id_);
@@ -891,8 +906,19 @@ public final class BetRequest {
         size += com.google.protobuf.CodedOutputStream
           .computeInt32Size(3, localTask_);
       }
-      if (!getServicesBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, services_);
+      {
+        int dataSize = 0;
+        for (int i = 0; i < services_.size(); i++) {
+          dataSize += com.google.protobuf.CodedOutputStream
+            .computeInt32SizeNoTag(services_.get(i));
+        }
+        size += dataSize;
+        if (!getServicesList().isEmpty()) {
+          size += 1;
+          size += com.google.protobuf.CodedOutputStream
+              .computeInt32SizeNoTag(dataSize);
+        }
+        servicesMemoizedSerializedSize = dataSize;
       }
       if (id_ != 0L) {
         size += com.google.protobuf.CodedOutputStream
@@ -924,8 +950,8 @@ public final class BetRequest {
           == other.getSum());
       result = result && (getLocalTask()
           == other.getLocalTask());
-      result = result && getServices()
-          .equals(other.getServices());
+      result = result && getServicesList()
+          .equals(other.getServicesList());
       result = result && (getId()
           == other.getId());
       result = result && getBetOutcomeList()
@@ -946,8 +972,10 @@ public final class BetRequest {
       hash = (53 * hash) + getSum();
       hash = (37 * hash) + LOCALTASK_FIELD_NUMBER;
       hash = (53 * hash) + getLocalTask();
-      hash = (37 * hash) + SERVICES_FIELD_NUMBER;
-      hash = (53 * hash) + getServices().hashCode();
+      if (getServicesCount() > 0) {
+        hash = (37 * hash) + SERVICES_FIELD_NUMBER;
+        hash = (53 * hash) + getServicesList().hashCode();
+      }
       hash = (37 * hash) + ID_FIELD_NUMBER;
       hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
           getId());
@@ -1080,8 +1108,8 @@ public final class BetRequest {
 
         localTask_ = 0;
 
-        services_ = "";
-
+        services_ = java.util.Collections.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000008);
         id_ = 0L;
 
         if (betOutcomeBuilder_ == null) {
@@ -1117,6 +1145,10 @@ public final class BetRequest {
         result.punterId_ = punterId_;
         result.sum_ = sum_;
         result.localTask_ = localTask_;
+        if (((bitField0_ & 0x00000008) == 0x00000008)) {
+          services_ = java.util.Collections.unmodifiableList(services_);
+          bitField0_ = (bitField0_ & ~0x00000008);
+        }
         result.services_ = services_;
         result.id_ = id_;
         if (betOutcomeBuilder_ == null) {
@@ -1179,8 +1211,14 @@ public final class BetRequest {
         if (other.getLocalTask() != 0) {
           setLocalTask(other.getLocalTask());
         }
-        if (!other.getServices().isEmpty()) {
-          services_ = other.services_;
+        if (!other.services_.isEmpty()) {
+          if (services_.isEmpty()) {
+            services_ = other.services_;
+            bitField0_ = (bitField0_ & ~0x00000008);
+          } else {
+            ensureServicesIsMutable();
+            services_.addAll(other.services_);
+          }
           onChanged();
         }
         if (other.getId() != 0L) {
@@ -1317,71 +1355,68 @@ public final class BetRequest {
         return this;
       }
 
-      private Object services_ = "";
-      /**
-       * <code>optional string services = 4;</code>
-       */
-      public String getServices() {
-        Object ref = services_;
-        if (!(ref instanceof String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          String s = bs.toStringUtf8();
-          services_ = s;
-          return s;
-        } else {
-          return (String) ref;
-        }
+      private java.util.List<Integer> services_ = java.util.Collections.emptyList();
+      private void ensureServicesIsMutable() {
+        if (!((bitField0_ & 0x00000008) == 0x00000008)) {
+          services_ = new java.util.ArrayList<Integer>(services_);
+          bitField0_ |= 0x00000008;
+         }
       }
       /**
-       * <code>optional string services = 4;</code>
+       * <code>repeated int32 services = 4;</code>
        */
-      public com.google.protobuf.ByteString
-          getServicesBytes() {
-        Object ref = services_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (String) ref);
-          services_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
+      public java.util.List<Integer>
+          getServicesList() {
+        return java.util.Collections.unmodifiableList(services_);
       }
       /**
-       * <code>optional string services = 4;</code>
+       * <code>repeated int32 services = 4;</code>
+       */
+      public int getServicesCount() {
+        return services_.size();
+      }
+      /**
+       * <code>repeated int32 services = 4;</code>
+       */
+      public int getServices(int index) {
+        return services_.get(index);
+      }
+      /**
+       * <code>repeated int32 services = 4;</code>
        */
       public Builder setServices(
-          String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
-        services_ = value;
+          int index, int value) {
+        ensureServicesIsMutable();
+        services_.set(index, value);
         onChanged();
         return this;
       }
       /**
-       * <code>optional string services = 4;</code>
+       * <code>repeated int32 services = 4;</code>
+       */
+      public Builder addServices(int value) {
+        ensureServicesIsMutable();
+        services_.add(value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated int32 services = 4;</code>
+       */
+      public Builder addAllServices(
+          Iterable<? extends Integer> values) {
+        ensureServicesIsMutable();
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(
+            values, services_);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated int32 services = 4;</code>
        */
       public Builder clearServices() {
-        
-        services_ = getDefaultInstance().getServices();
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional string services = 4;</code>
-       */
-      public Builder setServicesBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
-        services_ = value;
+        services_ = java.util.Collections.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000008);
         onChanged();
         return this;
       }
@@ -1721,7 +1756,7 @@ public final class BetRequest {
     String[] descriptorData = {
       "\n\020BetRequest.proto\"\272\001\n\003Bet\022\020\n\010punterId\030\001" +
       " \001(\005\022\013\n\003sum\030\002 \001(\005\022\021\n\tlocalTask\030\003 \001(\005\022\020\n\010" +
-      "services\030\004 \001(\t\022\n\n\002id\030\005 \001(\003\022#\n\nbetOutcome" +
+      "services\030\004 \003(\005\022\n\n\002id\030\005 \001(\003\022#\n\nbetOutcome" +
       "\030\006 \003(\0132\017.Bet.BetOutcome\032>\n\nBetOutcome\022\017\n" +
       "\007eventId\030\001 \001(\005\022\n\n\002id\030\002 \001(\005\022\023\n\013coefficien" +
       "t\030\003 \001(\001B\037\n\021ru.splat.messagesB\nBetRequest" +

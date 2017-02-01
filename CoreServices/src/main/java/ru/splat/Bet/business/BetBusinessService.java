@@ -1,45 +1,33 @@
 package ru.splat.Bet.business;
 
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.splat.Bet.feautures.BetInfo;
-import ru.splat.Bet.feautures.RepAnswerAddBet;
 import ru.splat.Bet.repository.BetRepository;
 import ru.splat.facade.business.BusinessService;
-import ru.splat.facade.feautures.RepAnswerNothing;
 import ru.splat.kafka.feautures.TransactionResult;
 import ru.splat.messages.Response;
 import ru.splat.messages.TaskTypesEnum;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
+import java.util.*;
 import java.util.stream.Collectors;
+
+import static org.slf4j.LoggerFactory.getLogger;
 
 public class BetBusinessService implements BusinessService<BetInfo>
 {
 
+    private Logger LOGGER = getLogger(BetBusinessService.class);
+
     @Autowired
     BetRepository betRepository;
-
-    private  Function<RepAnswerAddBet,TransactionResult>
-            converterAddBet = (map) -> new TransactionResult(
-            map.getTransactionId(),
-            Response.ServiceResponse.newBuilder().setServices(map.getServices()).setLongResult(map.getId()).build()
-    );
-
-    private  Function<RepAnswerNothing,TransactionResult>
-            converterFixBet = (map) -> new TransactionResult(
-            map.getTransactionId(),
-            Response.ServiceResponse.newBuilder().setServices(map.getServices()).build()
-    );
-
 
     @Override
     public List<TransactionResult> processTransactions(List<BetInfo> transactionRequests)
     {
-        Map<Integer, List<BetInfo>> localTaskComplex = new HashMap<>();
+
+        LOGGER.info("Start processTransaction");
+
+        Map<Integer, List<BetInfo>> localTaskComplex = new TreeMap<>(Collections.reverseOrder());
 
         for (BetInfo betInfo: transactionRequests)
         {
@@ -54,18 +42,60 @@ public class BetBusinessService implements BusinessService<BetInfo>
         for (Map.Entry<Integer, List<BetInfo>> entry : localTaskComplex.entrySet())
         {
             if (entry.getKey() == TaskTypesEnum.ADD_BET.ordinal())
-                    results.addAll(betRepository.addBet(entry.getValue()).stream().
-                            map((map) -> converterAddBet.apply(map)).collect(Collectors.toList()));
-
-            if (entry.getKey() == TaskTypesEnum.CACEL_BET.ordinal())
-                    results.addAll(betRepository.fixBetState(entry.getValue(),"FAILED").stream().
-                            map((map) -> converterFixBet.apply(map)).collect(Collectors.toList()));
-
+                    results.addAll(addBet(entry.getValue()));
+            else
+            if (entry.getKey() == TaskTypesEnum.CANCEL_BET.ordinal())
+                    results.addAll(fixBet(entry.getValue(),"FAILED"));
+            else
             if (entry.getKey() == TaskTypesEnum.FIX_BET.ordinal())
-                results.addAll(betRepository.fixBetState(entry.getValue(),"SUCESSEFULL").stream().
-                        map((map) -> converterFixBet.apply(map)).collect(Collectors.toList()));;
+                results.addAll(fixBet(entry.getValue(),"SUCESSEFULL"));
 
         }
+        LOGGER.info("Stop processTransaction");
         return results;
+    }
+
+    private Set<TransactionResult> addBet(List<BetInfo> betInfoList)
+    {
+        LOGGER.info("Start Add Bet");
+        int sequence = betRepository.getCurrentSequenceVal();
+        betRepository.addBet(betInfoList);
+        LOGGER.info("Add bet array: ");
+        LOGGER.info(Arrays.toString(betInfoList.toArray()));
+        Set<TransactionResult> transactionalResult = new HashSet<>(betInfoList.size());
+        for (BetInfo betInfo: betInfoList)
+        {
+            sequence++;
+
+            transactionalResult.add(new TransactionResult(
+                    betInfo.getTransactionId(),
+                    Response.ServiceResponse.newBuilder().addAllServices(betInfo.getServices()).setLongResult(sequence).build()
+            ));
+        }
+        LOGGER.info("Stop Add Bet");
+        return transactionalResult;
+    }
+
+    private Set<TransactionResult> fixBet(List<BetInfo> betInfoList, String state)
+    {
+        LOGGER.info("Start fix state = " + state);
+        LOGGER.info("Array for fix state = " + state + " : ");
+        LOGGER.info(Arrays.toString(betInfoList.toArray()));
+        betRepository.fixBetState(betInfoList,state);
+        LOGGER.info("Stop fix state = " + state);
+        return betInfoList.stream().map(map -> new TransactionResult(
+                map.getTransactionId(),
+                Response.ServiceResponse.newBuilder().addAllServices(map.getServices()).build()
+        )).collect(Collectors.toSet());
+    }
+
+    @Override
+    public void commitBusinessService() {
+
+    }
+
+    @Override
+    public void rollbackBusinessSerivce() {
+
     }
 }

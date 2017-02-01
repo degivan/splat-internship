@@ -16,6 +16,8 @@
 
     <import resource="spring-scheduler.xml" />
 
+    <import resource="spring-jmx.xml" />
+
     <bean id="boot" class="ru.splat.facade.Boot"/>
 
 </beans>

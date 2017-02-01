@@ -17,5 +17,5 @@ public enum TaskTypesEnum
     //BetService
     ADD_BET, // 6
     FIX_BET, // 7
-    CACEL_BET // 8
+    CANCEL_BET // 8
 }

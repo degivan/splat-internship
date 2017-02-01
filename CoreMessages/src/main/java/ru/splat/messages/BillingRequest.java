@@ -34,14 +34,17 @@ public final class BillingRequest {
     int getLocalTask();
 
     /**
-     * <code>optional string services = 4;</code>
+     * <code>repeated int32 services = 4;</code>
      */
-    String getServices();
+    java.util.List<Integer> getServicesList();
     /**
-     * <code>optional string services = 4;</code>
+     * <code>repeated int32 services = 4;</code>
      */
-    com.google.protobuf.ByteString
-        getServicesBytes();
+    int getServicesCount();
+    /**
+     * <code>repeated int32 services = 4;</code>
+     */
+    int getServices(int index);
   }
   /**
    * Protobuf type {@code Billing}
@@ -58,7 +61,7 @@ public final class BillingRequest {
       punterId_ = 0;
       sum_ = 0;
       localTask_ = 0;
-      services_ = "";
+      services_ = java.util.Collections.emptyList();
     }
 
     @Override
@@ -101,10 +104,25 @@ public final class BillingRequest {
               localTask_ = input.readInt32();
               break;
             }
+            case 32: {
+              if (!((mutable_bitField0_ & 0x00000008) == 0x00000008)) {
+                services_ = new java.util.ArrayList<Integer>();
+                mutable_bitField0_ |= 0x00000008;
+              }
+              services_.add(input.readInt32());
+              break;
+            }
             case 34: {
-              String s = input.readStringRequireUtf8();
-
-              services_ = s;
+              int length = input.readRawVarint32();
+              int limit = input.pushLimit(length);
+              if (!((mutable_bitField0_ & 0x00000008) == 0x00000008) && input.getBytesUntilLimit() > 0) {
+                services_ = new java.util.ArrayList<Integer>();
+                mutable_bitField0_ |= 0x00000008;
+              }
+              while (input.getBytesUntilLimit() > 0) {
+                services_.add(input.readInt32());
+              }
+              input.popLimit(limit);
               break;
             }
           }
@@ -115,6 +133,9 @@ public final class BillingRequest {
         throw new com.google.protobuf.InvalidProtocolBufferException(
             e).setUnfinishedMessage(this);
       } finally {
+        if (((mutable_bitField0_ & 0x00000008) == 0x00000008)) {
+          services_ = java.util.Collections.unmodifiableList(services_);
+        }
         makeExtensionsImmutable();
       }
     }
@@ -130,6 +151,7 @@ public final class BillingRequest {
               Billing.class, Builder.class);
     }
 
+    private int bitField0_;
     public static final int PUNTERID_FIELD_NUMBER = 1;
     private int punterId_;
     /**
@@ -158,38 +180,27 @@ public final class BillingRequest {
     }
 
     public static final int SERVICES_FIELD_NUMBER = 4;
-    private volatile Object services_;
+    private java.util.List<Integer> services_;
     /**
-     * <code>optional string services = 4;</code>
+     * <code>repeated int32 services = 4;</code>
      */
-    public String getServices() {
-      Object ref = services_;
-      if (ref instanceof String) {
-        return (String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
-        services_ = s;
-        return s;
-      }
+    public java.util.List<Integer>
+        getServicesList() {
+      return services_;
     }
     /**
-     * <code>optional string services = 4;</code>
+     * <code>repeated int32 services = 4;</code>
      */
-    public com.google.protobuf.ByteString
-        getServicesBytes() {
-      Object ref = services_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (String) ref);
-        services_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
+    public int getServicesCount() {
+      return services_.size();
     }
+    /**
+     * <code>repeated int32 services = 4;</code>
+     */
+    public int getServices(int index) {
+      return services_.get(index);
+    }
+    private int servicesMemoizedSerializedSize = -1;
 
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -203,6 +214,7 @@ public final class BillingRequest {
 
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
+      getSerializedSize();
       if (punterId_ != 0) {
         output.writeInt32(1, punterId_);
       }
@@ -212,8 +224,12 @@ public final class BillingRequest {
       if (localTask_ != 0) {
         output.writeInt32(3, localTask_);
       }
-      if (!getServicesBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 4, services_);
+      if (getServicesList().size() > 0) {
+        output.writeUInt32NoTag(34);
+        output.writeUInt32NoTag(servicesMemoizedSerializedSize);
+      }
+      for (int i = 0; i < services_.size(); i++) {
+        output.writeInt32NoTag(services_.get(i));
       }
     }
 
@@ -234,8 +250,19 @@ public final class BillingRequest {
         size += com.google.protobuf.CodedOutputStream
           .computeInt32Size(3, localTask_);
       }
-      if (!getServicesBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, services_);
+      {
+        int dataSize = 0;
+        for (int i = 0; i < services_.size(); i++) {
+          dataSize += com.google.protobuf.CodedOutputStream
+            .computeInt32SizeNoTag(services_.get(i));
+        }
+        size += dataSize;
+        if (!getServicesList().isEmpty()) {
+          size += 1;
+          size += com.google.protobuf.CodedOutputStream
+              .computeInt32SizeNoTag(dataSize);
+        }
+        servicesMemoizedSerializedSize = dataSize;
       }
       memoizedSize = size;
       return size;
@@ -259,8 +286,8 @@ public final class BillingRequest {
           == other.getSum());
       result = result && (getLocalTask()
           == other.getLocalTask());
-      result = result && getServices()
-          .equals(other.getServices());
+      result = result && getServicesList()
+          .equals(other.getServicesList());
       return result;
     }
 
@@ -277,8 +304,10 @@ public final class BillingRequest {
       hash = (53 * hash) + getSum();
       hash = (37 * hash) + LOCALTASK_FIELD_NUMBER;
       hash = (53 * hash) + getLocalTask();
-      hash = (37 * hash) + SERVICES_FIELD_NUMBER;
-      hash = (53 * hash) + getServices().hashCode();
+      if (getServicesCount() > 0) {
+        hash = (37 * hash) + SERVICES_FIELD_NUMBER;
+        hash = (53 * hash) + getServicesList().hashCode();
+      }
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -403,8 +432,8 @@ public final class BillingRequest {
 
         localTask_ = 0;
 
-        services_ = "";
-
+        services_ = java.util.Collections.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000008);
         return this;
       }
 
@@ -427,10 +456,17 @@ public final class BillingRequest {
 
       public Billing buildPartial() {
         Billing result = new Billing(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
         result.punterId_ = punterId_;
         result.sum_ = sum_;
         result.localTask_ = localTask_;
+        if (((bitField0_ & 0x00000008) == 0x00000008)) {
+          services_ = java.util.Collections.unmodifiableList(services_);
+          bitField0_ = (bitField0_ & ~0x00000008);
+        }
         result.services_ = services_;
+        result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
       }
@@ -481,8 +517,14 @@ public final class BillingRequest {
         if (other.getLocalTask() != 0) {
           setLocalTask(other.getLocalTask());
         }
-        if (!other.getServices().isEmpty()) {
-          services_ = other.services_;
+        if (!other.services_.isEmpty()) {
+          if (services_.isEmpty()) {
+            services_ = other.services_;
+            bitField0_ = (bitField0_ & ~0x00000008);
+          } else {
+            ensureServicesIsMutable();
+            services_.addAll(other.services_);
+          }
           onChanged();
         }
         onChanged();
@@ -510,6 +552,7 @@ public final class BillingRequest {
         }
         return this;
       }
+      private int bitField0_;
 
       private int punterId_ ;
       /**
@@ -589,71 +632,68 @@ public final class BillingRequest {
         return this;
       }
 
-      private Object services_ = "";
-      /**
-       * <code>optional string services = 4;</code>
-       */
-      public String getServices() {
-        Object ref = services_;
-        if (!(ref instanceof String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          String s = bs.toStringUtf8();
-          services_ = s;
-          return s;
-        } else {
-          return (String) ref;
-        }
+      private java.util.List<Integer> services_ = java.util.Collections.emptyList();
+      private void ensureServicesIsMutable() {
+        if (!((bitField0_ & 0x00000008) == 0x00000008)) {
+          services_ = new java.util.ArrayList<Integer>(services_);
+          bitField0_ |= 0x00000008;
+         }
       }
       /**
-       * <code>optional string services = 4;</code>
+       * <code>repeated int32 services = 4;</code>
        */
-      public com.google.protobuf.ByteString
-          getServicesBytes() {
-        Object ref = services_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (String) ref);
-          services_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
+      public java.util.List<Integer>
+          getServicesList() {
+        return java.util.Collections.unmodifiableList(services_);
       }
       /**
-       * <code>optional string services = 4;</code>
+       * <code>repeated int32 services = 4;</code>
+       */
+      public int getServicesCount() {
+        return services_.size();
+      }
+      /**
+       * <code>repeated int32 services = 4;</code>
+       */
+      public int getServices(int index) {
+        return services_.get(index);
+      }
+      /**
+       * <code>repeated int32 services = 4;</code>
        */
       public Builder setServices(
-          String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
-        services_ = value;
+          int index, int value) {
+        ensureServicesIsMutable();
+        services_.set(index, value);
         onChanged();
         return this;
       }
       /**
-       * <code>optional string services = 4;</code>
+       * <code>repeated int32 services = 4;</code>
+       */
+      public Builder addServices(int value) {
+        ensureServicesIsMutable();
+        services_.add(value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated int32 services = 4;</code>
+       */
+      public Builder addAllServices(
+          Iterable<? extends Integer> values) {
+        ensureServicesIsMutable();
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(
+            values, services_);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated int32 services = 4;</code>
        */
       public Builder clearServices() {
-        
-        services_ = getDefaultInstance().getServices();
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional string services = 4;</code>
-       */
-      public Builder setServicesBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
-        services_ = value;
+        services_ = java.util.Collections.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000008);
         onChanged();
         return this;
       }
@@ -722,7 +762,7 @@ public final class BillingRequest {
     String[] descriptorData = {
       "\n\024BillingRequest.proto\"M\n\007Billing\022\020\n\010pun" +
       "terId\030\001 \001(\005\022\013\n\003sum\030\002 \001(\005\022\021\n\tlocalTask\030\003 " +
-      "\001(\005\022\020\n\010services\030\004 \001(\tB#\n\021ru.splat.messag" +
+      "\001(\005\022\020\n\010services\030\004 \003(\005B#\n\021ru.splat.messag" +
       "esB\016BillingRequestb\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =

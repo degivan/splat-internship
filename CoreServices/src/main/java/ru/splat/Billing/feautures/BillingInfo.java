@@ -3,6 +3,8 @@ package ru.splat.Billing.feautures;
 
 import ru.splat.facade.feautures.TransactionRequest;
 
+import java.util.List;
+
 public class BillingInfo implements TransactionRequest
 {
 
@@ -10,9 +12,9 @@ public class BillingInfo implements TransactionRequest
     private int sum;
     private long transactionId;
     private int localTask;
-    private String services;
+    private List<Integer> services;
 
-    public BillingInfo(int punterID, int sum, long transactionId, int localTask, String services)
+    public BillingInfo(int punterID, int sum, long transactionId, int localTask, List<Integer> services)
     {
         this.punterId = punterID;
         this.sum = sum;
@@ -34,11 +36,22 @@ public class BillingInfo implements TransactionRequest
     }
 
     @Override
-    public String getServices() {
+    public String toString() {
+        return "BillingInfo{" +
+                "punterId=" + punterId +
+                ", sum=" + sum +
+                ", transactionId=" + transactionId +
+                ", localTask=" + localTask +
+                ", services=" + services +
+                '}';
+    }
+
+    @Override
+    public List<Integer> getServices() {
         return services;
     }
 
-    public void setServices(String services) {
+    public void setServices(List<Integer> services) {
         this.services = services;
     }
 

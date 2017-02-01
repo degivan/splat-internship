@@ -3,11 +3,11 @@ option java_package = "ru.splat.messages";
 option java_outer_classname = "Response";
 
 message ServiceResponse {
-  string services = 2;
+  repeated int32 services = 1;
   oneof result_oneof {
-     string stringResult = 3;
-     int64 longResult = 4;
-     double doubleResult = 5;
-     bool booleanResult = 6;
+     string stringResult = 2;
+     int64 longResult = 3;
+     double doubleResult = 4;
+     bool booleanResult = 5;
   }
 } 

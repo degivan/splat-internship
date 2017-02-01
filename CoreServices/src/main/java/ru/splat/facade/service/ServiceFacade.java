@@ -1,16 +1,11 @@
-package ru.splat.facade;
-
+package ru.splat.facade.service;
 
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import com.google.protobuf.Message;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
-
 import ru.splat.facade.repository.ExactlyOnceRepositoryInterface;
 import ru.splat.facade.feautures.TransactionRequest;
 import ru.splat.kafka.feautures.TransactionResult;
@@ -26,28 +21,21 @@ public class ServiceFacade<KafkaRecord extends Message, InternalTrType extends T
 
     private BusinessService<InternalTrType> businessService;
 
-    //TODO по хорошему надо избавиться здесь от ConsumerRecords
     @Transactional
-    public List<TransactionResult> customProcessMessage(ConsumerRecords<Long, KafkaRecord> records,
-            Function<ConsumerRecord<Long, KafkaRecord>, InternalTrType> converter) throws Exception {
-        if (records==null || records.isEmpty()) return null;
+    public List<TransactionResult> customProcessMessage(Set<InternalTrType> transactionRequests) throws RuntimeException
+    {
 
-        Set<InternalTrType> transactionRequests = new HashSet<>();
-        LOGGER.info("Batch from Kafka");
-        for (ConsumerRecord<Long, KafkaRecord> record : records)
-        {
-            transactionRequests.add(converter.apply(record));
-            LOGGER.info("Transaction ID: " + record.key());
-            LOGGER.info(record.value().toString());
-        }
+        if (transactionRequests == null || transactionRequests.isEmpty()) return null;
 
+        LOGGER.info("Batch after set-filter");
+        LOGGER.info(Arrays.toString(transactionRequests.toArray()));
+
+        LOGGER.info("Batch from Idemp");
         List<TransactionResult> readyTransactions = exactlyOnceRepository
                 .filterByTable(transactionRequests.stream()
                         .map(TransactionRequest::getTransactionId)
                         .collect(Collectors.toList())
                 );
-
-        LOGGER.info("Batch after filter");
         LOGGER.info(Arrays.toString(readyTransactions.toArray()));
 
         Set<Long> readyTransactionIds = readyTransactions.stream()
@@ -58,6 +46,8 @@ public class ServiceFacade<KafkaRecord extends Message, InternalTrType extends T
                 .filter(tr -> !readyTransactionIds.contains(tr.getTransactionId()))
                 .collect(Collectors.toList());
 
+        LOGGER.info("Batch for Business Service");
+        LOGGER.info(Arrays.toString(transactionsToStart.toArray()));
         // Бизнес-логика плагина
         List<TransactionResult> transactionResults = businessService.processTransactions(transactionsToStart);
 
@@ -65,11 +55,21 @@ public class ServiceFacade<KafkaRecord extends Message, InternalTrType extends T
         exactlyOnceRepository.insertFilterTable(transactionResults);
 
         readyTransactions.addAll(transactionResults);
-//        throw new RuntimeException();
+//        if (readyTransactions.size() == 1) throw new RuntimeException();
 
         LOGGER.info("Completed transaction");
         LOGGER.info(Arrays.toString(readyTransactions.toArray()));
         return readyTransactions;
+    }
+
+    public void commitService()
+    {
+        businessService.commitBusinessService();
+    }
+
+    public void rollbackService()
+    {
+        businessService.rollbackBusinessSerivce();
     }
 
 

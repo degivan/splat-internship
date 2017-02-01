@@ -4,6 +4,8 @@ package ru.splat.Bet.feautures;
 import ru.splat.facade.feautures.TransactionRequest;
 import ru.splat.messages.BetRequest;
 
+import java.util.List;
+
 
 public class BetInfo implements TransactionRequest
 {
@@ -11,10 +13,10 @@ public class BetInfo implements TransactionRequest
     private long transactionId;
     private int localTask;
     private BetRequest.Bet blob;
-    private String services;
+    private List<Integer> services;
     private long id;
 
-    public BetInfo(long transactionId, int localTask, BetRequest.Bet blob, String services)
+    public BetInfo(long transactionId, int localTask, BetRequest.Bet blob, List<Integer> services)
     {
         this.transactionId = transactionId;
         this.localTask = localTask;
@@ -22,7 +24,7 @@ public class BetInfo implements TransactionRequest
         this.services = services;
     }
 
-    public BetInfo(long transactionId, int localTask, BetRequest.Bet blob, String services, long id)
+    public BetInfo(long transactionId, int localTask, BetRequest.Bet blob, List<Integer> services, long id)
     {
         this.transactionId = transactionId;
         this.localTask = localTask;
@@ -48,6 +50,17 @@ public class BetInfo implements TransactionRequest
         return (int) (transactionId ^ (transactionId >>> 32));
     }
 
+    @Override
+    public String toString() {
+        return "BetInfo{" +
+                "transactionId=" + transactionId +
+                ", localTask=" + localTask +
+                ", blob=" + blob +
+                ", services=" + services +
+                ", id=" + id +
+                '}';
+    }
+
     public BetRequest.Bet getBlob() {
         return blob;
     }
@@ -63,7 +76,7 @@ public class BetInfo implements TransactionRequest
     }
 
     @Override
-    public String getServices() {
+    public List<Integer> getServices() {
         return services;
     }
 
