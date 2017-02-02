@@ -33,7 +33,7 @@ public class TMStarterImpl implements TMStarter {
 
             Message message = null;
             try {
-                message = ProtobufBuilder.buildProtobuf(transactionId, task, taskNames);
+                message = ProtobufFactory.buildProtobuf(transactionId, task, taskNames);
                 String topic = task.getService();
                 ProducerRecord<Long, Message> record = new ProducerRecord<Long, Message>(topic, transactionId, message);
                 writeToKafka(task.getService(), transactionId, message);

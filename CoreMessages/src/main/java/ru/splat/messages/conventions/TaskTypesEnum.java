@@ -1,12 +1,21 @@
 package ru.splat.messages.conventions;
 
-/**
- * Created by Дмитрий on 22.12.2016.
- */
-//виды локалтасков
-public enum TaskTypesEnum {
-    RESERVE, WITHDRAW, CANCEL_RESERVE,
-    CHECK_PUNTER_LIMITS, UPDATE_PUNTER_COUNTER, CANCEL_PUNTER_LIMITS, CANCEL_PUNTER_COUNTER,
-    CHECK_EVENT_LIMIT, CHECK_SELECTION_LIMIT, CANCEL_EVENT_LIMIT, CANCEL_SELECTION_LIMIT,
-    ADD_BET, CHANGE_BET_STATE
+public enum TaskTypesEnum
+{
+    //BillingService
+    WITHDRAW, // 0
+    CANCEL_RESERVE, // 1
+
+    //PunterService
+    ADD_PUNTER_LIMITS, // 2
+    CANCEL_PUNTER_LIMITS,  // 3
+
+    //EventService
+    ADD_SELECTION_LIMIT, // 4
+    CANCEL_SELECTION_LIMIT, // 5
+
+    //BetService
+    ADD_BET, // 6
+    FIX_BET, // 7
+    CANCEL_BET // 8
 }

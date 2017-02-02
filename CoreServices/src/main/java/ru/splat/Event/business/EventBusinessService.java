@@ -12,7 +12,7 @@ import ru.splat.facade.service.LimitService;
 import ru.splat.facade.util.JmxUtil;
 import ru.splat.kafka.feautures.TransactionResult;
 import ru.splat.messages.Response;
-import ru.splat.messages.TaskTypesEnum;
+import ru.splat.messages.conventions.TaskTypesEnum;
 import java.util.*;
 import java.util.stream.Collectors;
 

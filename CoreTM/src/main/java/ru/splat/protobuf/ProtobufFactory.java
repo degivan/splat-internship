@@ -1,11 +1,14 @@
-/*package ru.splat.protobuf;
+package ru.splat.protobuf;
 
 import com.google.protobuf.Message;
-import ru.splat.protobuf.BetReqProto;
-import ru.splat.protobuf.BillingReqProto;
-import ru.splat.protobuf.EventReqProto;
-import ru.splat.trmetadata.*;
+import ru.splat.messages.BetRequest;
+import ru.splat.messages.BillingRequest;
+import ru.splat.messages.EventRequest;
+import ru.splat.messages.PunterRequest;
+import ru.splat.messages.conventions.ServicesEnum;
+import ru.splat.messages.uptm.trmetadata.*;
 
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -13,27 +16,35 @@ import java.util.List;
  */
 //класс для формирования сообщений
     //TO-DO: необходимо протестировать возможность добавления пустых полей
-public  class ProtobufBuilder {
-    public ProtobufBuilder() {
+public  class ProtobufFactory {
+    public ProtobufFactory() {
     }
     //подготовить мессаги для оптравки
     //надо придумать, что делать с enum-и
-    public static Message buildProtobuf(Long transactionId, LocalTask localTask, List<String> taskList) throws Exception{
+    public static Message buildProtobuf(Long transactionId, LocalTask localTask, List<ServicesEnum> _services) throws Exception{
         Message message;
         if (localTask instanceof BetTask) {
+            List<Integer> services = new LinkedList<>();
+            Message.Builder builder = BetRequest.Bet.newBuilder()
+                    .setLocalTask(localTask.getType().ordinal())
+                    .setPunterId(((BetTask)localTask).getPunterId())
+                    .addAllBetOutcome(((BetTask)localTask).getBetOutcomes())
+                    .addAllServices(services);
 
-            Message.Builder builder = BetReqProto.BetReq.newBuilder()
+            message =  builder.build();
+
+            /*Message.Builder builder = BetRequest.Bet.newBuilder()
                     .setTransactionId(transactionId)
                     .setLocalTask(localTask.getType().toString())
                     .setBetState(((BetTask) localTask).getBetState().toString())
                     .setPunterId(((BetTask) localTask).getPunterId())
                     .addAllTasks(taskList);
             if (((BetTask) localTask).getBetState() != null) {
-            }
-            message =  builder.build();
+            }*/
+
             return message;
         }
-        if (localTask instanceof BillingTask) {
+        /*if (localTask instanceof BillingTask) {
             Message.Builder builder = BillingReqProto.BillingReq.
                     newBuilder()
                     .setTransactionId(transactionId)
@@ -70,7 +81,7 @@ public  class ProtobufBuilder {
 
             message = builder.build();
             return message;
-        }
+        }*/
         else {
             throw new Exception("Unknown task type!");
         }

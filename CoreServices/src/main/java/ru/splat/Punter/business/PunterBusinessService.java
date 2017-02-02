@@ -12,7 +12,7 @@ import ru.splat.Punter.repository.PunterRepository;
 import ru.splat.Punter.feautures.PunterInfo;
 import ru.splat.facade.business.BusinessService;
 import ru.splat.messages.Response;
-import ru.splat.messages.TaskTypesEnum;
+import ru.splat.messages.conventions.TaskTypesEnum;
 import java.util.*;
 import java.util.stream.Collectors;
 

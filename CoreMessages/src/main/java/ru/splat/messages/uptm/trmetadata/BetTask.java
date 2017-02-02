@@ -9,13 +9,13 @@ import java.util.List;
  * Created by Дмитрий on 22.12.2016.
  */
 public class BetTask extends LocalTask {
-    private final Long punterId;
+    private final Integer punterId;
     private final ServicesEnum service = ServicesEnum.BetService;
     private final List<BetOutcome> betOutcomes; //список возможных исходов
 
 
 
-    public Long getPunterId() {
+    public Integer getPunterId() {
         return punterId;
     }
 
@@ -23,7 +23,7 @@ public class BetTask extends LocalTask {
         return betOutcomes;
     }
 
-    public BetTask(TaskTypesEnum type, Long punterId, List<BetOutcome> betOutcomes) {
+    public BetTask(TaskTypesEnum type, Integer punterId, List<BetOutcome> betOutcomes) {
         super(type);
         this.punterId = punterId;
         this.betOutcomes = betOutcomes;

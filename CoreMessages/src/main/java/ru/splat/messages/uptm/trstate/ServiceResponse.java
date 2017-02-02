@@ -13,7 +13,7 @@ public class ServiceResponse<T> {
     public T getResult() {
         return result;
     }
-
+    //успешность таски
     public boolean isPositive() {
         if (result instanceof Boolean) {
             return (Boolean)result;
