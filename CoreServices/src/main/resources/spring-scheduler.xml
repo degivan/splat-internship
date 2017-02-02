@@ -25,11 +25,17 @@
         <property name="timeLimit" value="180000"/>
     </bean>
 
+    <bean id="cleaningTableEventIdemp" class="ru.splat.facade.shedule.SheduleCleaningDB">
+        <property name="tableName" value="event_idemp"/>
+        <property name="timeLimit" value="180000"/>
+    </bean>
+
     <task:scheduler id="cleanerSheduler"/>
     <task:scheduled-tasks scheduler="cleanerSheduler">
         <task:scheduled ref="cleaningTablePunterIdemp" method="cleanTable" fixed-rate="60000"/>
         <task:scheduled ref="cleaningTableBillingIdemp" method="cleanTable" fixed-rate="60000"/>
-        <!--<task:scheduled ref="cleaningTableBetIdemp" method="cleanTable" fixed-rate="60000"/>-->
+        <task:scheduled ref="cleaningTableBetIdemp" method="cleanTable" fixed-rate="60000"/>
+        <task:scheduled ref="cleaningTableEventIdemp" method="cleanTable" fixed-rate="60000"/>
     </task:scheduled-tasks>
 
 </beans>

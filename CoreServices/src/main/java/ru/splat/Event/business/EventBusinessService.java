@@ -1,12 +1,9 @@
 package ru.splat.Event.business;
 
-import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jmx.export.annotation.ManagedOperation;
 import org.springframework.jmx.export.annotation.ManagedResource;
 import ru.splat.Event.feautures.EventInfo;
-import ru.splat.Punter.business.PunterBusinessService;
-import ru.splat.Punter.feautures.PunterInfo;
 import ru.splat.facade.feautures.Proxy;
 import ru.splat.Event.repository.EventRepository;
 import ru.splat.facade.business.BusinessService;
@@ -17,9 +14,6 @@ import ru.splat.kafka.feautures.TransactionResult;
 import ru.splat.messages.Response;
 import ru.splat.messages.TaskTypesEnum;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @ManagedResource(objectName = "Event Limit Winodw:name=Resource")

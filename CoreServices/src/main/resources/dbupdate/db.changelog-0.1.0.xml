@@ -24,13 +24,6 @@
         </createTable>
         
         <addPrimaryKey tableName="punter" columnNames="id"/>
-        
-        <createTable tableName="punter_timestamps">
-            <column name="id" type="bigint"/>
-            <column name="record_timestamp" type="bigint"/>
-            <column name="transaction_id" type="bigint"/>
-            <column name="limit_time" type="integer"/>
-        </createTable>
 
         <createTable tableName="event">
             <column name="id" type="integer"/>
@@ -95,12 +88,6 @@
                                  onUpdate="RESTRICT"
                                  referencedColumnNames="id"
                                  referencedTableName="outcome"/>
-
-        <createTable tableName="event_timestamps">
-            <column name="outcome_id" type="integer"/>
-            <column name="transaction_id" type="bigint"/>
-            <column name="record_timestamp" type="bigint"/>
-        </createTable>
 
         <createTable tableName="event_idemp">
             <column name="transaction_id" type="bigint"/>
