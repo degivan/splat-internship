@@ -4,6 +4,6 @@ package ru.splat.messages.conventions;
  * Created by Дмитрий on 22.12.2016.
  */
 //возможные состояения тасков (ответы от сервисов)
-public enum LocalStatesEnum {
+public enum ServiceResponse {
     PROCESSING, OK, FAILED, CANCELLED, TIMEOUT
 }

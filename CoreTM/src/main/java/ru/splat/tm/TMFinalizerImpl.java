@@ -3,10 +3,10 @@ package ru.splat.tm;
 import akka.actor.ActorRef;
 import akka.actor.UntypedActor;
 import com.google.protobuf.Message;
-import ru.splat.messages.conventions.LocalStatesEnum;
+import ru.splat.messages.conventions.ServiceResponse;
 import ru.splat.messages.conventions.TaskTypesEnum;
 import ru.splat.trmetadata.TransactionMetadata;
-import ru.splat.messages.uptm.TransactionState;
+import ru.splat.messages.uptm.trstate.TransactionState;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,7 +28,7 @@ public class TMFinalizerImpl extends UntypedActor implements TMFinalizer {
         return transactionStates.containsKey(transactionId);
     }
 
-    public void createTransactionState(Long transactionId, Map<TaskTypesEnum, LocalStatesEnum> localStates) {
+    public void createTransactionState(Long transactionId, Map<TaskTypesEnum, ServiceResponse> localStates) {
         if (!stateExists(transactionId)) {
             System.out.println("Creating state for: " + transactionId);
             TransactionState transactionState = new TransactionState(transactionId, localStates);
@@ -54,9 +54,9 @@ public class TMFinalizerImpl extends UntypedActor implements TMFinalizer {
         //if (message instanceof )
     }
 
-    private Map<TaskTypesEnum, LocalStatesEnum> getLocalStates(TransactionMetadata trMetadata) {
-        Map<TaskTypesEnum, LocalStatesEnum> localStates = new HashMap<>();
-        trMetadata.getLocalTasks().forEach(localTask -> localStates.put(localTask.getType(), LocalStatesEnum.PROCESSING));
+    private Map<TaskTypesEnum, ServiceResponse> getLocalStates(TransactionMetadata trMetadata) {
+        Map<TaskTypesEnum, ServiceResponse> localStates = new HashMap<>();
+        trMetadata.getLocalTasks().forEach(localTask -> localStates.put(localTask.getType(), ServiceResponse.PROCESSING));
         return localStates;
     }
 }
