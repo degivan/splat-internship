@@ -9,7 +9,9 @@ import ru.splat.facade.feautures.TransactionRequest;
 
 public interface BusinessService<T extends TransactionRequest>
 {
-
-    //TODO Вынести из репозиториев бизнес-логику.
     List<TransactionResult> processTransactions(List<T> transactionRequests);
+
+    void commitBusinessService();
+
+    void rollbackBusinessSerivce();
 }

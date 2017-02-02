@@ -1,10 +1,9 @@
-package ru.splat.Billing;
+package ru.splat.Billing.wrapper;
 
 import ru.splat.Billing.feautures.BillingInfo;
-import ru.splat.facade.AbstractWrapper;
+import ru.splat.facade.wrapper.AbstractWrapper;
 import ru.splat.kafka.KafkaImpl;
 import ru.splat.messages.BillingRequest;
-
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -23,7 +22,7 @@ public class BillingWrapper extends AbstractWrapper<BillingRequest.Billing, Bill
                 consumerRecord.value().getSum(),
                 consumerRecord.key(),
                 consumerRecord.value().getLocalTask(),
-                consumerRecord.value().getServices()));
+                consumerRecord.value().getServicesList()));
         thread.execute(this::mainProcess);
     }
 }

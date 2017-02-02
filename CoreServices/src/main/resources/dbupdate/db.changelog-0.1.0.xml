@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.2.xsd">
 
     <changeSet logicalFilePath="changelog/db.changelog-0.1.0.xml" author="Sajfutdinov Ilnar" id="version-0.1.0">
@@ -23,13 +24,6 @@
         </createTable>
         
         <addPrimaryKey tableName="punter" columnNames="id"/>
-        
-        <createTable tableName="punter_timestamps">
-            <column name="id" type="bigint"/>
-            <column name="record_timestamp" type="bigint"/>
-            <column name="transaction_id" type="bigint"/>
-            <column name="limit_time" type="integer"/>
-        </createTable>
 
         <createTable tableName="event">
             <column name="id" type="integer"/>
@@ -64,6 +58,8 @@
             <column name="current_koef" type="double"/>
             <column name="status" type="status"/>
             <column name="market_id" type="integer"/>
+            <column name="lim" type="integer"/>
+            <column name="limit_time" type="bigint"/>
         </createTable>
 
         <addPrimaryKey tableName="outcome" columnNames="id"/>
@@ -92,6 +88,12 @@
                                  onUpdate="RESTRICT"
                                  referencedColumnNames="id"
                                  referencedTableName="outcome"/>
+
+        <createTable tableName="event_idemp">
+            <column name="transaction_id" type="bigint"/>
+            <column name="blob" type="bytea"/>
+            <column name="record_timestamp" type="bigint"/>
+        </createTable>
 
         <createTable tableName="ballance">
             <column name="sum" type="integer"/>

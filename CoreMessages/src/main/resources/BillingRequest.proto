@@ -6,5 +6,5 @@ message Billing {
   int32 punterId = 1;  
   int32 sum = 2;
   int32 localTask = 3;
-  string services = 4;
+  repeated int32 services = 4;
 }

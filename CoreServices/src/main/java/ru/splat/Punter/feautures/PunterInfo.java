@@ -2,35 +2,34 @@ package ru.splat.Punter.feautures;
 
 import ru.splat.facade.feautures.TransactionRequest;
 
+import java.util.List;
+
 public class PunterInfo implements TransactionRequest
 {
 
     private int localTask;
     private int punterId;
     private long transactionId;
-    private String services;
+    List<Integer> services;
+    private long time;
 
     public PunterInfo()
     {
     }
 
-    public PunterInfo(int punterId, long transactionId)
-    {
-        this.punterId = punterId;
-        this.transactionId = transactionId;
-    }
-
-    public PunterInfo(int punterId, long transactionId, int localTask,String services)
+    public PunterInfo(int punterId, long transactionId, int localTask,List<Integer> services, long time)
     {
         this.punterId = punterId;
         this.transactionId = transactionId;
         this.localTask = localTask;
         this.services = services;
+        this.time = time;
     }
 
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(Object o)
+    {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
@@ -45,19 +44,28 @@ public class PunterInfo implements TransactionRequest
         return (int) (transactionId ^ (transactionId >>> 32));
     }
 
+    @Override
+    public String toString()
+    {
+        return "PunterInfo{" +
+                "localTask=" + localTask +
+                ", punterId=" + punterId +
+                ", transactionId=" + transactionId +
+                ", services='" + services + '\'' +
+                ", time=" + time +
+                '}';
+    }
 
     @Override
-    public String getServices() {
+    public List<Integer> getServices() {
         return services;
     }
 
-    public void setServices(String services) {
+    public void setServices(List<Integer> services) {
         this.services = services;
     }
 
-    public int getPunterId() {
-        return punterId;
-    }
+    public int getId() {return punterId;}
 
     public long getTransactionId() {
         return transactionId;
@@ -79,5 +87,7 @@ public class PunterInfo implements TransactionRequest
         this.localTask = localTask;
     }
 
+    public long getTime() { return time;}
 
+    public void setTime(long time) {this.time = time;}
 }

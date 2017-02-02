@@ -7,15 +7,10 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import ru.splat.Billing.feautures.BillingInfo;
 import ru.splat.Billing.feautures.PunterBallance;
-import ru.splat.facade.feautures.RepAnswerBoolean;
-import ru.splat.facade.feautures.RepAnswerNothing;
 import ru.splat.facade.util.PunterUtil;
-
-
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 
 public class BillingRepository
@@ -32,38 +27,7 @@ public class BillingRepository
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    public Set<RepAnswerBoolean> withdrow(List<BillingInfo> billingInfoList)
-    {
-        insertPunterBallance(billingInfoList.stream().map(billingInfo -> billingInfo.getPunterID()).collect(Collectors.toList()));
-        boolean check=true;
-        List<PunterBallance> ballance = getPunterBallance(billingInfoList.stream().map(billingInfo -> billingInfo.getPunterID()).collect(Collectors.toList()));
-        Map<Integer,Integer> map = new HashMap<>();
-        ballance.stream().forEach(punterBallance -> map.put(punterBallance.getPunterId(),punterBallance.getSum()));
-        Set<RepAnswerBoolean> repAnswer = new HashSet<>();
-        List<BillingInfo> forPay = new ArrayList<>();
-        for (BillingInfo billingInfo: billingInfoList)
-        {
-            if (map.get(billingInfo.getPunterID())>=billingInfo.getSum())
-            {
-                repAnswer.add(new RepAnswerBoolean(billingInfo.getTransactionId(),true,billingInfo.getServices()));
-                forPay.add(billingInfo);
-            }
-            else
-            {
-                repAnswer.add(new RepAnswerBoolean(billingInfo.getTransactionId(),false,billingInfo.getServices()));
-            }
-        }
-        pay(forPay,check);
-        return repAnswer;
-    }
-    public Set<RepAnswerNothing> cancel(List<BillingInfo> billingInfoList)
-    {
-        boolean check = false;
-        pay(billingInfoList,check);
-        return billingInfoList.stream().map(billingInfo -> new RepAnswerNothing(billingInfo.getTransactionId(),billingInfo.getServices())).collect(Collectors.toSet());
-    }
-
-    private void insertPunterBallance(List<Integer> billingInfoList)
+    public void insertPunterBallance(List<Integer> billingInfoList)
     {
         if (billingInfoList == null || billingInfoList.isEmpty())
             return;
@@ -86,7 +50,7 @@ public class BillingRepository
         });
     }
 
-    private List<PunterBallance> getPunterBallance(List<Integer> punterIdList)
+    public List<PunterBallance> getPunterBallance(List<Integer> punterIdList)
     {
         if (punterIdList == null || punterIdList.isEmpty())
             return null;
@@ -107,7 +71,7 @@ public class BillingRepository
 
 
 
-    private void pay(List<BillingInfo> billingInfoList,boolean inverse)
+    public void pay(List<BillingInfo> billingInfoList,boolean inverse)
     {
         int index = inverse?1:-1;
 

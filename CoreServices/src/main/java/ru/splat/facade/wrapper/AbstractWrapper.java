@@ -1,19 +1,20 @@
-package ru.splat.facade;
+package ru.splat.facade.wrapper;
 
 import com.google.protobuf.Message;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Required;
+import ru.splat.facade.service.ServiceFacade;
 import ru.splat.facade.feautures.TransactionRequest;
 import ru.splat.kafka.Kafka;
 import ru.splat.kafka.feautures.TransactionResult;
 import javax.annotation.PostConstruct;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Function;
 import static org.slf4j.LoggerFactory.getLogger;
-
-//TODO проставить везде логгирование
 
 public abstract class AbstractWrapper<KafkaRecord extends Message, InternalTrType extends TransactionRequest>
 {
@@ -40,13 +41,18 @@ public abstract class AbstractWrapper<KafkaRecord extends Message, InternalTrTyp
             try {
                 // читаем
                 ConsumerRecords<Long, KafkaRecord> consumerRecords = kafka.readFromKafka(consumerTimeout);
+                // конверитруем
+                Set<InternalTrType> transactionRequest = convertToSet(consumerRecords);
                 // обрабатываем с учётом идемпотентности
-                List<TransactionResult> transactionResults = service.customProcessMessage(consumerRecords, converter);
+                List<TransactionResult> transactionResults = service.customProcessMessage(transactionRequest);
+                 // TODO подумать как завернуть через AOP
+                service.commitService();
                 kafka.writeToKafka(transactionResults);
-                kafka.commitKafka();;
+                kafka.commitKafka();
             }
             catch (Exception e)
             {
+                service.rollbackService();
                 LOGGER.error("High level",e);
                 while (true)
                 {
@@ -65,10 +71,23 @@ public abstract class AbstractWrapper<KafkaRecord extends Message, InternalTrTyp
             try {
                 Thread.sleep(100L);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                LOGGER.error("ThreadSleep level",e);
             }
 
         }
+    }
+
+    private Set<InternalTrType> convertToSet(ConsumerRecords<Long, KafkaRecord> consumerRecords)
+    {
+        Set<InternalTrType> transactionRequest = new HashSet<>();
+        for (ConsumerRecord<Long, KafkaRecord> consumerRecord: consumerRecords)
+        {
+            transactionRequest.add(converter.apply(consumerRecord));
+            LOGGER.info("Transaction id = " + consumerRecord.key());
+            LOGGER.info(consumerRecord.value().toString());
+        }
+
+        return transactionRequest;
     }
 
     public void setConsumerTimeout(long consumerTimeout)
