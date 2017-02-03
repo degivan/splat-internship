@@ -10,8 +10,10 @@ import com.mongodb.async.client.FindIterable;
 import com.mongodb.async.client.MongoClients;
 import com.mongodb.async.client.MongoCollection;
 import com.mongodb.async.client.MongoDatabase;
+import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Projections;
 import org.bson.Document;
+import org.bson.conversions.Bson;
 import ru.splat.messages.Transaction;
 
 import java.io.IOException;
@@ -31,7 +33,7 @@ public class DBConnection {
     private static MongoDatabase db;
     private static MongoCollection<Document> transactions;
     private static final MongoCollection<Document> counter;
-    private static final Document searchQuery;
+    private static final Document searchIdBoundsQuery;
     private static final Document rangeQuery;
     private static ObjectMapper mapper;
 
@@ -42,7 +44,7 @@ public class DBConnection {
                 .getDatabase("test");
         transactions = db.getCollection("transactions");
         counter = db.getCollection("bounds");
-        searchQuery = Document.parse("{ _id : \"tr_id\" } ");
+        searchIdBoundsQuery = Document.parse("{ _id : \"tr_id\" } ");
         rangeQuery = Document.parse("{ $inc: { lower : 10000 , upper : 10000 } }");
         mapper = new ObjectMapper();
     }
@@ -79,8 +81,20 @@ public class DBConnection {
         }
     }
 
-    public static void resaveTransaction(Transaction transaction, Procedure procedure) {
-        //TODO: resave transaction with a new state
+    /**
+     * Overwrites existing transaction in database
+     * @param transaction transaction to overwrite
+     * @param after action after overwriting
+     */
+    public static void overwriteTransaction(Transaction transaction, Procedure after) {
+        try {
+            transactions.findOneAndReplace(Filters.eq("lower", transaction.getLowerBound()),
+                    Document.parse(mapper.writeValueAsString(transaction)),
+                    (o, throwable) -> after.process());
+
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -88,7 +102,7 @@ public class DBConnection {
      * @param after processing transactions after creating
      */
     public static void createIdentifiers(Consumer<Bounds> after) {
-        counter.findOneAndUpdate(searchQuery, rangeQuery, ((document, throwable) -> {
+        counter.findOneAndUpdate(searchIdBoundsQuery, rangeQuery, ((document, throwable) -> {
             Long lower = document.getLong("lower");
             Long upper = document.getLong("upper");
 
