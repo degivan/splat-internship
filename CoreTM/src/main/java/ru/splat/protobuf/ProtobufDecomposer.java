@@ -2,7 +2,7 @@ package ru.splat.protobuf;
 
 import com.google.protobuf.Message;
 import javafx.util.Pair;
-import ru.splat.trmetadata.LocalTask;
+import ru.splat.messages.uptm.trmetadata.LocalTask;
 
 /**
  * Created by Дмитрий on 09.01.2017.

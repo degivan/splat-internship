@@ -20,8 +20,7 @@ public  class ProtobufFactory {
     public ProtobufFactory() {
     }
     //подготовить мессаги для оптравки
-    //надо придумать, что делать с enum-и
-    public static Message buildProtobuf(Long transactionId, LocalTask localTask, List<ServicesEnum> _services) throws Exception{
+    public static Message buildProtobuf(LocalTask localTask, List<ServicesEnum> _services) throws Exception{
         Message message;
         if (localTask instanceof BetTask) {
             List<Integer> services = new LinkedList<>();

@@ -11,7 +11,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>CoreTM</artifactId>
-    <packaging>pom</packaging>
+    <packaging>jar</packaging>
     <properties>
 
         <spring.version>4.2.4.RELEASE</spring.version>
@@ -34,6 +34,12 @@
         <dependency>
             <groupId>ru.splat</groupId>
             <artifactId>CoreMessages</artifactId>
+            <version>0.1-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>ru.splat</groupId>
+            <artifactId>CoreKafka</artifactId>
             <version>0.1-SNAPSHOT</version>
         </dependency>
 

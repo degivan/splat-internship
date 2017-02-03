@@ -5,7 +5,7 @@ import akka.actor.UntypedActor;
 import com.google.protobuf.Message;
 import ru.splat.messages.conventions.ServiceResponse;
 import ru.splat.messages.conventions.TaskTypesEnum;
-import ru.splat.trmetadata.TransactionMetadata;
+import ru.splat.messages.uptm.trmetadata.TransactionMetadata;
 import ru.splat.messages.uptm.trstate.TransactionState;
 
 import java.util.HashMap;
@@ -29,18 +29,18 @@ public class TMFinalizerImpl extends UntypedActor implements TMFinalizer {
     }
 
     public void createTransactionState(Long transactionId, Map<TaskTypesEnum, ServiceResponse> localStates) {
-        if (!stateExists(transactionId)) {
+        /*if (!stateExists(transactionId)) {
             System.out.println("Creating state for: " + transactionId);
             TransactionState transactionState = new TransactionState(transactionId, localStates);
             transactionStates.put(transactionId, transactionState);
         }
         else {//убрать
             System.out.println("State for " + transactionId + " already exists!");
-        }
+        }*/
     }
 
     public void onReceive(Object message) throws Exception {
-        if (message instanceof TransactionMetadata) {
+       /*f (message instanceof TransactionMetadata) {
             createTransactionState(((TransactionMetadata) message).getTransactionId(),
                     getLocalStates((TransactionMetadata)message));
         }
@@ -51,12 +51,12 @@ public class TMFinalizerImpl extends UntypedActor implements TMFinalizer {
         else {
             unhandled(message);
         }
-        //if (message instanceof )
+        //if (message instanceof )*/
     }
 
-    private Map<TaskTypesEnum, ServiceResponse> getLocalStates(TransactionMetadata trMetadata) {
+    /*private Map<TaskTypesEnum, ServiceResponse> getLocalStates(TransactionMetadata trMetadata) {
         Map<TaskTypesEnum, ServiceResponse> localStates = new HashMap<>();
         trMetadata.getLocalTasks().forEach(localTask -> localStates.put(localTask.getType(), ServiceResponse.PROCESSING));
         return localStates;
-    }
+    }*/
 }

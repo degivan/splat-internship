@@ -1,7 +1,7 @@
 package ru.splat.tmactors;
 
 import akka.actor.UntypedActor;
-import ru.splat.trstate.TransactionState;
+import ru.splat.messages.uptm.trstate.TransactionState;
 
 /**
  * Created by Дмитрий on 18.01.2017.

@@ -4,8 +4,11 @@ import com.google.protobuf.Message;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.LongSerializer;
+import ru.splat.kafka.serializer.ProtoBufMessageSerializer;
+import ru.splat.messages.uptm.trmetadata.LocalTask;
+import ru.splat.messages.uptm.trmetadata.TransactionMetadata;
 import ru.splat.protobuf.*;
-import ru.splat.trmetadata.*;
+import ru.splat.messages.uptm.trmetadata.*;
 
 import java.util.*;
 import java.util.concurrent.Future;
@@ -32,14 +35,14 @@ public class TMStarterImpl implements TMStarter {
         taskList.forEach(task->{
 
             Message message = null;
-            try {
-                message = ProtobufFactory.buildProtobuf(transactionId, task, taskNames);
+            /*try {
+                message = ProtobufFactory.buildProtobuf(task, taskNames);
                 String topic = task.getService();
                 ProducerRecord<Long, Message> record = new ProducerRecord<Long, Message>(topic, transactionId, message);
                 writeToKafka(task.getService(), transactionId, message);
             } catch (Exception e) {
                 e.printStackTrace();
-            }
+            }*/
 
 
 
