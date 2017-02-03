@@ -1,7 +1,8 @@
 package ru.splat.messages.uptm;
 
 /**
- * Response from TM to UP after request processing.
+ * Confirmation that TransactionMetadata message was delivered.
+ * отправляется TMActor-м сразу после отправки данных в кафку
  */
 public class TMResponse {
     private final Long transactionId;

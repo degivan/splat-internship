@@ -15,7 +15,7 @@ public final class Response {
         (com.google.protobuf.ExtensionRegistryLite) registry);
   }
   public interface ServiceResponseOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:ServiceResponse)
+      // @@protoc_insertion_point(interface_extends:ServiceResult)
       com.google.protobuf.MessageOrBuilder {
 
     /**
@@ -59,13 +59,13 @@ public final class Response {
     public ServiceResponse.ResultOneofCase getResultOneofCase();
   }
   /**
-   * Protobuf type {@code ServiceResponse}
+   * Protobuf type {@code ServiceResult}
    */
   public  static final class ServiceResponse extends
       com.google.protobuf.GeneratedMessageV3 implements
-      // @@protoc_insertion_point(message_implements:ServiceResponse)
+      // @@protoc_insertion_point(message_implements:ServiceResult)
       ServiceResponseOrBuilder {
-    // Use ServiceResponse.newBuilder() to construct.
+    // Use ServiceResult.newBuilder() to construct.
     private ServiceResponse(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
       super(builder);
     }
@@ -545,11 +545,11 @@ public final class Response {
       return builder;
     }
     /**
-     * Protobuf type {@code ServiceResponse}
+     * Protobuf type {@code ServiceResult}
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-        // @@protoc_insertion_point(builder_implements:ServiceResponse)
+        // @@protoc_insertion_point(builder_implements:ServiceResult)
         ServiceResponseOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
@@ -563,7 +563,7 @@ public final class Response {
                 ServiceResponse.class, Builder.class);
       }
 
-      // Construct using ru.splat.messages.Response.ServiceResponse.newBuilder()
+      // Construct using ru.splat.messages.Response.ServiceResult.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -989,10 +989,10 @@ public final class Response {
       }
 
 
-      // @@protoc_insertion_point(builder_scope:ServiceResponse)
+      // @@protoc_insertion_point(builder_scope:ServiceResult)
     }
 
-    // @@protoc_insertion_point(class_scope:ServiceResponse)
+    // @@protoc_insertion_point(class_scope:ServiceResult)
     private static final ServiceResponse DEFAULT_INSTANCE;
     static {
       DEFAULT_INSTANCE = new ServiceResponse();
