@@ -13,6 +13,7 @@ public class Main {
                 new ClassPathXmlApplicationContext("beans.xml");*/
         /*ActorsStarter actorsStarter = (ActorsStarter) appContext.getBean("ActorsStarter");
         actorsStarter.initActors();*/
+        System.out.println("Hello");
 
     }
 

@@ -10,6 +10,8 @@ import ru.splat.messages.uptm.trmetadata.*;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Created by Дмитрий on 17.01.2017.
@@ -20,16 +22,17 @@ public  class ProtobufFactory {
     public ProtobufFactory() {
     }
     //подготовить мессаги для оптравки
-    public static Message buildProtobuf(LocalTask localTask, List<ServicesEnum> _services) throws Exception{
-        Message message;
+    public static Message buildProtobuf(LocalTask localTask, Set<ServicesEnum> _services) throws Exception{
+
         if (localTask instanceof BetTask) {
-            List<Integer> services = new LinkedList<>();
-            Message.Builder builder = BetRequest.Bet.newBuilder()
+            BetRequest.Bet message;
+            List<Integer> services = _services.stream().map(servicesEnum -> servicesEnum.ordinal())
+                    .collect(Collectors.toList());
+            BetRequest.Bet.Builder builder = BetRequest.Bet.newBuilder()
                     .setLocalTask(localTask.getType().ordinal())
                     .setPunterId(((BetTask)localTask).getPunterId())
                     .addAllBetOutcome(((BetTask)localTask).getBetOutcomes())
                     .addAllServices(services);
-
             message =  builder.build();
 
             /*Message.Builder builder = BetRequest.Bet.newBuilder()

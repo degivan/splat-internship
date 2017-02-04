@@ -6,4 +6,4 @@ TM (03.02.17-04.02.17):
 -доделать ProtobufFactory (под новые мессаги);
 -отправка в кафку батчем;
 -JMX;
--Проблема JUnit после git pull;
+-C List на Set в TransactionMetadata и LocalTask-ах;

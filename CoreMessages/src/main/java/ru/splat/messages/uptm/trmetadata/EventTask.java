@@ -9,11 +9,11 @@ import java.util.List;
  * Created by Дмитрий on 17.12.2016.
  */
 public class EventTask extends LocalTask {
-    private final List<Long> selections;
+    private final List<Integer> selections;
     private final ServicesEnum service = ServicesEnum.EventService;
 
     public EventTask(TaskTypesEnum type,
-                     List<Long> selections) {
+                     List<Integer> selections) {
         super(type);
         this.selections = selections;
     }
@@ -23,7 +23,7 @@ public class EventTask extends LocalTask {
         return service;
     }
 
-    public List<Long> getSelections() {
+    public List<Integer> getSelections() {
         return selections;
     }
 
