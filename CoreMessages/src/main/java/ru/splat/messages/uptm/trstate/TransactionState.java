@@ -1,6 +1,6 @@
 package ru.splat.messages.uptm.trstate;
 
-import ru.splat.messages.conventions.ServiceResponse;
+
 import ru.splat.messages.conventions.ServicesEnum;
 
 import java.util.Map;
