@@ -1,36 +1,30 @@
 package ru.splat.messages.uptm.trstate;
 
+import ru.splat.messages.conventions.ServiceResult;
+
 /**
  * Created by Дмитрий on 02.02.2017.
  */
 public class ServiceResponse<T> {
-    private final T result; //?????почему-то это единственное поле
+    private final T attachment;
+    private final ServiceResult result;
 
-    public ServiceResponse(T result) {
+    public ServiceResponse(T attachment, ServiceResult result) {
+        this.attachment = attachment;
         this.result = result;
     }
 
-    public T getResult() {
-        return result;
+    public T getAttachment() {
+        return attachment;
     }
+
     //успешность таски
     public boolean isPositive() {
-        if (result instanceof Boolean) {
-            return (Boolean)result;
-        }
-        //выяснить у Ильнара (или Ивана)
-        if (result instanceof String) {
-            return false;
-        }
-        if (result instanceof Long) {
-            return false;
-        }
-        if (result instanceof Double) {
-            return false;
-        }
-        else return false;
-
+        return result.equals(ServiceResult.OK);
     }
 
 
+    public ServiceResult getResult() {
+        return result;
+    }
 }

@@ -1,6 +1,5 @@
 package ru.splat.messages.uptm.trstate;
 
-
 import ru.splat.messages.conventions.ServicesEnum;
 
 import java.util.Map;
@@ -13,6 +12,7 @@ public class TransactionState {
     private final Long transactionId;
     //таски от всех сервисов
     private Map<ServicesEnum, ServiceResponse> localStates;
+
     //конструктор вызывается при инициализации транзакции через TMActor или при получении сообщения от сервисов с информацией о тасках
     public TransactionState(Long transactionId, Map<ServicesEnum, ServiceResponse> localStates) {
         this.transactionId = transactionId;

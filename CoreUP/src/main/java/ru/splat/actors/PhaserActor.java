@@ -7,10 +7,10 @@ import akka.japi.Procedure;
 import ru.splat.db.DBConnection;
 import ru.splat.message.PhaserRequest;
 import ru.splat.messages.Transaction;
-import ru.splat.messages.uptm.TMConfirm;
 import ru.splat.messages.uptm.TMResponse;
 import ru.splat.messages.uptm.trmetadata.MetadataPatterns;
 import ru.splat.messages.uptm.trmetadata.TransactionMetadata;
+import ru.splat.messages.uptm.trstate.TransactionState;
 import scala.concurrent.duration.Duration;
 
 import java.util.concurrent.TimeUnit;
@@ -39,33 +39,35 @@ public class PhaserActor extends UntypedActor {
     }
 
     @Override
-    public void onReceive(Object o) throws Throwable {
-        if(o instanceof PhaserRequest) {
-            processPhaserRequest((PhaserRequest) o);
-        } else if(o instanceof TMResponse) {
-            processTMResponse((TMResponse) o);
-        } else if(o instanceof ReceiveTimeout) {
+    public void onReceive(Object message) throws Throwable {
+        if(message instanceof PhaserRequest) {
+            processPhaserRequest((PhaserRequest) message);
+        } else if(message instanceof TransactionState) {
+            processTransactionState((TransactionState) message);
+        } else if(message instanceof ReceiveTimeout) {
             processReceiveTimeout();
-        } else if(o instanceof TMConfirm) {
+        } else if(message instanceof TMResponse) {
             //TODO: Change state to PHASE1_RESPONDED
+        } else {
+            unhandled(message);
         }
     }
 
     private void processReceiveTimeout() {
         transaction.setState(Transaction.State.CANCEL);
 
-        DBConnection.resaveTransaction(transaction,
+        DBConnection.overwriteTransaction(transaction,
                 () -> {
                     cancelTransaction(transaction);
                     sendResult(transaction);
                 });
     }
 
-    private void processTMResponse(TMResponse o) {
+    private void processTransactionState(TransactionState o) {
         if(isResponsePositive(o)) {
             transaction.setState(Transaction.State.PHASE2_SEND);
 
-            DBConnection.resaveTransaction(transaction,
+            DBConnection.overwriteTransaction(transaction,
                     () ->  {
                         sendPhase2(transaction);
                         sendResult(transaction);
@@ -73,7 +75,7 @@ public class PhaserActor extends UntypedActor {
         } else {
             transaction.setState(Transaction.State.DENIED);
 
-            DBConnection.resaveTransaction(transaction,
+            DBConnection.overwriteTransaction(transaction,
                     () -> sendResult(transaction));
         }
     }
@@ -126,35 +128,35 @@ public class PhaserActor extends UntypedActor {
     }
 
     //TODO:
-    private static boolean isResponsePositive(TMResponse o) {
+    private static boolean isResponsePositive(TransactionState transactionState) {
         return false;
     }
 
     private abstract class State implements Procedure<Object> {
         @Override
-        public void apply(Object o) throws Exception {
-            if(o instanceof TMResponse) {
-                processTMResponse((TMResponse) o);
-            } else if(o instanceof ReceiveTimeout) {
+        public void apply(Object message) throws Exception {
+            if(message instanceof TransactionState) {
+                processTMResponse((TransactionState) message);
+            } else if(message instanceof ReceiveTimeout) {
                 //do nothing
-            } else if(o instanceof TMConfirm) {
+            } else if(message instanceof TMResponse) {
                 //TODO: check that it's confirmation for phase2 and change state
             }
         }
 
         //TODO
-        boolean checkIdCorrect(TMResponse o, Transaction transaction) {
-            return (o.getTransactionId()).equals(transaction.getCurrent());
+        boolean checkIdCorrect(TransactionState trState, Transaction transaction) {
+            return (trState.getTransactionId()).equals(transaction.getCurrent());
         }
 
-        abstract void processTMResponse(TMResponse o);
+        abstract void processTMResponse(TransactionState trState);
     }
 
     private class Phase2 extends State {
         @Override
-        void processTMResponse(TMResponse o) {
-            if(checkIdCorrect(o, transaction)) {
-                if(isResponsePositive(o)) {
+        void processTMResponse(TransactionState trState) {
+            if(checkIdCorrect(trState, transaction)) {
+                if(isResponsePositive(trState)) {
                     transaction.setState(Transaction.State.COMPLETED);
                     getContext().stop(getSelf());
                 } else {
@@ -167,9 +169,9 @@ public class PhaserActor extends UntypedActor {
 
     private class Cancel extends State {
         @Override
-        void processTMResponse(TMResponse o) {
-            if(checkIdCorrect(o, transaction)) {
-                if(isResponsePositive(o)) {
+        void processTMResponse(TransactionState trState) {
+            if(checkIdCorrect(trState, transaction)) {
+                if(isResponsePositive(trState)) {
                     transaction.setState(Transaction.State.CANCEL_COMPLETED);
                     getContext().stop(getSelf());
                 } else {

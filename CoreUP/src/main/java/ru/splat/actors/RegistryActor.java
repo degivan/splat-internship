@@ -5,6 +5,7 @@ import akka.actor.UntypedActor;
 import ru.splat.message.RegisterRequest;
 import ru.splat.message.RegisterResponse;
 import ru.splat.messages.uptm.TMResponse;
+import ru.splat.messages.uptm.trstate.TransactionState;
 
 
 import java.util.HashMap;
@@ -24,12 +25,12 @@ public class RegistryActor extends UntypedActor {
     public void onReceive(Object o) throws Throwable {
         if(o instanceof RegisterRequest) {
             processRegisterRequest((RegisterRequest) o);
-        } else if(o instanceof TMResponse) {
-            processTMResponse((TMResponse) o);
+        } else if(o instanceof TransactionState) {
+            processTMResponse((TransactionState) o);
         }
     }
 
-    private void processTMResponse(TMResponse o) {
+    private void processTMResponse(TransactionState o) {
         actors.get(o.getTransactionId())
                 .tell(o, getSelf());
     }

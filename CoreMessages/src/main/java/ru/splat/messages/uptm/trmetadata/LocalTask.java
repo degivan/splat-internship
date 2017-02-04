@@ -9,6 +9,7 @@ import ru.splat.messages.conventions.TaskTypesEnum;
 //инкапсулирует одну из локальных операций транзакции
 public abstract class LocalTask {
     private final TaskTypesEnum type; //тип локальной транзакции
+
     public LocalTask(TaskTypesEnum type) {
         this.type = type;
     }
