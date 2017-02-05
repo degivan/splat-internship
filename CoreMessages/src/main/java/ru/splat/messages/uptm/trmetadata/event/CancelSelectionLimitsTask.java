@@ -13,12 +13,17 @@ public class CancelSelectionLimitsTask extends LocalTask {
     private final Set<Integer> selections;
     private final ServicesEnum service = ServicesEnum.EventService;
 
-    public CancelSelectionLimitsTask(TaskTypesEnum type, Long time,
-                                  Set<Integer> selections) {
-        super(type, time);
+    public CancelSelectionLimitsTask(
+                                  Set<Integer> selections, Long time) {
+        super(time);
         this.selections = selections;
     }
 
+
+    @Override
+    public TaskTypesEnum getType() {
+        return TaskTypesEnum.CANCEL_SELECTION_LIMIT;
+    }
 
     public ServicesEnum getService() {
         return service;

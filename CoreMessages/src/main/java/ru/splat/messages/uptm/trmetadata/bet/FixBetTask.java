@@ -11,14 +11,19 @@ public class FixBetTask extends LocalTask {
     private final ServicesEnum service = ServicesEnum.BetService;
     private final Long betId;
     //конструктор второй фазы
-    public FixBetTask(TaskTypesEnum type, Long betId, Long time) {
-        super(type, time);
+    public FixBetTask(Long betId, Long time) {
+        super(time);
         this.betId = betId;
 
     }
 
     public Long getBetId() {
         return betId;
+    }
+
+    @Override
+    public TaskTypesEnum getType() {
+        return TaskTypesEnum.FIX_BET;
     }
 
     @Override

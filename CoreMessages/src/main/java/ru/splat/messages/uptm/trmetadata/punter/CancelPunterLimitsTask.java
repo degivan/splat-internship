@@ -10,9 +10,14 @@ import ru.splat.messages.uptm.trmetadata.LocalTask;
 public class CancelPunterLimitsTask extends LocalTask {
     private final Integer punterId;
     private final ServicesEnum service = ServicesEnum.PunterService;
-    public CancelPunterLimitsTask(TaskTypesEnum type, Integer _punterId, Long time) {
-        super(type, time);
+    public CancelPunterLimitsTask(Integer _punterId, Long time) {
+        super(time);
         this.punterId = _punterId;
+    }
+
+    @Override
+    public TaskTypesEnum getType() {
+        return TaskTypesEnum.CANCEL_PUNTER_LIMITS;
     }
 
     @Override

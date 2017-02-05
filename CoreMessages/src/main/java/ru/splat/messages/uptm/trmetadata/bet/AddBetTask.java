@@ -4,7 +4,6 @@ import ru.splat.messages.conventions.ServicesEnum;
 import ru.splat.messages.conventions.TaskTypesEnum;
 import ru.splat.messages.uptm.trmetadata.LocalTask;
 
-import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -13,7 +12,6 @@ import java.util.Set;
 //первая фаза по ставкам
 public class AddBetTask extends LocalTask {
     private final Integer punterId;
-    private final ServicesEnum service = ServicesEnum.BetService;
     private final Set<BetOutcome> betOutcomes; //список возможных исходов
 
     public Integer getPunterId() {
@@ -24,19 +22,21 @@ public class AddBetTask extends LocalTask {
         return betOutcomes;
     }
     //конструктор первой фазы
-    public AddBetTask(TaskTypesEnum type, Long time, Integer punterId, Set<BetOutcome> betOutcomes) {
-        super(type, time);
+    public AddBetTask(Integer punterId, Set<BetOutcome> betOutcomes, Long time) {
+        super(time);
         this.punterId = punterId;
         this.betOutcomes = betOutcomes;
     }
 
 
-
-
+    @Override
+    public TaskTypesEnum getType() {
+        return TaskTypesEnum.ADD_BET;
+    }
 
     @Override
     public ServicesEnum getService() {
-        return service;
+        return ServicesEnum.BetService;
     }
 
 
