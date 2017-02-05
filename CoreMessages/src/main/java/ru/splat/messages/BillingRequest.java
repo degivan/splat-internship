@@ -36,7 +36,7 @@ public final class BillingRequest {
     /**
      * <code>repeated int32 services = 4;</code>
      */
-    java.util.List<Integer> getServicesList();
+    java.util.List<java.lang.Integer> getServicesList();
     /**
      * <code>repeated int32 services = 4;</code>
      */
@@ -45,6 +45,11 @@ public final class BillingRequest {
      * <code>repeated int32 services = 4;</code>
      */
     int getServices(int index);
+
+    /**
+     * <code>optional int64 time = 5;</code>
+     */
+    long getTime();
   }
   /**
    * Protobuf type {@code Billing}
@@ -62,9 +67,10 @@ public final class BillingRequest {
       sum_ = 0;
       localTask_ = 0;
       services_ = java.util.Collections.emptyList();
+      time_ = 0L;
     }
 
-    @Override
+    @java.lang.Override
     public final com.google.protobuf.UnknownFieldSet
     getUnknownFields() {
       return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
@@ -106,7 +112,7 @@ public final class BillingRequest {
             }
             case 32: {
               if (!((mutable_bitField0_ & 0x00000008) == 0x00000008)) {
-                services_ = new java.util.ArrayList<Integer>();
+                services_ = new java.util.ArrayList<java.lang.Integer>();
                 mutable_bitField0_ |= 0x00000008;
               }
               services_.add(input.readInt32());
@@ -116,13 +122,18 @@ public final class BillingRequest {
               int length = input.readRawVarint32();
               int limit = input.pushLimit(length);
               if (!((mutable_bitField0_ & 0x00000008) == 0x00000008) && input.getBytesUntilLimit() > 0) {
-                services_ = new java.util.ArrayList<Integer>();
+                services_ = new java.util.ArrayList<java.lang.Integer>();
                 mutable_bitField0_ |= 0x00000008;
               }
               while (input.getBytesUntilLimit() > 0) {
                 services_.add(input.readInt32());
               }
               input.popLimit(limit);
+              break;
+            }
+            case 40: {
+
+              time_ = input.readInt64();
               break;
             }
           }
@@ -141,14 +152,14 @@ public final class BillingRequest {
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return BillingRequest.internal_static_Billing_descriptor;
+      return ru.splat.messages.BillingRequest.internal_static_Billing_descriptor;
     }
 
-    protected FieldAccessorTable
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return BillingRequest.internal_static_Billing_fieldAccessorTable
+      return ru.splat.messages.BillingRequest.internal_static_Billing_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              Billing.class, Builder.class);
+              ru.splat.messages.BillingRequest.Billing.class, ru.splat.messages.BillingRequest.Billing.Builder.class);
     }
 
     private int bitField0_;
@@ -180,11 +191,11 @@ public final class BillingRequest {
     }
 
     public static final int SERVICES_FIELD_NUMBER = 4;
-    private java.util.List<Integer> services_;
+    private java.util.List<java.lang.Integer> services_;
     /**
      * <code>repeated int32 services = 4;</code>
      */
-    public java.util.List<Integer>
+    public java.util.List<java.lang.Integer>
         getServicesList() {
       return services_;
     }
@@ -201,6 +212,15 @@ public final class BillingRequest {
       return services_.get(index);
     }
     private int servicesMemoizedSerializedSize = -1;
+
+    public static final int TIME_FIELD_NUMBER = 5;
+    private long time_;
+    /**
+     * <code>optional int64 time = 5;</code>
+     */
+    public long getTime() {
+      return time_;
+    }
 
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -230,6 +250,9 @@ public final class BillingRequest {
       }
       for (int i = 0; i < services_.size(); i++) {
         output.writeInt32NoTag(services_.get(i));
+      }
+      if (time_ != 0L) {
+        output.writeInt64(5, time_);
       }
     }
 
@@ -264,20 +287,24 @@ public final class BillingRequest {
         }
         servicesMemoizedSerializedSize = dataSize;
       }
+      if (time_ != 0L) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt64Size(5, time_);
+      }
       memoizedSize = size;
       return size;
     }
 
     private static final long serialVersionUID = 0L;
-    @Override
-    public boolean equals(final Object obj) {
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
       if (obj == this) {
        return true;
       }
-      if (!(obj instanceof Billing)) {
+      if (!(obj instanceof ru.splat.messages.BillingRequest.Billing)) {
         return super.equals(obj);
       }
-      Billing other = (Billing) obj;
+      ru.splat.messages.BillingRequest.Billing other = (ru.splat.messages.BillingRequest.Billing) obj;
 
       boolean result = true;
       result = result && (getPunterId()
@@ -288,10 +315,12 @@ public final class BillingRequest {
           == other.getLocalTask());
       result = result && getServicesList()
           .equals(other.getServicesList());
+      result = result && (getTime()
+          == other.getTime());
       return result;
     }
 
-    @Override
+    @java.lang.Override
     public int hashCode() {
       if (memoizedHashCode != 0) {
         return memoizedHashCode;
@@ -308,63 +337,66 @@ public final class BillingRequest {
         hash = (37 * hash) + SERVICES_FIELD_NUMBER;
         hash = (53 * hash) + getServicesList().hashCode();
       }
+      hash = (37 * hash) + TIME_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          getTime());
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
     }
 
-    public static Billing parseFrom(
+    public static ru.splat.messages.BillingRequest.Billing parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static Billing parseFrom(
+    public static ru.splat.messages.BillingRequest.Billing parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static Billing parseFrom(byte[] data)
+    public static ru.splat.messages.BillingRequest.Billing parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static Billing parseFrom(
+    public static ru.splat.messages.BillingRequest.Billing parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static Billing parseFrom(java.io.InputStream input)
+    public static ru.splat.messages.BillingRequest.Billing parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static Billing parseFrom(
+    public static ru.splat.messages.BillingRequest.Billing parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-    public static Billing parseDelimitedFrom(java.io.InputStream input)
+    public static ru.splat.messages.BillingRequest.Billing parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-    public static Billing parseDelimitedFrom(
+    public static ru.splat.messages.BillingRequest.Billing parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
-    public static Billing parseFrom(
+    public static ru.splat.messages.BillingRequest.Billing parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static Billing parseFrom(
+    public static ru.splat.messages.BillingRequest.Billing parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -376,7 +408,7 @@ public final class BillingRequest {
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
     }
-    public static Builder newBuilder(Billing prototype) {
+    public static Builder newBuilder(ru.splat.messages.BillingRequest.Billing prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
     public Builder toBuilder() {
@@ -384,9 +416,9 @@ public final class BillingRequest {
           ? new Builder() : new Builder().mergeFrom(this);
     }
 
-    @Override
+    @java.lang.Override
     protected Builder newBuilderForType(
-        BuilderParent parent) {
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
       Builder builder = new Builder(parent);
       return builder;
     }
@@ -396,17 +428,17 @@ public final class BillingRequest {
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
         // @@protoc_insertion_point(builder_implements:Billing)
-        BillingOrBuilder {
+        ru.splat.messages.BillingRequest.BillingOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return BillingRequest.internal_static_Billing_descriptor;
+        return ru.splat.messages.BillingRequest.internal_static_Billing_descriptor;
       }
 
-      protected FieldAccessorTable
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return BillingRequest.internal_static_Billing_fieldAccessorTable
+        return ru.splat.messages.BillingRequest.internal_static_Billing_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                Billing.class, Builder.class);
+                ru.splat.messages.BillingRequest.Billing.class, ru.splat.messages.BillingRequest.Billing.Builder.class);
       }
 
       // Construct using ru.splat.messages.BillingRequest.Billing.newBuilder()
@@ -415,7 +447,7 @@ public final class BillingRequest {
       }
 
       private Builder(
-          BuilderParent parent) {
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
         maybeForceBuilderInitialization();
       }
@@ -434,28 +466,30 @@ public final class BillingRequest {
 
         services_ = java.util.Collections.emptyList();
         bitField0_ = (bitField0_ & ~0x00000008);
+        time_ = 0L;
+
         return this;
       }
 
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return BillingRequest.internal_static_Billing_descriptor;
+        return ru.splat.messages.BillingRequest.internal_static_Billing_descriptor;
       }
 
-      public Billing getDefaultInstanceForType() {
-        return Billing.getDefaultInstance();
+      public ru.splat.messages.BillingRequest.Billing getDefaultInstanceForType() {
+        return ru.splat.messages.BillingRequest.Billing.getDefaultInstance();
       }
 
-      public Billing build() {
-        Billing result = buildPartial();
+      public ru.splat.messages.BillingRequest.Billing build() {
+        ru.splat.messages.BillingRequest.Billing result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
         return result;
       }
 
-      public Billing buildPartial() {
-        Billing result = new Billing(this);
+      public ru.splat.messages.BillingRequest.Billing buildPartial() {
+        ru.splat.messages.BillingRequest.Billing result = new ru.splat.messages.BillingRequest.Billing(this);
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         result.punterId_ = punterId_;
@@ -466,6 +500,7 @@ public final class BillingRequest {
           bitField0_ = (bitField0_ & ~0x00000008);
         }
         result.services_ = services_;
+        result.time_ = time_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -498,16 +533,16 @@ public final class BillingRequest {
         return (Builder) super.addRepeatedField(field, value);
       }
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof Billing) {
-          return mergeFrom((Billing)other);
+        if (other instanceof ru.splat.messages.BillingRequest.Billing) {
+          return mergeFrom((ru.splat.messages.BillingRequest.Billing)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(Billing other) {
-        if (other == Billing.getDefaultInstance()) return this;
+      public Builder mergeFrom(ru.splat.messages.BillingRequest.Billing other) {
+        if (other == ru.splat.messages.BillingRequest.Billing.getDefaultInstance()) return this;
         if (other.getPunterId() != 0) {
           setPunterId(other.getPunterId());
         }
@@ -527,6 +562,9 @@ public final class BillingRequest {
           }
           onChanged();
         }
+        if (other.getTime() != 0L) {
+          setTime(other.getTime());
+        }
         onChanged();
         return this;
       }
@@ -539,11 +577,11 @@ public final class BillingRequest {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        Billing parsedMessage = null;
+        ru.splat.messages.BillingRequest.Billing parsedMessage = null;
         try {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (Billing) e.getUnfinishedMessage();
+          parsedMessage = (ru.splat.messages.BillingRequest.Billing) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
@@ -632,17 +670,17 @@ public final class BillingRequest {
         return this;
       }
 
-      private java.util.List<Integer> services_ = java.util.Collections.emptyList();
+      private java.util.List<java.lang.Integer> services_ = java.util.Collections.emptyList();
       private void ensureServicesIsMutable() {
         if (!((bitField0_ & 0x00000008) == 0x00000008)) {
-          services_ = new java.util.ArrayList<Integer>(services_);
+          services_ = new java.util.ArrayList<java.lang.Integer>(services_);
           bitField0_ |= 0x00000008;
          }
       }
       /**
        * <code>repeated int32 services = 4;</code>
        */
-      public java.util.List<Integer>
+      public java.util.List<java.lang.Integer>
           getServicesList() {
         return java.util.Collections.unmodifiableList(services_);
       }
@@ -681,7 +719,7 @@ public final class BillingRequest {
        * <code>repeated int32 services = 4;</code>
        */
       public Builder addAllServices(
-          Iterable<? extends Integer> values) {
+          java.lang.Iterable<? extends java.lang.Integer> values) {
         ensureServicesIsMutable();
         com.google.protobuf.AbstractMessageLite.Builder.addAll(
             values, services_);
@@ -694,6 +732,32 @@ public final class BillingRequest {
       public Builder clearServices() {
         services_ = java.util.Collections.emptyList();
         bitField0_ = (bitField0_ & ~0x00000008);
+        onChanged();
+        return this;
+      }
+
+      private long time_ ;
+      /**
+       * <code>optional int64 time = 5;</code>
+       */
+      public long getTime() {
+        return time_;
+      }
+      /**
+       * <code>optional int64 time = 5;</code>
+       */
+      public Builder setTime(long value) {
+        
+        time_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional int64 time = 5;</code>
+       */
+      public Builder clearTime() {
+        
+        time_ = 0L;
         onChanged();
         return this;
       }
@@ -712,12 +776,12 @@ public final class BillingRequest {
     }
 
     // @@protoc_insertion_point(class_scope:Billing)
-    private static final Billing DEFAULT_INSTANCE;
+    private static final ru.splat.messages.BillingRequest.Billing DEFAULT_INSTANCE;
     static {
-      DEFAULT_INSTANCE = new Billing();
+      DEFAULT_INSTANCE = new ru.splat.messages.BillingRequest.Billing();
     }
 
-    public static Billing getDefaultInstance() {
+    public static ru.splat.messages.BillingRequest.Billing getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
@@ -735,12 +799,12 @@ public final class BillingRequest {
       return PARSER;
     }
 
-    @Override
+    @java.lang.Override
     public com.google.protobuf.Parser<Billing> getParserForType() {
       return PARSER;
     }
 
-    public Billing getDefaultInstanceForType() {
+    public ru.splat.messages.BillingRequest.Billing getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
@@ -759,11 +823,11 @@ public final class BillingRequest {
   private static  com.google.protobuf.Descriptors.FileDescriptor
       descriptor;
   static {
-    String[] descriptorData = {
-      "\n\024BillingRequest.proto\"M\n\007Billing\022\020\n\010pun" +
+    java.lang.String[] descriptorData = {
+      "\n\024BillingRequest.proto\"[\n\007Billing\022\020\n\010pun" +
       "terId\030\001 \001(\005\022\013\n\003sum\030\002 \001(\005\022\021\n\tlocalTask\030\003 " +
-      "\001(\005\022\020\n\010services\030\004 \003(\005B#\n\021ru.splat.messag" +
-      "esB\016BillingRequestb\006proto3"
+      "\001(\005\022\020\n\010services\030\004 \003(\005\022\014\n\004time\030\005 \001(\003B#\n\021r" +
+      "u.splat.messagesB\016BillingRequestb\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -782,7 +846,7 @@ public final class BillingRequest {
     internal_static_Billing_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_Billing_descriptor,
-        new String[] { "PunterId", "Sum", "LocalTask", "Services", });
+        new java.lang.String[] { "PunterId", "Sum", "LocalTask", "Services", "Time", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)

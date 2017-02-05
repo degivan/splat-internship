@@ -7,4 +7,5 @@ message Billing {
   int32 sum = 2;
   int32 localTask = 3;
   repeated int32 services = 4;
+  int64 time = 5;
 }

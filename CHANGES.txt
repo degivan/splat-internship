@@ -1,0 +1,8 @@
+﻿Response.proto :
+ -добавлено поле in32 result (java enum);
+ -result_oneof переименовано в attachment_oneof;
+
+-добавлены поля time в BetRequest и BillingRequest
+
+-Списки в trmetadata заменены на сеты;
+-Теперь поля тасков Optional - необходимо инициализацию транзакции в УП

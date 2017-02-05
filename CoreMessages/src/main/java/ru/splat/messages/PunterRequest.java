@@ -31,7 +31,7 @@ public final class PunterRequest {
     /**
      * <code>repeated int32 services = 3;</code>
      */
-    java.util.List<Integer> getServicesList();
+    java.util.List<java.lang.Integer> getServicesList();
     /**
      * <code>repeated int32 services = 3;</code>
      */
@@ -64,7 +64,7 @@ public final class PunterRequest {
       time_ = 0L;
     }
 
-    @Override
+    @java.lang.Override
     public final com.google.protobuf.UnknownFieldSet
     getUnknownFields() {
       return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
@@ -101,7 +101,7 @@ public final class PunterRequest {
             }
             case 24: {
               if (!((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
-                services_ = new java.util.ArrayList<Integer>();
+                services_ = new java.util.ArrayList<java.lang.Integer>();
                 mutable_bitField0_ |= 0x00000004;
               }
               services_.add(input.readInt32());
@@ -111,7 +111,7 @@ public final class PunterRequest {
               int length = input.readRawVarint32();
               int limit = input.pushLimit(length);
               if (!((mutable_bitField0_ & 0x00000004) == 0x00000004) && input.getBytesUntilLimit() > 0) {
-                services_ = new java.util.ArrayList<Integer>();
+                services_ = new java.util.ArrayList<java.lang.Integer>();
                 mutable_bitField0_ |= 0x00000004;
               }
               while (input.getBytesUntilLimit() > 0) {
@@ -141,14 +141,14 @@ public final class PunterRequest {
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return PunterRequest.internal_static_Punter_descriptor;
+      return ru.splat.messages.PunterRequest.internal_static_Punter_descriptor;
     }
 
-    protected FieldAccessorTable
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return PunterRequest.internal_static_Punter_fieldAccessorTable
+      return ru.splat.messages.PunterRequest.internal_static_Punter_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              Punter.class, Builder.class);
+              ru.splat.messages.PunterRequest.Punter.class, ru.splat.messages.PunterRequest.Punter.Builder.class);
     }
 
     private int bitField0_;
@@ -171,11 +171,11 @@ public final class PunterRequest {
     }
 
     public static final int SERVICES_FIELD_NUMBER = 3;
-    private java.util.List<Integer> services_;
+    private java.util.List<java.lang.Integer> services_;
     /**
      * <code>repeated int32 services = 3;</code>
      */
-    public java.util.List<Integer>
+    public java.util.List<java.lang.Integer>
         getServicesList() {
       return services_;
     }
@@ -269,15 +269,15 @@ public final class PunterRequest {
     }
 
     private static final long serialVersionUID = 0L;
-    @Override
-    public boolean equals(final Object obj) {
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
       if (obj == this) {
        return true;
       }
-      if (!(obj instanceof Punter)) {
+      if (!(obj instanceof ru.splat.messages.PunterRequest.Punter)) {
         return super.equals(obj);
       }
-      Punter other = (Punter) obj;
+      ru.splat.messages.PunterRequest.Punter other = (ru.splat.messages.PunterRequest.Punter) obj;
 
       boolean result = true;
       result = result && (getPunterId()
@@ -291,7 +291,7 @@ public final class PunterRequest {
       return result;
     }
 
-    @Override
+    @java.lang.Override
     public int hashCode() {
       if (memoizedHashCode != 0) {
         return memoizedHashCode;
@@ -314,58 +314,58 @@ public final class PunterRequest {
       return hash;
     }
 
-    public static Punter parseFrom(
+    public static ru.splat.messages.PunterRequest.Punter parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static Punter parseFrom(
+    public static ru.splat.messages.PunterRequest.Punter parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static Punter parseFrom(byte[] data)
+    public static ru.splat.messages.PunterRequest.Punter parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static Punter parseFrom(
+    public static ru.splat.messages.PunterRequest.Punter parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static Punter parseFrom(java.io.InputStream input)
+    public static ru.splat.messages.PunterRequest.Punter parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static Punter parseFrom(
+    public static ru.splat.messages.PunterRequest.Punter parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-    public static Punter parseDelimitedFrom(java.io.InputStream input)
+    public static ru.splat.messages.PunterRequest.Punter parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-    public static Punter parseDelimitedFrom(
+    public static ru.splat.messages.PunterRequest.Punter parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
-    public static Punter parseFrom(
+    public static ru.splat.messages.PunterRequest.Punter parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static Punter parseFrom(
+    public static ru.splat.messages.PunterRequest.Punter parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -377,7 +377,7 @@ public final class PunterRequest {
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
     }
-    public static Builder newBuilder(Punter prototype) {
+    public static Builder newBuilder(ru.splat.messages.PunterRequest.Punter prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
     public Builder toBuilder() {
@@ -385,9 +385,9 @@ public final class PunterRequest {
           ? new Builder() : new Builder().mergeFrom(this);
     }
 
-    @Override
+    @java.lang.Override
     protected Builder newBuilderForType(
-        BuilderParent parent) {
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
       Builder builder = new Builder(parent);
       return builder;
     }
@@ -397,17 +397,17 @@ public final class PunterRequest {
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
         // @@protoc_insertion_point(builder_implements:Punter)
-        PunterOrBuilder {
+        ru.splat.messages.PunterRequest.PunterOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return PunterRequest.internal_static_Punter_descriptor;
+        return ru.splat.messages.PunterRequest.internal_static_Punter_descriptor;
       }
 
-      protected FieldAccessorTable
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return PunterRequest.internal_static_Punter_fieldAccessorTable
+        return ru.splat.messages.PunterRequest.internal_static_Punter_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                Punter.class, Builder.class);
+                ru.splat.messages.PunterRequest.Punter.class, ru.splat.messages.PunterRequest.Punter.Builder.class);
       }
 
       // Construct using ru.splat.messages.PunterRequest.Punter.newBuilder()
@@ -416,7 +416,7 @@ public final class PunterRequest {
       }
 
       private Builder(
-          BuilderParent parent) {
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
         maybeForceBuilderInitialization();
       }
@@ -440,23 +440,23 @@ public final class PunterRequest {
 
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return PunterRequest.internal_static_Punter_descriptor;
+        return ru.splat.messages.PunterRequest.internal_static_Punter_descriptor;
       }
 
-      public Punter getDefaultInstanceForType() {
-        return Punter.getDefaultInstance();
+      public ru.splat.messages.PunterRequest.Punter getDefaultInstanceForType() {
+        return ru.splat.messages.PunterRequest.Punter.getDefaultInstance();
       }
 
-      public Punter build() {
-        Punter result = buildPartial();
+      public ru.splat.messages.PunterRequest.Punter build() {
+        ru.splat.messages.PunterRequest.Punter result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
         return result;
       }
 
-      public Punter buildPartial() {
-        Punter result = new Punter(this);
+      public ru.splat.messages.PunterRequest.Punter buildPartial() {
+        ru.splat.messages.PunterRequest.Punter result = new ru.splat.messages.PunterRequest.Punter(this);
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         result.punterId_ = punterId_;
@@ -499,16 +499,16 @@ public final class PunterRequest {
         return (Builder) super.addRepeatedField(field, value);
       }
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof Punter) {
-          return mergeFrom((Punter)other);
+        if (other instanceof ru.splat.messages.PunterRequest.Punter) {
+          return mergeFrom((ru.splat.messages.PunterRequest.Punter)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(Punter other) {
-        if (other == Punter.getDefaultInstance()) return this;
+      public Builder mergeFrom(ru.splat.messages.PunterRequest.Punter other) {
+        if (other == ru.splat.messages.PunterRequest.Punter.getDefaultInstance()) return this;
         if (other.getPunterId() != 0) {
           setPunterId(other.getPunterId());
         }
@@ -540,11 +540,11 @@ public final class PunterRequest {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        Punter parsedMessage = null;
+        ru.splat.messages.PunterRequest.Punter parsedMessage = null;
         try {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (Punter) e.getUnfinishedMessage();
+          parsedMessage = (ru.splat.messages.PunterRequest.Punter) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
@@ -607,17 +607,17 @@ public final class PunterRequest {
         return this;
       }
 
-      private java.util.List<Integer> services_ = java.util.Collections.emptyList();
+      private java.util.List<java.lang.Integer> services_ = java.util.Collections.emptyList();
       private void ensureServicesIsMutable() {
         if (!((bitField0_ & 0x00000004) == 0x00000004)) {
-          services_ = new java.util.ArrayList<Integer>(services_);
+          services_ = new java.util.ArrayList<java.lang.Integer>(services_);
           bitField0_ |= 0x00000004;
          }
       }
       /**
        * <code>repeated int32 services = 3;</code>
        */
-      public java.util.List<Integer>
+      public java.util.List<java.lang.Integer>
           getServicesList() {
         return java.util.Collections.unmodifiableList(services_);
       }
@@ -656,7 +656,7 @@ public final class PunterRequest {
        * <code>repeated int32 services = 3;</code>
        */
       public Builder addAllServices(
-          Iterable<? extends Integer> values) {
+          java.lang.Iterable<? extends java.lang.Integer> values) {
         ensureServicesIsMutable();
         com.google.protobuf.AbstractMessageLite.Builder.addAll(
             values, services_);
@@ -713,12 +713,12 @@ public final class PunterRequest {
     }
 
     // @@protoc_insertion_point(class_scope:Punter)
-    private static final Punter DEFAULT_INSTANCE;
+    private static final ru.splat.messages.PunterRequest.Punter DEFAULT_INSTANCE;
     static {
-      DEFAULT_INSTANCE = new Punter();
+      DEFAULT_INSTANCE = new ru.splat.messages.PunterRequest.Punter();
     }
 
-    public static Punter getDefaultInstance() {
+    public static ru.splat.messages.PunterRequest.Punter getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
@@ -736,12 +736,12 @@ public final class PunterRequest {
       return PARSER;
     }
 
-    @Override
+    @java.lang.Override
     public com.google.protobuf.Parser<Punter> getParserForType() {
       return PARSER;
     }
 
-    public Punter getDefaultInstanceForType() {
+    public ru.splat.messages.PunterRequest.Punter getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
@@ -760,7 +760,7 @@ public final class PunterRequest {
   private static  com.google.protobuf.Descriptors.FileDescriptor
       descriptor;
   static {
-    String[] descriptorData = {
+    java.lang.String[] descriptorData = {
       "\n\023PunterRequest.proto\"O\n\006Punter\022\021\n\tpunte" +
       "r_id\030\001 \001(\005\022\022\n\nlocal_task\030\002 \001(\005\022\020\n\010servic" +
       "es\030\003 \003(\005\022\014\n\004time\030\004 \001(\003B\"\n\021ru.splat.messa" +
@@ -783,7 +783,7 @@ public final class PunterRequest {
     internal_static_Punter_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_Punter_descriptor,
-        new String[] { "PunterId", "LocalTask", "Services", "Time", });
+        new java.lang.String[] { "PunterId", "LocalTask", "Services", "Time", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)

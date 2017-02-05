@@ -8,6 +8,7 @@ message Bet {
   int32 localTask = 3;
   repeated int32 services = 4;
   int64 id = 5;
+  int64 time = 6;
     
   message BetOutcome {
     int32 eventId = 1;
@@ -15,6 +16,6 @@ message Bet {
     double coefficient = 3;
   }
 
-  repeated BetOutcome betOutcome = 6;
+  repeated BetOutcome betOutcome = 7;
 }
 

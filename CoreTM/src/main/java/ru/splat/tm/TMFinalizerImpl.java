@@ -3,11 +3,11 @@ package ru.splat.tm;
 import akka.actor.ActorRef;
 import akka.actor.UntypedActor;
 import com.google.protobuf.Message;
-import ru.splat.conventions.LocalStatesEnum;
-import ru.splat.conventions.TaskTypesEnum;
-import ru.splat.trmetadata.LocalTask;
-import ru.splat.trmetadata.TransactionMetadata;
-import ru.splat.trstate.TransactionState;
+import ru.splat.messages.conventions.ServiceResult;
+import ru.splat.messages.conventions.TaskTypesEnum;
+import ru.splat.messages.uptm.trmetadata.TransactionMetadata;
+import ru.splat.messages.uptm.trstate.ServiceResponse;
+import ru.splat.messages.uptm.trstate.TransactionState;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,35 +29,35 @@ public class TMFinalizerImpl extends UntypedActor implements TMFinalizer {
         return transactionStates.containsKey(transactionId);
     }
 
-    public void createTransactionState(Long transactionId, Map<TaskTypesEnum, LocalStatesEnum> localStates) {
-        if (!stateExists(transactionId)) {
+    public void createTransactionState(Long transactionId, Map<TaskTypesEnum, ServiceResponse> localStates) {
+        /*if (!stateExists(transactionId)) {
             System.out.println("Creating state for: " + transactionId);
             TransactionState transactionState = new TransactionState(transactionId, localStates);
             transactionStates.put(transactionId, transactionState);
         }
         else {//убрать
             System.out.println("State for " + transactionId + " already exists!");
-        }
+        }*/
     }
 
     public void onReceive(Object message) throws Exception {
-        if (message instanceof TransactionMetadata) {
+       /*f (message instanceof TransactionMetadata) {
             createTransactionState(((TransactionMetadata) message).getTransactionId(),
                     getLocalStates((TransactionMetadata)message));
         }
         if (message instanceof Message) {
-            Pair<Long, LocalTask>
-            createTransactionState();
+            //Pair<Long, LocalTask>
+            //createTransactionState();
         }
         else {
             unhandled(message);
         }
-        //if (message instanceof )
+        //if (message instanceof )*/
     }
 
-    private Map<TaskTypesEnum, LocalStatesEnum> getLocalStates(TransactionMetadata trMetadata) {
-        Map<TaskTypesEnum, LocalStatesEnum> localStates = new HashMap<>();
-        trMetadata.getLocalTasks().forEach(localTask -> localStates.put(localTask.getType(), LocalStatesEnum.PROCESSING));
+    /*private Map<TaskTypesEnum, ServiceResponse> getLocalStates(TransactionMetadata trMetadata) {
+        Map<TaskTypesEnum, ServiceResponse> localStates = new HashMap<>();
+        trMetadata.getLocalTasks().forEach(localTask -> localStates.put(localTask.getType(), ServiceResponse.PROCESSING));
         return localStates;
-    }
+    }*/
 }

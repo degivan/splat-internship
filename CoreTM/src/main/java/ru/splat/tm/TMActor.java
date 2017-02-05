@@ -2,7 +2,7 @@ package ru.splat.tm;
 
 import akka.actor.ActorRef;
 import akka.actor.UntypedActor;
-import ru.splat.trmetadata.TransactionMetadata;
+import ru.splat.messages.uptm.trmetadata.TransactionMetadata;
 
 
 /**

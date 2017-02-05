@@ -26,7 +26,7 @@ public final class EventRequest {
     /**
      * <code>repeated int32 services = 2;</code>
      */
-    java.util.List<Integer> getServicesList();
+    java.util.List<java.lang.Integer> getServicesList();
     /**
      * <code>repeated int32 services = 2;</code>
      */
@@ -44,7 +44,7 @@ public final class EventRequest {
     /**
      * <code>repeated int32 selections = 4;</code>
      */
-    java.util.List<Integer> getSelectionsList();
+    java.util.List<java.lang.Integer> getSelectionsList();
     /**
      * <code>repeated int32 selections = 4;</code>
      */
@@ -72,7 +72,7 @@ public final class EventRequest {
       selections_ = java.util.Collections.emptyList();
     }
 
-    @Override
+    @java.lang.Override
     public final com.google.protobuf.UnknownFieldSet
     getUnknownFields() {
       return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
@@ -104,7 +104,7 @@ public final class EventRequest {
             }
             case 16: {
               if (!((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
-                services_ = new java.util.ArrayList<Integer>();
+                services_ = new java.util.ArrayList<java.lang.Integer>();
                 mutable_bitField0_ |= 0x00000002;
               }
               services_.add(input.readInt32());
@@ -114,7 +114,7 @@ public final class EventRequest {
               int length = input.readRawVarint32();
               int limit = input.pushLimit(length);
               if (!((mutable_bitField0_ & 0x00000002) == 0x00000002) && input.getBytesUntilLimit() > 0) {
-                services_ = new java.util.ArrayList<Integer>();
+                services_ = new java.util.ArrayList<java.lang.Integer>();
                 mutable_bitField0_ |= 0x00000002;
               }
               while (input.getBytesUntilLimit() > 0) {
@@ -130,7 +130,7 @@ public final class EventRequest {
             }
             case 32: {
               if (!((mutable_bitField0_ & 0x00000008) == 0x00000008)) {
-                selections_ = new java.util.ArrayList<Integer>();
+                selections_ = new java.util.ArrayList<java.lang.Integer>();
                 mutable_bitField0_ |= 0x00000008;
               }
               selections_.add(input.readInt32());
@@ -140,7 +140,7 @@ public final class EventRequest {
               int length = input.readRawVarint32();
               int limit = input.pushLimit(length);
               if (!((mutable_bitField0_ & 0x00000008) == 0x00000008) && input.getBytesUntilLimit() > 0) {
-                selections_ = new java.util.ArrayList<Integer>();
+                selections_ = new java.util.ArrayList<java.lang.Integer>();
                 mutable_bitField0_ |= 0x00000008;
               }
               while (input.getBytesUntilLimit() > 0) {
@@ -168,14 +168,14 @@ public final class EventRequest {
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return EventRequest.internal_static_Event_descriptor;
+      return ru.splat.messages.EventRequest.internal_static_Event_descriptor;
     }
 
-    protected FieldAccessorTable
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return EventRequest.internal_static_Event_fieldAccessorTable
+      return ru.splat.messages.EventRequest.internal_static_Event_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              Event.class, Builder.class);
+              ru.splat.messages.EventRequest.Event.class, ru.splat.messages.EventRequest.Event.Builder.class);
     }
 
     private int bitField0_;
@@ -189,11 +189,11 @@ public final class EventRequest {
     }
 
     public static final int SERVICES_FIELD_NUMBER = 2;
-    private java.util.List<Integer> services_;
+    private java.util.List<java.lang.Integer> services_;
     /**
      * <code>repeated int32 services = 2;</code>
      */
-    public java.util.List<Integer>
+    public java.util.List<java.lang.Integer>
         getServicesList() {
       return services_;
     }
@@ -221,11 +221,11 @@ public final class EventRequest {
     }
 
     public static final int SELECTIONS_FIELD_NUMBER = 4;
-    private java.util.List<Integer> selections_;
+    private java.util.List<java.lang.Integer> selections_;
     /**
      * <code>repeated int32 selections = 4;</code>
      */
-    public java.util.List<Integer>
+    public java.util.List<java.lang.Integer>
         getSelectionsList() {
       return selections_;
     }
@@ -324,15 +324,15 @@ public final class EventRequest {
     }
 
     private static final long serialVersionUID = 0L;
-    @Override
-    public boolean equals(final Object obj) {
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
       if (obj == this) {
        return true;
       }
-      if (!(obj instanceof Event)) {
+      if (!(obj instanceof ru.splat.messages.EventRequest.Event)) {
         return super.equals(obj);
       }
-      Event other = (Event) obj;
+      ru.splat.messages.EventRequest.Event other = (ru.splat.messages.EventRequest.Event) obj;
 
       boolean result = true;
       result = result && (getLocalTask()
@@ -346,7 +346,7 @@ public final class EventRequest {
       return result;
     }
 
-    @Override
+    @java.lang.Override
     public int hashCode() {
       if (memoizedHashCode != 0) {
         return memoizedHashCode;
@@ -371,58 +371,58 @@ public final class EventRequest {
       return hash;
     }
 
-    public static Event parseFrom(
+    public static ru.splat.messages.EventRequest.Event parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static Event parseFrom(
+    public static ru.splat.messages.EventRequest.Event parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static Event parseFrom(byte[] data)
+    public static ru.splat.messages.EventRequest.Event parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static Event parseFrom(
+    public static ru.splat.messages.EventRequest.Event parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static Event parseFrom(java.io.InputStream input)
+    public static ru.splat.messages.EventRequest.Event parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static Event parseFrom(
+    public static ru.splat.messages.EventRequest.Event parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-    public static Event parseDelimitedFrom(java.io.InputStream input)
+    public static ru.splat.messages.EventRequest.Event parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-    public static Event parseDelimitedFrom(
+    public static ru.splat.messages.EventRequest.Event parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
-    public static Event parseFrom(
+    public static ru.splat.messages.EventRequest.Event parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static Event parseFrom(
+    public static ru.splat.messages.EventRequest.Event parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -434,7 +434,7 @@ public final class EventRequest {
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
     }
-    public static Builder newBuilder(Event prototype) {
+    public static Builder newBuilder(ru.splat.messages.EventRequest.Event prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
     public Builder toBuilder() {
@@ -442,9 +442,9 @@ public final class EventRequest {
           ? new Builder() : new Builder().mergeFrom(this);
     }
 
-    @Override
+    @java.lang.Override
     protected Builder newBuilderForType(
-        BuilderParent parent) {
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
       Builder builder = new Builder(parent);
       return builder;
     }
@@ -454,17 +454,17 @@ public final class EventRequest {
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
         // @@protoc_insertion_point(builder_implements:Event)
-        EventOrBuilder {
+        ru.splat.messages.EventRequest.EventOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return EventRequest.internal_static_Event_descriptor;
+        return ru.splat.messages.EventRequest.internal_static_Event_descriptor;
       }
 
-      protected FieldAccessorTable
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return EventRequest.internal_static_Event_fieldAccessorTable
+        return ru.splat.messages.EventRequest.internal_static_Event_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                Event.class, Builder.class);
+                ru.splat.messages.EventRequest.Event.class, ru.splat.messages.EventRequest.Event.Builder.class);
       }
 
       // Construct using ru.splat.messages.EventRequest.Event.newBuilder()
@@ -473,7 +473,7 @@ public final class EventRequest {
       }
 
       private Builder(
-          BuilderParent parent) {
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
         maybeForceBuilderInitialization();
       }
@@ -497,23 +497,23 @@ public final class EventRequest {
 
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return EventRequest.internal_static_Event_descriptor;
+        return ru.splat.messages.EventRequest.internal_static_Event_descriptor;
       }
 
-      public Event getDefaultInstanceForType() {
-        return Event.getDefaultInstance();
+      public ru.splat.messages.EventRequest.Event getDefaultInstanceForType() {
+        return ru.splat.messages.EventRequest.Event.getDefaultInstance();
       }
 
-      public Event build() {
-        Event result = buildPartial();
+      public ru.splat.messages.EventRequest.Event build() {
+        ru.splat.messages.EventRequest.Event result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
         return result;
       }
 
-      public Event buildPartial() {
-        Event result = new Event(this);
+      public ru.splat.messages.EventRequest.Event buildPartial() {
+        ru.splat.messages.EventRequest.Event result = new ru.splat.messages.EventRequest.Event(this);
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         result.localTask_ = localTask_;
@@ -560,16 +560,16 @@ public final class EventRequest {
         return (Builder) super.addRepeatedField(field, value);
       }
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof Event) {
-          return mergeFrom((Event)other);
+        if (other instanceof ru.splat.messages.EventRequest.Event) {
+          return mergeFrom((ru.splat.messages.EventRequest.Event)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(Event other) {
-        if (other == Event.getDefaultInstance()) return this;
+      public Builder mergeFrom(ru.splat.messages.EventRequest.Event other) {
+        if (other == ru.splat.messages.EventRequest.Event.getDefaultInstance()) return this;
         if (other.getLocalTask() != 0) {
           setLocalTask(other.getLocalTask());
         }
@@ -608,11 +608,11 @@ public final class EventRequest {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        Event parsedMessage = null;
+        ru.splat.messages.EventRequest.Event parsedMessage = null;
         try {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (Event) e.getUnfinishedMessage();
+          parsedMessage = (ru.splat.messages.EventRequest.Event) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
@@ -649,17 +649,17 @@ public final class EventRequest {
         return this;
       }
 
-      private java.util.List<Integer> services_ = java.util.Collections.emptyList();
+      private java.util.List<java.lang.Integer> services_ = java.util.Collections.emptyList();
       private void ensureServicesIsMutable() {
         if (!((bitField0_ & 0x00000002) == 0x00000002)) {
-          services_ = new java.util.ArrayList<Integer>(services_);
+          services_ = new java.util.ArrayList<java.lang.Integer>(services_);
           bitField0_ |= 0x00000002;
          }
       }
       /**
        * <code>repeated int32 services = 2;</code>
        */
-      public java.util.List<Integer>
+      public java.util.List<java.lang.Integer>
           getServicesList() {
         return java.util.Collections.unmodifiableList(services_);
       }
@@ -698,7 +698,7 @@ public final class EventRequest {
        * <code>repeated int32 services = 2;</code>
        */
       public Builder addAllServices(
-          Iterable<? extends Integer> values) {
+          java.lang.Iterable<? extends java.lang.Integer> values) {
         ensureServicesIsMutable();
         com.google.protobuf.AbstractMessageLite.Builder.addAll(
             values, services_);
@@ -741,17 +741,17 @@ public final class EventRequest {
         return this;
       }
 
-      private java.util.List<Integer> selections_ = java.util.Collections.emptyList();
+      private java.util.List<java.lang.Integer> selections_ = java.util.Collections.emptyList();
       private void ensureSelectionsIsMutable() {
         if (!((bitField0_ & 0x00000008) == 0x00000008)) {
-          selections_ = new java.util.ArrayList<Integer>(selections_);
+          selections_ = new java.util.ArrayList<java.lang.Integer>(selections_);
           bitField0_ |= 0x00000008;
          }
       }
       /**
        * <code>repeated int32 selections = 4;</code>
        */
-      public java.util.List<Integer>
+      public java.util.List<java.lang.Integer>
           getSelectionsList() {
         return java.util.Collections.unmodifiableList(selections_);
       }
@@ -790,7 +790,7 @@ public final class EventRequest {
        * <code>repeated int32 selections = 4;</code>
        */
       public Builder addAllSelections(
-          Iterable<? extends Integer> values) {
+          java.lang.Iterable<? extends java.lang.Integer> values) {
         ensureSelectionsIsMutable();
         com.google.protobuf.AbstractMessageLite.Builder.addAll(
             values, selections_);
@@ -821,12 +821,12 @@ public final class EventRequest {
     }
 
     // @@protoc_insertion_point(class_scope:Event)
-    private static final Event DEFAULT_INSTANCE;
+    private static final ru.splat.messages.EventRequest.Event DEFAULT_INSTANCE;
     static {
-      DEFAULT_INSTANCE = new Event();
+      DEFAULT_INSTANCE = new ru.splat.messages.EventRequest.Event();
     }
 
-    public static Event getDefaultInstance() {
+    public static ru.splat.messages.EventRequest.Event getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
@@ -844,12 +844,12 @@ public final class EventRequest {
       return PARSER;
     }
 
-    @Override
+    @java.lang.Override
     public com.google.protobuf.Parser<Event> getParserForType() {
       return PARSER;
     }
 
-    public Event getDefaultInstanceForType() {
+    public ru.splat.messages.EventRequest.Event getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
@@ -868,7 +868,7 @@ public final class EventRequest {
   private static  com.google.protobuf.Descriptors.FileDescriptor
       descriptor;
   static {
-    String[] descriptorData = {
+    java.lang.String[] descriptorData = {
       "\n\022EventRequest.proto\"N\n\005Event\022\021\n\tlocalTa" +
       "sk\030\001 \001(\005\022\020\n\010services\030\002 \003(\005\022\014\n\004time\030\003 \001(\003" +
       "\022\022\n\nselections\030\004 \003(\005B!\n\021ru.splat.message" +
@@ -891,7 +891,7 @@ public final class EventRequest {
     internal_static_Event_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_Event_descriptor,
-        new String[] { "LocalTask", "Services", "Time", "Selections", });
+        new java.lang.String[] { "LocalTask", "Services", "Time", "Selections", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)

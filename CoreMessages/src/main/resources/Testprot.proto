@@ -1,0 +1,13 @@
+syntax = "proto3";
+option java_package = "ru.splat.messages";
+option java_outer_classname = "TestProt";
+
+message ServiceResponse {
+    repeated int32 services = 1;
+    oneof result_oneof {
+        string stringResult = 2;
+        int64 longResult = 3;
+        double doubleResult = 4;
+        bool booleanResult = 5;
+    }
+}
