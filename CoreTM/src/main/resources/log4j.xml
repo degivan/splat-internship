@@ -29,10 +29,6 @@
       <level value="error" />
       <appender-ref ref="console" />
    </logger>
-   <logger name="com.example.kafkaLogger">
-      <level value="debug" />
-      <appender-ref ref="kafkaAppender" />
-   </logger>
    <root>
       <priority value="debug" />
       <appender-ref ref="console" />
