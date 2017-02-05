@@ -71,7 +71,7 @@ public class BetBusinessService implements BusinessService<BetInfo>
             transactionalResult.add(new TransactionResult(
                     betInfo.getTransactionId(),
                     Response.ServiceResponse.newBuilder().addAllServices(betInfo.getServices())
-                            .setResult(ServiceResult.CONFIRMED.ordinal()).setLongResult(sequence).build()
+                            .setResult(ServiceResult.CONFIRMED.ordinal()).setLongAttachment(sequence).build()
             ));
         }
         LOGGER.info("Stop Add Bet");

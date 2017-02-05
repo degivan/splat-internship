@@ -124,7 +124,7 @@ public class EventBusinessService implements BusinessService<EventInfo>,LimitSer
 
 
             result.add(new TransactionResult(eventInfo.getTransactionId(),
-                    Response.ServiceResponse.newBuilder().addAllServices(eventInfo.getServices()).setStringResult(stringResult)
+                    Response.ServiceResponse.newBuilder().addAllServices(eventInfo.getServices()).setStringAttachment(stringResult)
                             .setResult(stringResult.isEmpty()?ServiceResult.CONFIRMED.ordinal():ServiceResult.DENIED.ordinal()).build()
             ));
         }
