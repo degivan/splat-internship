@@ -9,6 +9,7 @@ import ru.splat.Billing.repository.BillingRepository;
 import ru.splat.facade.business.BusinessService;
 import ru.splat.kafka.feautures.TransactionResult;
 import ru.splat.messages.Response;
+import ru.splat.messages.conventions.ServiceResult;
 import ru.splat.messages.conventions.TaskTypesEnum;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -79,7 +80,9 @@ public class BillingBusinessService implements BusinessService<BillingInfo>
 
             transactionResults.add(new TransactionResult(
                     billingInfo.getTransactionId(),
-                    Response.ServiceResponse.newBuilder().setBooleanResult(check).addAllServices(billingInfo.getServices()).build()
+                    Response.ServiceResponse.newBuilder()
+                            .setResult(check?ServiceResult.CONFIRMED.ordinal():ServiceResult.DENIED.ordinal())
+                            .addAllServices(billingInfo.getServices()).build()
             ));
         }
 
@@ -99,7 +102,8 @@ public class BillingBusinessService implements BusinessService<BillingInfo>
         LOGGER.info("Cancel stop");
         return billingInfoList.stream().map(billingInfo -> new TransactionResult(
                 billingInfo.getTransactionId(),
-                Response.ServiceResponse.newBuilder().addAllServices(billingInfo.getServices()).build()
+                Response.ServiceResponse.newBuilder().setResult(ServiceResult.CONFIRMED.ordinal())
+                        .addAllServices(billingInfo.getServices()).build()
         )).collect(Collectors.toSet());
 
     }

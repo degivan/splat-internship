@@ -12,6 +12,7 @@ import ru.splat.facade.service.LimitService;
 import ru.splat.facade.util.JmxUtil;
 import ru.splat.kafka.feautures.TransactionResult;
 import ru.splat.messages.Response;
+import ru.splat.messages.conventions.ServiceResult;
 import ru.splat.messages.conventions.TaskTypesEnum;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -123,7 +124,8 @@ public class EventBusinessService implements BusinessService<EventInfo>,LimitSer
 
 
             result.add(new TransactionResult(eventInfo.getTransactionId(),
-                    Response.ServiceResponse.newBuilder().addAllServices(eventInfo.getServices()).setStringResult(stringResult).build()
+                    Response.ServiceResponse.newBuilder().addAllServices(eventInfo.getServices()).setStringResult(stringResult)
+                            .setResult(stringResult.isEmpty()?ServiceResult.CONFIRMED.ordinal():ServiceResult.DENIED.ordinal()).build()
             ));
         }
 
@@ -241,7 +243,8 @@ public class EventBusinessService implements BusinessService<EventInfo>,LimitSer
             outcomes.addAll(eventInfo.getOutcomes());
             result.add(new TransactionResult(
                     eventInfo.getTransactionId(),
-                    Response.ServiceResponse.newBuilder().addAllServices(eventInfo.getServices()).build()
+                    Response.ServiceResponse.newBuilder().addAllServices(eventInfo.getServices())
+                    .setResult(ServiceResult.CONFIRMED.ordinal()).build()
                     ));
         }
 

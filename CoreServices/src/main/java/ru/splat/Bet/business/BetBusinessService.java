@@ -7,6 +7,7 @@ import ru.splat.Bet.repository.BetRepository;
 import ru.splat.facade.business.BusinessService;
 import ru.splat.kafka.feautures.TransactionResult;
 import ru.splat.messages.Response;
+import ru.splat.messages.conventions.ServiceResult;
 import ru.splat.messages.conventions.TaskTypesEnum;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -69,7 +70,8 @@ public class BetBusinessService implements BusinessService<BetInfo>
 
             transactionalResult.add(new TransactionResult(
                     betInfo.getTransactionId(),
-                    Response.ServiceResponse.newBuilder().addAllServices(betInfo.getServices()).setLongResult(sequence).build()
+                    Response.ServiceResponse.newBuilder().addAllServices(betInfo.getServices())
+                            .setResult(ServiceResult.CONFIRMED.ordinal()).setLongResult(sequence).build()
             ));
         }
         LOGGER.info("Stop Add Bet");
@@ -85,7 +87,8 @@ public class BetBusinessService implements BusinessService<BetInfo>
         LOGGER.info("Stop fix state = " + state);
         return betInfoList.stream().map(map -> new TransactionResult(
                 map.getTransactionId(),
-                Response.ServiceResponse.newBuilder().addAllServices(map.getServices()).build()
+                Response.ServiceResponse.newBuilder()
+                        .setResult(ServiceResult.CONFIRMED.ordinal()).addAllServices(map.getServices()).build()
         )).collect(Collectors.toSet());
     }
 

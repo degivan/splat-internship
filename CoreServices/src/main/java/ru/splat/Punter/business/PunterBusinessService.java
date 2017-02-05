@@ -12,6 +12,7 @@ import ru.splat.Punter.repository.PunterRepository;
 import ru.splat.Punter.feautures.PunterInfo;
 import ru.splat.facade.business.BusinessService;
 import ru.splat.messages.Response;
+import ru.splat.messages.conventions.ServiceResult;
 import ru.splat.messages.conventions.TaskTypesEnum;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -95,7 +96,8 @@ public class PunterBusinessService implements BusinessService<PunterInfo>, Limit
                 LOGGER.info("Don't reserve limit");
             }
             result.add(new TransactionResult(punterInfo.getTransactionId(),
-                    Response.ServiceResponse.newBuilder().addAllServices(punterInfo.getServices()).setBooleanResult(answer).build()));
+                    Response.ServiceResponse.newBuilder().addAllServices(punterInfo.getServices())
+                    .setResult(answer?ServiceResult.CONFIRMED.ordinal():ServiceResult.DENIED.ordinal()).build()));
         }
         LOGGER.info("Stop Add Punter limits: ");
         return result;
@@ -139,7 +141,8 @@ public class PunterBusinessService implements BusinessService<PunterInfo>, Limit
 
             result.add(new TransactionResult(
                     p.getTransactionId(),
-                    Response.ServiceResponse.newBuilder().addAllServices(p.getServices()).build()
+                    Response.ServiceResponse.newBuilder().addAllServices(p.getServices())
+                            .setResult(ServiceResult.CONFIRMED.ordinal()).build()
             ));
         }
 
