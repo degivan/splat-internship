@@ -82,7 +82,7 @@ public class EventBusinessService implements BusinessService<EventInfo>,LimitSer
             {
 
                 Proxy proxy = dequeMap.get(integer);
-                if (currentTime - eventInfo.getTime() > proxy.getLimitTime())
+                if (proxy == null || currentTime - eventInfo.getTime() > proxy.getLimitTime())
                 {
                     stringBuilder.append(integer + " ");
                 }

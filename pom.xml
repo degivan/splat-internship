@@ -16,6 +16,7 @@
         <module>CoreKafka</module>
         <module>CoreTM</module>
         <module>CoreUP</module>
+        <module>TestBoot</module>
     </modules>
 
 
@@ -75,6 +76,12 @@
             <dependency>
                 <groupId>ru.splat</groupId>
                 <artifactId>CoreTM</artifactId>
+                <version>0.1-SNAPSHOT</version>
+            </dependency>
+
+            <dependency>
+                <groupId>ru.splat</groupId>
+                <artifactId>TestBoot</artifactId>
                 <version>0.1-SNAPSHOT</version>
             </dependency>
 
