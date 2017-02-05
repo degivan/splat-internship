@@ -20,7 +20,7 @@ public class ServiceResponse<T> {
 
     //успешность таски
     public boolean isPositive() {
-        return result.equals(ServiceResult.OK);
+        return result.equals(ServiceResult.CONFIRMED);
     }
 
 
