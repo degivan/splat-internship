@@ -5,10 +5,10 @@ option java_outer_classname = "Response";
 message ServiceResponse {
   repeated int32 services = 1;
   oneof attachment_oneof {
-     string stringResult = 2;
-     int64 longResult = 3;
-     double doubleResult = 4;
-     bool booleanResult = 5;
+     string stringAttachment = 2;
+     int64 longAttachment = 3;
+     double doubleAttachment = 4;
+     bool booleanAttachment = 5;
   }
   int32 result = 6;
 
