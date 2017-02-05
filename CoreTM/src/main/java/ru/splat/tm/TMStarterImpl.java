@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 public class TMStarterImpl implements TMStarter {
     private KafkaProducer<Long, Message> producer;
     private ProtobufFactory protobufFactory = new ProtobufFactoryImpl();    //пока без Autowire
+    private List<RequestContainer> requests = new LinkedList<>();
 
     public void processTransaction(TransactionMetadata trMetadata) {
         List<LocalTask> taskList = trMetadata.getLocalTasks();
@@ -34,9 +35,6 @@ public class TMStarterImpl implements TMStarter {
         Set<ServicesEnum> services = taskList.stream().map(task -> task.getService())
                 .collect(Collectors.toSet());
         List<String> taskNames = new ArrayList<>();
-        /*taskList.forEach(task->{
-            taskNames.add(task.getType().toString());
-        });*/
         taskList.forEach(task->{
             Message message = null;
             message = protobufFactory.buildProtobuf(task, services);
@@ -44,10 +42,13 @@ public class TMStarterImpl implements TMStarter {
         });
     }
 
+    //отправка пачкой
+    //private void sendBatch(String topic, Map<>)
     //отправка одного сообщения
     private void send(String topic, Long transactionId, Message message) {
         System.out.println("TMStarter: topic " + topic);
-        producer.send(new ProducerRecord<Long, Message>(topic, transactionId, message));
+        ProducerRecord<Long, Message> pr = new ProducerRecord<Long, Message>(topic, transactionId, message);
+        producer.send(pr);
 
         //дописать переотправку и батч
         /*while(true)

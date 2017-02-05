@@ -24,6 +24,14 @@
             <name>Typesafe Repository</name>
             <url>http://repo.typesafe.com/typesafe/releases/</url>
         </repository>
+
+        <repository>
+            <id>akka-snapshots</id>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <url>http://repo.akka.io/snapshots/</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -42,10 +50,16 @@
         </dependency>
 
         <!--tools-->
+
+        <dependency>
+            <groupId>com.typesafe.akka</groupId>
+            <artifactId>akka-testkit_2.11</artifactId>
+            <version>2.4.14</version>
+        </dependency>
         <dependency>
             <groupId>com.typesafe.akka</groupId>
             <artifactId>akka-actor_2.11</artifactId>
-            <version>2.4.16</version>
+            <version>2.5-SNAPSHOT</version>
         </dependency>
 
 
@@ -61,11 +75,7 @@
             <version>0.10.0.0</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>1.7.12</version>
-        </dependency>
+
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>

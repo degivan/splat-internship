@@ -3,6 +3,7 @@ package ru.splat.tm;
 import akka.actor.ActorRef;
 import akka.actor.UntypedActor;
 import ru.splat.messages.uptm.trmetadata.TransactionMetadata;
+import ru.splat.tmactors.SendBatchMessage;
 
 
 /**
@@ -22,6 +23,9 @@ public  class TMActor extends UntypedActor {
         if (message instanceof TransactionMetadata) {
             tmFinalizer.tell(message, getSelf());
             tmStarter.processTransaction((TransactionMetadata) message);
+        }
+        else if (message instanceof SendBatchMessage) {
+            //tmStarter.sendBatch()
         }
         else {
             unhandled(message);

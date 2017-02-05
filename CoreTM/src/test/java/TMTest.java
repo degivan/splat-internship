@@ -41,32 +41,11 @@ public class TMTest extends TestCase {
     private TMStarter tmStarter;
     private TMConsumerImpl tmConsumer;
 
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
+    public void testTMActors() {
 
-        services = new HashSet<>();
-        services.add(ServicesEnum.BetService);
-        services.add(ServicesEnum.EventService);
-        services.add(ServicesEnum.BillingService);
-        services.add(ServicesEnum.PunterService);
-        servicesOrd = services.stream().map(Enum::ordinal)
-                .collect(Collectors.toSet());
-
-        protobufFactory = new ProtobufFactoryImpl();
-        responseParser = new ResponseParserImpl();
-        tmStarter = new TMStarterImpl();
-        //tmConsumer = new TMConsumerImpl();
     }
 
-    @Override
-    public void tearDown() throws Exception {
-        super.tearDown();
-    }
 
-    public TMTest() {
-        //addTestSuite(TMTest.class);
-    }
 
     public void testTMConsumer() {  //test consumer and responseParser work
         tmConsumer = new TMConsumerImpl();
@@ -131,5 +110,30 @@ public class TMTest extends TestCase {
 
 
 
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
 
+        services = new HashSet<>();
+        services.add(ServicesEnum.BetService);
+        services.add(ServicesEnum.EventService);
+        services.add(ServicesEnum.BillingService);
+        services.add(ServicesEnum.PunterService);
+        servicesOrd = services.stream().map(Enum::ordinal)
+                .collect(Collectors.toSet());
+
+        protobufFactory = new ProtobufFactoryImpl();
+        responseParser = new ResponseParserImpl();
+        tmStarter = new TMStarterImpl();
+        //tmConsumer = new TMConsumerImpl();
+    }
+
+    @Override
+    public void tearDown() throws Exception {
+        super.tearDown();
+    }
+
+    public TMTest() {
+        //addTestSuite(TMTest.class);
+    }
 }
