@@ -1,8 +1,7 @@
-package ru.splat.protobuf;
+package ru.splat.tmprotobuf;
 
 import com.google.protobuf.Message;
 import javafx.util.Pair;
-import ru.splat.messages.uptm.trmetadata.LocalTask;
 import ru.splat.messages.uptm.trmetadata.LocalTask;
 
 /**

@@ -1,8 +1,5 @@
 package ru.splat.main;
 
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-
 /**
  * Created by Дмитрий on 07.01.2017.
  */
@@ -14,6 +11,7 @@ public class Main {
         /*ActorsStarter actorsStarter = (ActorsStarter) appContext.getBean("ActorsStarter");
         actorsStarter.initActors();*/
         System.out.println("Hello");
+
 
     }
 

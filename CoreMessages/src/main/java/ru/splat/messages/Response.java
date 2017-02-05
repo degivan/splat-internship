@@ -15,13 +15,13 @@ public final class Response {
         (com.google.protobuf.ExtensionRegistryLite) registry);
   }
   public interface ServiceResponseOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:ServiceResult)
+      // @@protoc_insertion_point(interface_extends:ServiceResponse)
       com.google.protobuf.MessageOrBuilder {
 
     /**
      * <code>repeated int32 services = 1;</code>
      */
-    java.util.List<Integer> getServicesList();
+    java.util.List<java.lang.Integer> getServicesList();
     /**
      * <code>repeated int32 services = 1;</code>
      */
@@ -34,7 +34,7 @@ public final class Response {
     /**
      * <code>optional string stringResult = 2;</code>
      */
-    String getStringResult();
+    java.lang.String getStringResult();
     /**
      * <code>optional string stringResult = 2;</code>
      */
@@ -56,24 +56,30 @@ public final class Response {
      */
     boolean getBooleanResult();
 
-    public ServiceResponse.ResultOneofCase getResultOneofCase();
+    /**
+     * <code>optional int32 result = 6;</code>
+     */
+    int getResult();
+
+    public ru.splat.messages.Response.ServiceResponse.AttachmentOneofCase getAttachmentOneofCase();
   }
   /**
-   * Protobuf type {@code ServiceResult}
+   * Protobuf type {@code ServiceResponse}
    */
   public  static final class ServiceResponse extends
       com.google.protobuf.GeneratedMessageV3 implements
-      // @@protoc_insertion_point(message_implements:ServiceResult)
+      // @@protoc_insertion_point(message_implements:ServiceResponse)
       ServiceResponseOrBuilder {
-    // Use ServiceResult.newBuilder() to construct.
+    // Use ServiceResponse.newBuilder() to construct.
     private ServiceResponse(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
       super(builder);
     }
     private ServiceResponse() {
       services_ = java.util.Collections.emptyList();
+      result_ = 0;
     }
 
-    @Override
+    @java.lang.Override
     public final com.google.protobuf.UnknownFieldSet
     getUnknownFields() {
       return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
@@ -100,7 +106,7 @@ public final class Response {
             }
             case 8: {
               if (!((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
-                services_ = new java.util.ArrayList<Integer>();
+                services_ = new java.util.ArrayList<java.lang.Integer>();
                 mutable_bitField0_ |= 0x00000001;
               }
               services_.add(input.readInt32());
@@ -110,7 +116,7 @@ public final class Response {
               int length = input.readRawVarint32();
               int limit = input.pushLimit(length);
               if (!((mutable_bitField0_ & 0x00000001) == 0x00000001) && input.getBytesUntilLimit() > 0) {
-                services_ = new java.util.ArrayList<Integer>();
+                services_ = new java.util.ArrayList<java.lang.Integer>();
                 mutable_bitField0_ |= 0x00000001;
               }
               while (input.getBytesUntilLimit() > 0) {
@@ -120,24 +126,29 @@ public final class Response {
               break;
             }
             case 18: {
-              String s = input.readStringRequireUtf8();
-              resultOneofCase_ = 2;
-              resultOneof_ = s;
+              java.lang.String s = input.readStringRequireUtf8();
+              attachmentOneofCase_ = 2;
+              attachmentOneof_ = s;
               break;
             }
             case 24: {
-              resultOneofCase_ = 3;
-              resultOneof_ = input.readInt64();
+              attachmentOneofCase_ = 3;
+              attachmentOneof_ = input.readInt64();
               break;
             }
             case 33: {
-              resultOneofCase_ = 4;
-              resultOneof_ = input.readDouble();
+              attachmentOneofCase_ = 4;
+              attachmentOneof_ = input.readDouble();
               break;
             }
             case 40: {
-              resultOneofCase_ = 5;
-              resultOneof_ = input.readBool();
+              attachmentOneofCase_ = 5;
+              attachmentOneof_ = input.readBool();
+              break;
+            }
+            case 48: {
+
+              result_ = input.readInt32();
               break;
             }
           }
@@ -156,45 +167,45 @@ public final class Response {
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return Response.internal_static_ServiceResponse_descriptor;
+      return ru.splat.messages.Response.internal_static_ServiceResponse_descriptor;
     }
 
-    protected FieldAccessorTable
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return Response.internal_static_ServiceResponse_fieldAccessorTable
+      return ru.splat.messages.Response.internal_static_ServiceResponse_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              ServiceResponse.class, Builder.class);
+              ru.splat.messages.Response.ServiceResponse.class, ru.splat.messages.Response.ServiceResponse.Builder.class);
     }
 
     private int bitField0_;
-    private int resultOneofCase_ = 0;
-    private Object resultOneof_;
-    public enum ResultOneofCase
+    private int attachmentOneofCase_ = 0;
+    private java.lang.Object attachmentOneof_;
+    public enum AttachmentOneofCase
         implements com.google.protobuf.Internal.EnumLite {
       STRINGRESULT(2),
       LONGRESULT(3),
       DOUBLERESULT(4),
       BOOLEANRESULT(5),
-      RESULTONEOF_NOT_SET(0);
+      ATTACHMENTONEOF_NOT_SET(0);
       private final int value;
-      private ResultOneofCase(int value) {
+      private AttachmentOneofCase(int value) {
         this.value = value;
       }
       /**
        * @deprecated Use {@link #forNumber(int)} instead.
        */
-      @Deprecated
-      public static ResultOneofCase valueOf(int value) {
+      @java.lang.Deprecated
+      public static AttachmentOneofCase valueOf(int value) {
         return forNumber(value);
       }
 
-      public static ResultOneofCase forNumber(int value) {
+      public static AttachmentOneofCase forNumber(int value) {
         switch (value) {
           case 2: return STRINGRESULT;
           case 3: return LONGRESULT;
           case 4: return DOUBLERESULT;
           case 5: return BOOLEANRESULT;
-          case 0: return RESULTONEOF_NOT_SET;
+          case 0: return ATTACHMENTONEOF_NOT_SET;
           default: return null;
         }
       }
@@ -203,18 +214,18 @@ public final class Response {
       }
     };
 
-    public ResultOneofCase
-    getResultOneofCase() {
-      return ResultOneofCase.forNumber(
-          resultOneofCase_);
+    public AttachmentOneofCase
+    getAttachmentOneofCase() {
+      return AttachmentOneofCase.forNumber(
+          attachmentOneofCase_);
     }
 
     public static final int SERVICES_FIELD_NUMBER = 1;
-    private java.util.List<Integer> services_;
+    private java.util.List<java.lang.Integer> services_;
     /**
      * <code>repeated int32 services = 1;</code>
      */
-    public java.util.List<Integer>
+    public java.util.List<java.lang.Integer>
         getServicesList() {
       return services_;
     }
@@ -236,19 +247,19 @@ public final class Response {
     /**
      * <code>optional string stringResult = 2;</code>
      */
-    public String getStringResult() {
-      Object ref = "";
-      if (resultOneofCase_ == 2) {
-        ref = resultOneof_;
+    public java.lang.String getStringResult() {
+      java.lang.Object ref = "";
+      if (attachmentOneofCase_ == 2) {
+        ref = attachmentOneof_;
       }
-      if (ref instanceof String) {
-        return (String) ref;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
       } else {
         com.google.protobuf.ByteString bs = 
             (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
-        if (resultOneofCase_ == 2) {
-          resultOneof_ = s;
+        java.lang.String s = bs.toStringUtf8();
+        if (attachmentOneofCase_ == 2) {
+          attachmentOneof_ = s;
         }
         return s;
       }
@@ -258,16 +269,16 @@ public final class Response {
      */
     public com.google.protobuf.ByteString
         getStringResultBytes() {
-      Object ref = "";
-      if (resultOneofCase_ == 2) {
-        ref = resultOneof_;
+      java.lang.Object ref = "";
+      if (attachmentOneofCase_ == 2) {
+        ref = attachmentOneof_;
       }
-      if (ref instanceof String) {
+      if (ref instanceof java.lang.String) {
         com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
-                (String) ref);
-        if (resultOneofCase_ == 2) {
-          resultOneof_ = b;
+                (java.lang.String) ref);
+        if (attachmentOneofCase_ == 2) {
+          attachmentOneof_ = b;
         }
         return b;
       } else {
@@ -280,8 +291,8 @@ public final class Response {
      * <code>optional int64 longResult = 3;</code>
      */
     public long getLongResult() {
-      if (resultOneofCase_ == 3) {
-        return (Long) resultOneof_;
+      if (attachmentOneofCase_ == 3) {
+        return (java.lang.Long) attachmentOneof_;
       }
       return 0L;
     }
@@ -291,8 +302,8 @@ public final class Response {
      * <code>optional double doubleResult = 4;</code>
      */
     public double getDoubleResult() {
-      if (resultOneofCase_ == 4) {
-        return (Double) resultOneof_;
+      if (attachmentOneofCase_ == 4) {
+        return (java.lang.Double) attachmentOneof_;
       }
       return 0D;
     }
@@ -302,10 +313,19 @@ public final class Response {
      * <code>optional bool booleanResult = 5;</code>
      */
     public boolean getBooleanResult() {
-      if (resultOneofCase_ == 5) {
-        return (Boolean) resultOneof_;
+      if (attachmentOneofCase_ == 5) {
+        return (java.lang.Boolean) attachmentOneof_;
       }
       return false;
+    }
+
+    public static final int RESULT_FIELD_NUMBER = 6;
+    private int result_;
+    /**
+     * <code>optional int32 result = 6;</code>
+     */
+    public int getResult() {
+      return result_;
     }
 
     private byte memoizedIsInitialized = -1;
@@ -328,20 +348,23 @@ public final class Response {
       for (int i = 0; i < services_.size(); i++) {
         output.writeInt32NoTag(services_.get(i));
       }
-      if (resultOneofCase_ == 2) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 2, resultOneof_);
+      if (attachmentOneofCase_ == 2) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 2, attachmentOneof_);
       }
-      if (resultOneofCase_ == 3) {
+      if (attachmentOneofCase_ == 3) {
         output.writeInt64(
-            3, (long)((Long) resultOneof_));
+            3, (long)((java.lang.Long) attachmentOneof_));
       }
-      if (resultOneofCase_ == 4) {
+      if (attachmentOneofCase_ == 4) {
         output.writeDouble(
-            4, (double)((Double) resultOneof_));
+            4, (double)((java.lang.Double) attachmentOneof_));
       }
-      if (resultOneofCase_ == 5) {
+      if (attachmentOneofCase_ == 5) {
         output.writeBool(
-            5, (boolean)((Boolean) resultOneof_));
+            5, (boolean)((java.lang.Boolean) attachmentOneof_));
+      }
+      if (result_ != 0) {
+        output.writeInt32(6, result_);
       }
     }
 
@@ -364,46 +387,52 @@ public final class Response {
         }
         servicesMemoizedSerializedSize = dataSize;
       }
-      if (resultOneofCase_ == 2) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, resultOneof_);
+      if (attachmentOneofCase_ == 2) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, attachmentOneof_);
       }
-      if (resultOneofCase_ == 3) {
+      if (attachmentOneofCase_ == 3) {
         size += com.google.protobuf.CodedOutputStream
           .computeInt64Size(
-              3, (long)((Long) resultOneof_));
+              3, (long)((java.lang.Long) attachmentOneof_));
       }
-      if (resultOneofCase_ == 4) {
+      if (attachmentOneofCase_ == 4) {
         size += com.google.protobuf.CodedOutputStream
           .computeDoubleSize(
-              4, (double)((Double) resultOneof_));
+              4, (double)((java.lang.Double) attachmentOneof_));
       }
-      if (resultOneofCase_ == 5) {
+      if (attachmentOneofCase_ == 5) {
         size += com.google.protobuf.CodedOutputStream
           .computeBoolSize(
-              5, (boolean)((Boolean) resultOneof_));
+              5, (boolean)((java.lang.Boolean) attachmentOneof_));
+      }
+      if (result_ != 0) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(6, result_);
       }
       memoizedSize = size;
       return size;
     }
 
     private static final long serialVersionUID = 0L;
-    @Override
-    public boolean equals(final Object obj) {
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
       if (obj == this) {
        return true;
       }
-      if (!(obj instanceof ServiceResponse)) {
+      if (!(obj instanceof ru.splat.messages.Response.ServiceResponse)) {
         return super.equals(obj);
       }
-      ServiceResponse other = (ServiceResponse) obj;
+      ru.splat.messages.Response.ServiceResponse other = (ru.splat.messages.Response.ServiceResponse) obj;
 
       boolean result = true;
       result = result && getServicesList()
           .equals(other.getServicesList());
-      result = result && getResultOneofCase().equals(
-          other.getResultOneofCase());
+      result = result && (getResult()
+          == other.getResult());
+      result = result && getAttachmentOneofCase().equals(
+          other.getAttachmentOneofCase());
       if (!result) return false;
-      switch (resultOneofCase_) {
+      switch (attachmentOneofCase_) {
         case 2:
           result = result && getStringResult()
               .equals(other.getStringResult());
@@ -414,8 +443,8 @@ public final class Response {
           break;
         case 4:
           result = result && (
-              Double.doubleToLongBits(getDoubleResult())
-              == Double.doubleToLongBits(
+              java.lang.Double.doubleToLongBits(getDoubleResult())
+              == java.lang.Double.doubleToLongBits(
                   other.getDoubleResult()));
           break;
         case 5:
@@ -428,7 +457,7 @@ public final class Response {
       return result;
     }
 
-    @Override
+    @java.lang.Override
     public int hashCode() {
       if (memoizedHashCode != 0) {
         return memoizedHashCode;
@@ -439,7 +468,9 @@ public final class Response {
         hash = (37 * hash) + SERVICES_FIELD_NUMBER;
         hash = (53 * hash) + getServicesList().hashCode();
       }
-      switch (resultOneofCase_) {
+      hash = (37 * hash) + RESULT_FIELD_NUMBER;
+      hash = (53 * hash) + getResult();
+      switch (attachmentOneofCase_) {
         case 2:
           hash = (37 * hash) + STRINGRESULT_FIELD_NUMBER;
           hash = (53 * hash) + getStringResult().hashCode();
@@ -452,7 +483,7 @@ public final class Response {
         case 4:
           hash = (37 * hash) + DOUBLERESULT_FIELD_NUMBER;
           hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
-              Double.doubleToLongBits(getDoubleResult()));
+              java.lang.Double.doubleToLongBits(getDoubleResult()));
           break;
         case 5:
           hash = (37 * hash) + BOOLEANRESULT_FIELD_NUMBER;
@@ -467,58 +498,58 @@ public final class Response {
       return hash;
     }
 
-    public static ServiceResponse parseFrom(
+    public static ru.splat.messages.Response.ServiceResponse parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static ServiceResponse parseFrom(
+    public static ru.splat.messages.Response.ServiceResponse parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static ServiceResponse parseFrom(byte[] data)
+    public static ru.splat.messages.Response.ServiceResponse parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static ServiceResponse parseFrom(
+    public static ru.splat.messages.Response.ServiceResponse parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static ServiceResponse parseFrom(java.io.InputStream input)
+    public static ru.splat.messages.Response.ServiceResponse parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static ServiceResponse parseFrom(
+    public static ru.splat.messages.Response.ServiceResponse parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-    public static ServiceResponse parseDelimitedFrom(java.io.InputStream input)
+    public static ru.splat.messages.Response.ServiceResponse parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-    public static ServiceResponse parseDelimitedFrom(
+    public static ru.splat.messages.Response.ServiceResponse parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
-    public static ServiceResponse parseFrom(
+    public static ru.splat.messages.Response.ServiceResponse parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static ServiceResponse parseFrom(
+    public static ru.splat.messages.Response.ServiceResponse parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -530,7 +561,7 @@ public final class Response {
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
     }
-    public static Builder newBuilder(ServiceResponse prototype) {
+    public static Builder newBuilder(ru.splat.messages.Response.ServiceResponse prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
     public Builder toBuilder() {
@@ -538,38 +569,38 @@ public final class Response {
           ? new Builder() : new Builder().mergeFrom(this);
     }
 
-    @Override
+    @java.lang.Override
     protected Builder newBuilderForType(
-        BuilderParent parent) {
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
       Builder builder = new Builder(parent);
       return builder;
     }
     /**
-     * Protobuf type {@code ServiceResult}
+     * Protobuf type {@code ServiceResponse}
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-        // @@protoc_insertion_point(builder_implements:ServiceResult)
-        ServiceResponseOrBuilder {
+        // @@protoc_insertion_point(builder_implements:ServiceResponse)
+        ru.splat.messages.Response.ServiceResponseOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return Response.internal_static_ServiceResponse_descriptor;
+        return ru.splat.messages.Response.internal_static_ServiceResponse_descriptor;
       }
 
-      protected FieldAccessorTable
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return Response.internal_static_ServiceResponse_fieldAccessorTable
+        return ru.splat.messages.Response.internal_static_ServiceResponse_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                ServiceResponse.class, Builder.class);
+                ru.splat.messages.Response.ServiceResponse.class, ru.splat.messages.Response.ServiceResponse.Builder.class);
       }
 
-      // Construct using ru.splat.messages.Response.ServiceResult.newBuilder()
+      // Construct using ru.splat.messages.Response.ServiceResponse.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
 
       private Builder(
-          BuilderParent parent) {
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
         maybeForceBuilderInitialization();
       }
@@ -582,30 +613,32 @@ public final class Response {
         super.clear();
         services_ = java.util.Collections.emptyList();
         bitField0_ = (bitField0_ & ~0x00000001);
-        resultOneofCase_ = 0;
-        resultOneof_ = null;
+        result_ = 0;
+
+        attachmentOneofCase_ = 0;
+        attachmentOneof_ = null;
         return this;
       }
 
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return Response.internal_static_ServiceResponse_descriptor;
+        return ru.splat.messages.Response.internal_static_ServiceResponse_descriptor;
       }
 
-      public ServiceResponse getDefaultInstanceForType() {
-        return ServiceResponse.getDefaultInstance();
+      public ru.splat.messages.Response.ServiceResponse getDefaultInstanceForType() {
+        return ru.splat.messages.Response.ServiceResponse.getDefaultInstance();
       }
 
-      public ServiceResponse build() {
-        ServiceResponse result = buildPartial();
+      public ru.splat.messages.Response.ServiceResponse build() {
+        ru.splat.messages.Response.ServiceResponse result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
         return result;
       }
 
-      public ServiceResponse buildPartial() {
-        ServiceResponse result = new ServiceResponse(this);
+      public ru.splat.messages.Response.ServiceResponse buildPartial() {
+        ru.splat.messages.Response.ServiceResponse result = new ru.splat.messages.Response.ServiceResponse(this);
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (((bitField0_ & 0x00000001) == 0x00000001)) {
@@ -613,20 +646,21 @@ public final class Response {
           bitField0_ = (bitField0_ & ~0x00000001);
         }
         result.services_ = services_;
-        if (resultOneofCase_ == 2) {
-          result.resultOneof_ = resultOneof_;
+        if (attachmentOneofCase_ == 2) {
+          result.attachmentOneof_ = attachmentOneof_;
         }
-        if (resultOneofCase_ == 3) {
-          result.resultOneof_ = resultOneof_;
+        if (attachmentOneofCase_ == 3) {
+          result.attachmentOneof_ = attachmentOneof_;
         }
-        if (resultOneofCase_ == 4) {
-          result.resultOneof_ = resultOneof_;
+        if (attachmentOneofCase_ == 4) {
+          result.attachmentOneof_ = attachmentOneof_;
         }
-        if (resultOneofCase_ == 5) {
-          result.resultOneof_ = resultOneof_;
+        if (attachmentOneofCase_ == 5) {
+          result.attachmentOneof_ = attachmentOneof_;
         }
+        result.result_ = result_;
         result.bitField0_ = to_bitField0_;
-        result.resultOneofCase_ = resultOneofCase_;
+        result.attachmentOneofCase_ = attachmentOneofCase_;
         onBuilt();
         return result;
       }
@@ -658,16 +692,16 @@ public final class Response {
         return (Builder) super.addRepeatedField(field, value);
       }
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof ServiceResponse) {
-          return mergeFrom((ServiceResponse)other);
+        if (other instanceof ru.splat.messages.Response.ServiceResponse) {
+          return mergeFrom((ru.splat.messages.Response.ServiceResponse)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(ServiceResponse other) {
-        if (other == ServiceResponse.getDefaultInstance()) return this;
+      public Builder mergeFrom(ru.splat.messages.Response.ServiceResponse other) {
+        if (other == ru.splat.messages.Response.ServiceResponse.getDefaultInstance()) return this;
         if (!other.services_.isEmpty()) {
           if (services_.isEmpty()) {
             services_ = other.services_;
@@ -678,10 +712,13 @@ public final class Response {
           }
           onChanged();
         }
-        switch (other.getResultOneofCase()) {
+        if (other.getResult() != 0) {
+          setResult(other.getResult());
+        }
+        switch (other.getAttachmentOneofCase()) {
           case STRINGRESULT: {
-            resultOneofCase_ = 2;
-            resultOneof_ = other.resultOneof_;
+            attachmentOneofCase_ = 2;
+            attachmentOneof_ = other.attachmentOneof_;
             onChanged();
             break;
           }
@@ -697,7 +734,7 @@ public final class Response {
             setBooleanResult(other.getBooleanResult());
             break;
           }
-          case RESULTONEOF_NOT_SET: {
+          case ATTACHMENTONEOF_NOT_SET: {
             break;
           }
         }
@@ -713,11 +750,11 @@ public final class Response {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        ServiceResponse parsedMessage = null;
+        ru.splat.messages.Response.ServiceResponse parsedMessage = null;
         try {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (ServiceResponse) e.getUnfinishedMessage();
+          parsedMessage = (ru.splat.messages.Response.ServiceResponse) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
@@ -726,34 +763,34 @@ public final class Response {
         }
         return this;
       }
-      private int resultOneofCase_ = 0;
-      private Object resultOneof_;
-      public ResultOneofCase
-          getResultOneofCase() {
-        return ResultOneofCase.forNumber(
-            resultOneofCase_);
+      private int attachmentOneofCase_ = 0;
+      private java.lang.Object attachmentOneof_;
+      public AttachmentOneofCase
+          getAttachmentOneofCase() {
+        return AttachmentOneofCase.forNumber(
+            attachmentOneofCase_);
       }
 
-      public Builder clearResultOneof() {
-        resultOneofCase_ = 0;
-        resultOneof_ = null;
+      public Builder clearAttachmentOneof() {
+        attachmentOneofCase_ = 0;
+        attachmentOneof_ = null;
         onChanged();
         return this;
       }
 
       private int bitField0_;
 
-      private java.util.List<Integer> services_ = java.util.Collections.emptyList();
+      private java.util.List<java.lang.Integer> services_ = java.util.Collections.emptyList();
       private void ensureServicesIsMutable() {
         if (!((bitField0_ & 0x00000001) == 0x00000001)) {
-          services_ = new java.util.ArrayList<Integer>(services_);
+          services_ = new java.util.ArrayList<java.lang.Integer>(services_);
           bitField0_ |= 0x00000001;
          }
       }
       /**
        * <code>repeated int32 services = 1;</code>
        */
-      public java.util.List<Integer>
+      public java.util.List<java.lang.Integer>
           getServicesList() {
         return java.util.Collections.unmodifiableList(services_);
       }
@@ -792,7 +829,7 @@ public final class Response {
        * <code>repeated int32 services = 1;</code>
        */
       public Builder addAllServices(
-          Iterable<? extends Integer> values) {
+          java.lang.Iterable<? extends java.lang.Integer> values) {
         ensureServicesIsMutable();
         com.google.protobuf.AbstractMessageLite.Builder.addAll(
             values, services_);
@@ -812,21 +849,21 @@ public final class Response {
       /**
        * <code>optional string stringResult = 2;</code>
        */
-      public String getStringResult() {
-        Object ref = "";
-        if (resultOneofCase_ == 2) {
-          ref = resultOneof_;
+      public java.lang.String getStringResult() {
+        java.lang.Object ref = "";
+        if (attachmentOneofCase_ == 2) {
+          ref = attachmentOneof_;
         }
-        if (!(ref instanceof String)) {
+        if (!(ref instanceof java.lang.String)) {
           com.google.protobuf.ByteString bs =
               (com.google.protobuf.ByteString) ref;
-          String s = bs.toStringUtf8();
-          if (resultOneofCase_ == 2) {
-            resultOneof_ = s;
+          java.lang.String s = bs.toStringUtf8();
+          if (attachmentOneofCase_ == 2) {
+            attachmentOneof_ = s;
           }
           return s;
         } else {
-          return (String) ref;
+          return (java.lang.String) ref;
         }
       }
       /**
@@ -834,16 +871,16 @@ public final class Response {
        */
       public com.google.protobuf.ByteString
           getStringResultBytes() {
-        Object ref = "";
-        if (resultOneofCase_ == 2) {
-          ref = resultOneof_;
+        java.lang.Object ref = "";
+        if (attachmentOneofCase_ == 2) {
+          ref = attachmentOneof_;
         }
         if (ref instanceof String) {
           com.google.protobuf.ByteString b = 
               com.google.protobuf.ByteString.copyFromUtf8(
-                  (String) ref);
-          if (resultOneofCase_ == 2) {
-            resultOneof_ = b;
+                  (java.lang.String) ref);
+          if (attachmentOneofCase_ == 2) {
+            attachmentOneof_ = b;
           }
           return b;
         } else {
@@ -854,12 +891,12 @@ public final class Response {
        * <code>optional string stringResult = 2;</code>
        */
       public Builder setStringResult(
-          String value) {
+          java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  resultOneofCase_ = 2;
-        resultOneof_ = value;
+  attachmentOneofCase_ = 2;
+        attachmentOneof_ = value;
         onChanged();
         return this;
       }
@@ -867,9 +904,9 @@ public final class Response {
        * <code>optional string stringResult = 2;</code>
        */
       public Builder clearStringResult() {
-        if (resultOneofCase_ == 2) {
-          resultOneofCase_ = 0;
-          resultOneof_ = null;
+        if (attachmentOneofCase_ == 2) {
+          attachmentOneofCase_ = 0;
+          attachmentOneof_ = null;
           onChanged();
         }
         return this;
@@ -883,8 +920,8 @@ public final class Response {
     throw new NullPointerException();
   }
   checkByteStringIsUtf8(value);
-        resultOneofCase_ = 2;
-        resultOneof_ = value;
+        attachmentOneofCase_ = 2;
+        attachmentOneof_ = value;
         onChanged();
         return this;
       }
@@ -893,8 +930,8 @@ public final class Response {
        * <code>optional int64 longResult = 3;</code>
        */
       public long getLongResult() {
-        if (resultOneofCase_ == 3) {
-          return (Long) resultOneof_;
+        if (attachmentOneofCase_ == 3) {
+          return (java.lang.Long) attachmentOneof_;
         }
         return 0L;
       }
@@ -902,8 +939,8 @@ public final class Response {
        * <code>optional int64 longResult = 3;</code>
        */
       public Builder setLongResult(long value) {
-        resultOneofCase_ = 3;
-        resultOneof_ = value;
+        attachmentOneofCase_ = 3;
+        attachmentOneof_ = value;
         onChanged();
         return this;
       }
@@ -911,9 +948,9 @@ public final class Response {
        * <code>optional int64 longResult = 3;</code>
        */
       public Builder clearLongResult() {
-        if (resultOneofCase_ == 3) {
-          resultOneofCase_ = 0;
-          resultOneof_ = null;
+        if (attachmentOneofCase_ == 3) {
+          attachmentOneofCase_ = 0;
+          attachmentOneof_ = null;
           onChanged();
         }
         return this;
@@ -923,8 +960,8 @@ public final class Response {
        * <code>optional double doubleResult = 4;</code>
        */
       public double getDoubleResult() {
-        if (resultOneofCase_ == 4) {
-          return (Double) resultOneof_;
+        if (attachmentOneofCase_ == 4) {
+          return (java.lang.Double) attachmentOneof_;
         }
         return 0D;
       }
@@ -932,8 +969,8 @@ public final class Response {
        * <code>optional double doubleResult = 4;</code>
        */
       public Builder setDoubleResult(double value) {
-        resultOneofCase_ = 4;
-        resultOneof_ = value;
+        attachmentOneofCase_ = 4;
+        attachmentOneof_ = value;
         onChanged();
         return this;
       }
@@ -941,9 +978,9 @@ public final class Response {
        * <code>optional double doubleResult = 4;</code>
        */
       public Builder clearDoubleResult() {
-        if (resultOneofCase_ == 4) {
-          resultOneofCase_ = 0;
-          resultOneof_ = null;
+        if (attachmentOneofCase_ == 4) {
+          attachmentOneofCase_ = 0;
+          attachmentOneof_ = null;
           onChanged();
         }
         return this;
@@ -953,8 +990,8 @@ public final class Response {
        * <code>optional bool booleanResult = 5;</code>
        */
       public boolean getBooleanResult() {
-        if (resultOneofCase_ == 5) {
-          return (Boolean) resultOneof_;
+        if (attachmentOneofCase_ == 5) {
+          return (java.lang.Boolean) attachmentOneof_;
         }
         return false;
       }
@@ -962,8 +999,8 @@ public final class Response {
        * <code>optional bool booleanResult = 5;</code>
        */
       public Builder setBooleanResult(boolean value) {
-        resultOneofCase_ = 5;
-        resultOneof_ = value;
+        attachmentOneofCase_ = 5;
+        attachmentOneof_ = value;
         onChanged();
         return this;
       }
@@ -971,11 +1008,37 @@ public final class Response {
        * <code>optional bool booleanResult = 5;</code>
        */
       public Builder clearBooleanResult() {
-        if (resultOneofCase_ == 5) {
-          resultOneofCase_ = 0;
-          resultOneof_ = null;
+        if (attachmentOneofCase_ == 5) {
+          attachmentOneofCase_ = 0;
+          attachmentOneof_ = null;
           onChanged();
         }
+        return this;
+      }
+
+      private int result_ ;
+      /**
+       * <code>optional int32 result = 6;</code>
+       */
+      public int getResult() {
+        return result_;
+      }
+      /**
+       * <code>optional int32 result = 6;</code>
+       */
+      public Builder setResult(int value) {
+        
+        result_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional int32 result = 6;</code>
+       */
+      public Builder clearResult() {
+        
+        result_ = 0;
+        onChanged();
         return this;
       }
       public final Builder setUnknownFields(
@@ -989,16 +1052,16 @@ public final class Response {
       }
 
 
-      // @@protoc_insertion_point(builder_scope:ServiceResult)
+      // @@protoc_insertion_point(builder_scope:ServiceResponse)
     }
 
-    // @@protoc_insertion_point(class_scope:ServiceResult)
-    private static final ServiceResponse DEFAULT_INSTANCE;
+    // @@protoc_insertion_point(class_scope:ServiceResponse)
+    private static final ru.splat.messages.Response.ServiceResponse DEFAULT_INSTANCE;
     static {
-      DEFAULT_INSTANCE = new ServiceResponse();
+      DEFAULT_INSTANCE = new ru.splat.messages.Response.ServiceResponse();
     }
 
-    public static ServiceResponse getDefaultInstance() {
+    public static ru.splat.messages.Response.ServiceResponse getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
@@ -1016,12 +1079,12 @@ public final class Response {
       return PARSER;
     }
 
-    @Override
+    @java.lang.Override
     public com.google.protobuf.Parser<ServiceResponse> getParserForType() {
       return PARSER;
     }
 
-    public ServiceResponse getDefaultInstanceForType() {
+    public ru.splat.messages.Response.ServiceResponse getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
@@ -1040,13 +1103,13 @@ public final class Response {
   private static  com.google.protobuf.Descriptors.FileDescriptor
       descriptor;
   static {
-    String[] descriptorData = {
-      "\n\016Response.proto\"\222\001\n\017ServiceResponse\022\020\n\010" +
+    java.lang.String[] descriptorData = {
+      "\n\016Response.proto\"\246\001\n\017ServiceResponse\022\020\n\010" +
       "services\030\001 \003(\005\022\026\n\014stringResult\030\002 \001(\tH\000\022\024" +
       "\n\nlongResult\030\003 \001(\003H\000\022\026\n\014doubleResult\030\004 \001" +
-      "(\001H\000\022\027\n\rbooleanResult\030\005 \001(\010H\000B\016\n\014result_" +
-      "oneofB\035\n\021ru.splat.messagesB\010Responseb\006pr" +
-      "oto3"
+      "(\001H\000\022\027\n\rbooleanResult\030\005 \001(\010H\000\022\016\n\006result\030" +
+      "\006 \001(\005B\022\n\020attachment_oneofB\035\n\021ru.splat.me" +
+      "ssagesB\010Responseb\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -1065,7 +1128,7 @@ public final class Response {
     internal_static_ServiceResponse_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_ServiceResponse_descriptor,
-        new String[] { "Services", "StringResult", "LongResult", "DoubleResult", "BooleanResult", "ResultOneof", });
+        new java.lang.String[] { "Services", "StringResult", "LongResult", "DoubleResult", "BooleanResult", "Result", "AttachmentOneof", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)

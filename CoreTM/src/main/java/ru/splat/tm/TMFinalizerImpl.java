@@ -3,9 +3,10 @@ package ru.splat.tm;
 import akka.actor.ActorRef;
 import akka.actor.UntypedActor;
 import com.google.protobuf.Message;
-import ru.splat.messages.conventions.ServiceResponse;
+import ru.splat.messages.conventions.ServiceResult;
 import ru.splat.messages.conventions.TaskTypesEnum;
 import ru.splat.messages.uptm.trmetadata.TransactionMetadata;
+import ru.splat.messages.uptm.trstate.ServiceResponse;
 import ru.splat.messages.uptm.trstate.TransactionState;
 
 import java.util.HashMap;

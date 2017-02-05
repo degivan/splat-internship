@@ -4,7 +4,7 @@ import akka.actor.ActorRef;
 import akka.actor.UntypedActor;
 import ru.splat.messages.conventions.TaskTypesEnum;
 import ru.splat.messages.uptm.trmetadata.LocalTask;
-import ru.splat.messages.uptm.trmetadata.PunterTask;
+import ru.splat.messages.uptm.trmetadata.punter.AddPunterLimitsTask;
 import ru.splat.messages.uptm.trmetadata.TransactionMetadata;
 
 import java.util.LinkedList;
@@ -27,7 +27,7 @@ public class MockPhaser extends UntypedActor {
             Long trid = (Long) o;
            // ActorRef tmActor = getContext().actorFor("tmActor");
             List<LocalTask> taskList = new LinkedList<LocalTask>();
-            PunterTask pt = new PunterTask(TaskTypesEnum.ADD_PUNTER_LIMITS, 10 - trid);
+            AddPunterLimitsTask pt = new AddPunterLimitsTask(TaskTypesEnum.ADD_PUNTER_LIMITS, 10 - trid, System.currentTimeMillis());
             TransactionMetadata trMet = new TransactionMetadata(trid, taskList);
             tmActor.tell(trMet, getSelf());
         }

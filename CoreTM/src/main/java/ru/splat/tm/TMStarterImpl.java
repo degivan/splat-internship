@@ -7,8 +7,6 @@ import org.apache.kafka.common.serialization.LongSerializer;
 import ru.splat.kafka.serializer.ProtoBufMessageSerializer;
 import ru.splat.messages.uptm.trmetadata.LocalTask;
 import ru.splat.messages.uptm.trmetadata.TransactionMetadata;
-import ru.splat.protobuf.*;
-import ru.splat.messages.uptm.trmetadata.*;
 
 import java.util.*;
 import java.util.concurrent.Future;

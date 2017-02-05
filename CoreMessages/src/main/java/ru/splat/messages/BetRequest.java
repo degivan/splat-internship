@@ -36,7 +36,7 @@ public final class BetRequest {
     /**
      * <code>repeated int32 services = 4;</code>
      */
-    java.util.List<Integer> getServicesList();
+    java.util.List<java.lang.Integer> getServicesList();
     /**
      * <code>repeated int32 services = 4;</code>
      */
@@ -52,28 +52,33 @@ public final class BetRequest {
     long getId();
 
     /**
-     * <code>repeated .Bet.BetOutcome betOutcome = 6;</code>
+     * <code>optional int64 time = 6;</code>
      */
-    java.util.List<Bet.BetOutcome>
+    long getTime();
+
+    /**
+     * <code>repeated .Bet.BetOutcome betOutcome = 7;</code>
+     */
+    java.util.List<ru.splat.messages.BetRequest.Bet.BetOutcome> 
         getBetOutcomeList();
     /**
-     * <code>repeated .Bet.BetOutcome betOutcome = 6;</code>
+     * <code>repeated .Bet.BetOutcome betOutcome = 7;</code>
      */
-    Bet.BetOutcome getBetOutcome(int index);
+    ru.splat.messages.BetRequest.Bet.BetOutcome getBetOutcome(int index);
     /**
-     * <code>repeated .Bet.BetOutcome betOutcome = 6;</code>
+     * <code>repeated .Bet.BetOutcome betOutcome = 7;</code>
      */
     int getBetOutcomeCount();
     /**
-     * <code>repeated .Bet.BetOutcome betOutcome = 6;</code>
+     * <code>repeated .Bet.BetOutcome betOutcome = 7;</code>
      */
-    java.util.List<? extends Bet.BetOutcomeOrBuilder>
+    java.util.List<? extends ru.splat.messages.BetRequest.Bet.BetOutcomeOrBuilder> 
         getBetOutcomeOrBuilderList();
     /**
-     * <code>repeated .Bet.BetOutcome betOutcome = 6;</code>
+     * <code>repeated .Bet.BetOutcome betOutcome = 7;</code>
      */
-    Bet.BetOutcomeOrBuilder getBetOutcomeOrBuilder(
-            int index);
+    ru.splat.messages.BetRequest.Bet.BetOutcomeOrBuilder getBetOutcomeOrBuilder(
+        int index);
   }
   /**
    * Protobuf type {@code Bet}
@@ -92,10 +97,11 @@ public final class BetRequest {
       localTask_ = 0;
       services_ = java.util.Collections.emptyList();
       id_ = 0L;
+      time_ = 0L;
       betOutcome_ = java.util.Collections.emptyList();
     }
 
-    @Override
+    @java.lang.Override
     public final com.google.protobuf.UnknownFieldSet
     getUnknownFields() {
       return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
@@ -137,7 +143,7 @@ public final class BetRequest {
             }
             case 32: {
               if (!((mutable_bitField0_ & 0x00000008) == 0x00000008)) {
-                services_ = new java.util.ArrayList<Integer>();
+                services_ = new java.util.ArrayList<java.lang.Integer>();
                 mutable_bitField0_ |= 0x00000008;
               }
               services_.add(input.readInt32());
@@ -147,7 +153,7 @@ public final class BetRequest {
               int length = input.readRawVarint32();
               int limit = input.pushLimit(length);
               if (!((mutable_bitField0_ & 0x00000008) == 0x00000008) && input.getBytesUntilLimit() > 0) {
-                services_ = new java.util.ArrayList<Integer>();
+                services_ = new java.util.ArrayList<java.lang.Integer>();
                 mutable_bitField0_ |= 0x00000008;
               }
               while (input.getBytesUntilLimit() > 0) {
@@ -161,13 +167,18 @@ public final class BetRequest {
               id_ = input.readInt64();
               break;
             }
-            case 50: {
-              if (!((mutable_bitField0_ & 0x00000020) == 0x00000020)) {
-                betOutcome_ = new java.util.ArrayList<BetOutcome>();
-                mutable_bitField0_ |= 0x00000020;
+            case 48: {
+
+              time_ = input.readInt64();
+              break;
+            }
+            case 58: {
+              if (!((mutable_bitField0_ & 0x00000040) == 0x00000040)) {
+                betOutcome_ = new java.util.ArrayList<ru.splat.messages.BetRequest.Bet.BetOutcome>();
+                mutable_bitField0_ |= 0x00000040;
               }
               betOutcome_.add(
-                  input.readMessage(BetOutcome.parser(), extensionRegistry));
+                  input.readMessage(ru.splat.messages.BetRequest.Bet.BetOutcome.parser(), extensionRegistry));
               break;
             }
           }
@@ -181,7 +192,7 @@ public final class BetRequest {
         if (((mutable_bitField0_ & 0x00000008) == 0x00000008)) {
           services_ = java.util.Collections.unmodifiableList(services_);
         }
-        if (((mutable_bitField0_ & 0x00000020) == 0x00000020)) {
+        if (((mutable_bitField0_ & 0x00000040) == 0x00000040)) {
           betOutcome_ = java.util.Collections.unmodifiableList(betOutcome_);
         }
         makeExtensionsImmutable();
@@ -189,14 +200,14 @@ public final class BetRequest {
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return BetRequest.internal_static_Bet_descriptor;
+      return ru.splat.messages.BetRequest.internal_static_Bet_descriptor;
     }
 
-    protected FieldAccessorTable
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return BetRequest.internal_static_Bet_fieldAccessorTable
+      return ru.splat.messages.BetRequest.internal_static_Bet_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              Bet.class, Builder.class);
+              ru.splat.messages.BetRequest.Bet.class, ru.splat.messages.BetRequest.Bet.Builder.class);
     }
 
     public interface BetOutcomeOrBuilder extends
@@ -235,7 +246,7 @@ public final class BetRequest {
         coefficient_ = 0D;
       }
 
-      @Override
+      @java.lang.Override
       public final com.google.protobuf.UnknownFieldSet
       getUnknownFields() {
         return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
@@ -288,14 +299,14 @@ public final class BetRequest {
       }
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return BetRequest.internal_static_Bet_BetOutcome_descriptor;
+        return ru.splat.messages.BetRequest.internal_static_Bet_BetOutcome_descriptor;
       }
 
-      protected FieldAccessorTable
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return BetRequest.internal_static_Bet_BetOutcome_fieldAccessorTable
+        return ru.splat.messages.BetRequest.internal_static_Bet_BetOutcome_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                BetOutcome.class, Builder.class);
+                ru.splat.messages.BetRequest.Bet.BetOutcome.class, ru.splat.messages.BetRequest.Bet.BetOutcome.Builder.class);
       }
 
       public static final int EVENTID_FIELD_NUMBER = 1;
@@ -370,15 +381,15 @@ public final class BetRequest {
       }
 
       private static final long serialVersionUID = 0L;
-      @Override
-      public boolean equals(final Object obj) {
+      @java.lang.Override
+      public boolean equals(final java.lang.Object obj) {
         if (obj == this) {
          return true;
         }
-        if (!(obj instanceof BetOutcome)) {
+        if (!(obj instanceof ru.splat.messages.BetRequest.Bet.BetOutcome)) {
           return super.equals(obj);
         }
-        BetOutcome other = (BetOutcome) obj;
+        ru.splat.messages.BetRequest.Bet.BetOutcome other = (ru.splat.messages.BetRequest.Bet.BetOutcome) obj;
 
         boolean result = true;
         result = result && (getEventId()
@@ -386,13 +397,13 @@ public final class BetRequest {
         result = result && (getId()
             == other.getId());
         result = result && (
-            Double.doubleToLongBits(getCoefficient())
-            == Double.doubleToLongBits(
+            java.lang.Double.doubleToLongBits(getCoefficient())
+            == java.lang.Double.doubleToLongBits(
                 other.getCoefficient()));
         return result;
       }
 
-      @Override
+      @java.lang.Override
       public int hashCode() {
         if (memoizedHashCode != 0) {
           return memoizedHashCode;
@@ -405,64 +416,64 @@ public final class BetRequest {
         hash = (53 * hash) + getId();
         hash = (37 * hash) + COEFFICIENT_FIELD_NUMBER;
         hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
-            Double.doubleToLongBits(getCoefficient()));
+            java.lang.Double.doubleToLongBits(getCoefficient()));
         hash = (29 * hash) + unknownFields.hashCode();
         memoizedHashCode = hash;
         return hash;
       }
 
-      public static BetOutcome parseFrom(
+      public static ru.splat.messages.BetRequest.Bet.BetOutcome parseFrom(
           com.google.protobuf.ByteString data)
           throws com.google.protobuf.InvalidProtocolBufferException {
         return PARSER.parseFrom(data);
       }
-      public static BetOutcome parseFrom(
+      public static ru.splat.messages.BetRequest.Bet.BetOutcome parseFrom(
           com.google.protobuf.ByteString data,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
         return PARSER.parseFrom(data, extensionRegistry);
       }
-      public static BetOutcome parseFrom(byte[] data)
+      public static ru.splat.messages.BetRequest.Bet.BetOutcome parseFrom(byte[] data)
           throws com.google.protobuf.InvalidProtocolBufferException {
         return PARSER.parseFrom(data);
       }
-      public static BetOutcome parseFrom(
+      public static ru.splat.messages.BetRequest.Bet.BetOutcome parseFrom(
           byte[] data,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
         return PARSER.parseFrom(data, extensionRegistry);
       }
-      public static BetOutcome parseFrom(java.io.InputStream input)
+      public static ru.splat.messages.BetRequest.Bet.BetOutcome parseFrom(java.io.InputStream input)
           throws java.io.IOException {
         return com.google.protobuf.GeneratedMessageV3
             .parseWithIOException(PARSER, input);
       }
-      public static BetOutcome parseFrom(
+      public static ru.splat.messages.BetRequest.Bet.BetOutcome parseFrom(
           java.io.InputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
         return com.google.protobuf.GeneratedMessageV3
             .parseWithIOException(PARSER, input, extensionRegistry);
       }
-      public static BetOutcome parseDelimitedFrom(java.io.InputStream input)
+      public static ru.splat.messages.BetRequest.Bet.BetOutcome parseDelimitedFrom(java.io.InputStream input)
           throws java.io.IOException {
         return com.google.protobuf.GeneratedMessageV3
             .parseDelimitedWithIOException(PARSER, input);
       }
-      public static BetOutcome parseDelimitedFrom(
+      public static ru.splat.messages.BetRequest.Bet.BetOutcome parseDelimitedFrom(
           java.io.InputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
         return com.google.protobuf.GeneratedMessageV3
             .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
       }
-      public static BetOutcome parseFrom(
+      public static ru.splat.messages.BetRequest.Bet.BetOutcome parseFrom(
           com.google.protobuf.CodedInputStream input)
           throws java.io.IOException {
         return com.google.protobuf.GeneratedMessageV3
             .parseWithIOException(PARSER, input);
       }
-      public static BetOutcome parseFrom(
+      public static ru.splat.messages.BetRequest.Bet.BetOutcome parseFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
@@ -474,7 +485,7 @@ public final class BetRequest {
       public static Builder newBuilder() {
         return DEFAULT_INSTANCE.toBuilder();
       }
-      public static Builder newBuilder(BetOutcome prototype) {
+      public static Builder newBuilder(ru.splat.messages.BetRequest.Bet.BetOutcome prototype) {
         return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
       }
       public Builder toBuilder() {
@@ -482,9 +493,9 @@ public final class BetRequest {
             ? new Builder() : new Builder().mergeFrom(this);
       }
 
-      @Override
+      @java.lang.Override
       protected Builder newBuilderForType(
-          BuilderParent parent) {
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         Builder builder = new Builder(parent);
         return builder;
       }
@@ -494,17 +505,17 @@ public final class BetRequest {
       public static final class Builder extends
           com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
           // @@protoc_insertion_point(builder_implements:Bet.BetOutcome)
-          BetOutcomeOrBuilder {
+          ru.splat.messages.BetRequest.Bet.BetOutcomeOrBuilder {
         public static final com.google.protobuf.Descriptors.Descriptor
             getDescriptor() {
-          return BetRequest.internal_static_Bet_BetOutcome_descriptor;
+          return ru.splat.messages.BetRequest.internal_static_Bet_BetOutcome_descriptor;
         }
 
-        protected FieldAccessorTable
+        protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
             internalGetFieldAccessorTable() {
-          return BetRequest.internal_static_Bet_BetOutcome_fieldAccessorTable
+          return ru.splat.messages.BetRequest.internal_static_Bet_BetOutcome_fieldAccessorTable
               .ensureFieldAccessorsInitialized(
-                  BetOutcome.class, Builder.class);
+                  ru.splat.messages.BetRequest.Bet.BetOutcome.class, ru.splat.messages.BetRequest.Bet.BetOutcome.Builder.class);
         }
 
         // Construct using ru.splat.messages.BetRequest.Bet.BetOutcome.newBuilder()
@@ -513,7 +524,7 @@ public final class BetRequest {
         }
 
         private Builder(
-            BuilderParent parent) {
+            com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
           super(parent);
           maybeForceBuilderInitialization();
         }
@@ -535,23 +546,23 @@ public final class BetRequest {
 
         public com.google.protobuf.Descriptors.Descriptor
             getDescriptorForType() {
-          return BetRequest.internal_static_Bet_BetOutcome_descriptor;
+          return ru.splat.messages.BetRequest.internal_static_Bet_BetOutcome_descriptor;
         }
 
-        public BetOutcome getDefaultInstanceForType() {
-          return BetOutcome.getDefaultInstance();
+        public ru.splat.messages.BetRequest.Bet.BetOutcome getDefaultInstanceForType() {
+          return ru.splat.messages.BetRequest.Bet.BetOutcome.getDefaultInstance();
         }
 
-        public BetOutcome build() {
-          BetOutcome result = buildPartial();
+        public ru.splat.messages.BetRequest.Bet.BetOutcome build() {
+          ru.splat.messages.BetRequest.Bet.BetOutcome result = buildPartial();
           if (!result.isInitialized()) {
             throw newUninitializedMessageException(result);
           }
           return result;
         }
 
-        public BetOutcome buildPartial() {
-          BetOutcome result = new BetOutcome(this);
+        public ru.splat.messages.BetRequest.Bet.BetOutcome buildPartial() {
+          ru.splat.messages.BetRequest.Bet.BetOutcome result = new ru.splat.messages.BetRequest.Bet.BetOutcome(this);
           result.eventId_ = eventId_;
           result.id_ = id_;
           result.coefficient_ = coefficient_;
@@ -586,16 +597,16 @@ public final class BetRequest {
           return (Builder) super.addRepeatedField(field, value);
         }
         public Builder mergeFrom(com.google.protobuf.Message other) {
-          if (other instanceof BetOutcome) {
-            return mergeFrom((BetOutcome)other);
+          if (other instanceof ru.splat.messages.BetRequest.Bet.BetOutcome) {
+            return mergeFrom((ru.splat.messages.BetRequest.Bet.BetOutcome)other);
           } else {
             super.mergeFrom(other);
             return this;
           }
         }
 
-        public Builder mergeFrom(BetOutcome other) {
-          if (other == BetOutcome.getDefaultInstance()) return this;
+        public Builder mergeFrom(ru.splat.messages.BetRequest.Bet.BetOutcome other) {
+          if (other == ru.splat.messages.BetRequest.Bet.BetOutcome.getDefaultInstance()) return this;
           if (other.getEventId() != 0) {
             setEventId(other.getEventId());
           }
@@ -617,11 +628,11 @@ public final class BetRequest {
             com.google.protobuf.CodedInputStream input,
             com.google.protobuf.ExtensionRegistryLite extensionRegistry)
             throws java.io.IOException {
-          BetOutcome parsedMessage = null;
+          ru.splat.messages.BetRequest.Bet.BetOutcome parsedMessage = null;
           try {
             parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
           } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-            parsedMessage = (BetOutcome) e.getUnfinishedMessage();
+            parsedMessage = (ru.splat.messages.BetRequest.Bet.BetOutcome) e.getUnfinishedMessage();
             throw e.unwrapIOException();
           } finally {
             if (parsedMessage != null) {
@@ -723,12 +734,12 @@ public final class BetRequest {
       }
 
       // @@protoc_insertion_point(class_scope:Bet.BetOutcome)
-      private static final BetOutcome DEFAULT_INSTANCE;
+      private static final ru.splat.messages.BetRequest.Bet.BetOutcome DEFAULT_INSTANCE;
       static {
-        DEFAULT_INSTANCE = new BetOutcome();
+        DEFAULT_INSTANCE = new ru.splat.messages.BetRequest.Bet.BetOutcome();
       }
 
-      public static BetOutcome getDefaultInstance() {
+      public static ru.splat.messages.BetRequest.Bet.BetOutcome getDefaultInstance() {
         return DEFAULT_INSTANCE;
       }
 
@@ -746,12 +757,12 @@ public final class BetRequest {
         return PARSER;
       }
 
-      @Override
+      @java.lang.Override
       public com.google.protobuf.Parser<BetOutcome> getParserForType() {
         return PARSER;
       }
 
-      public BetOutcome getDefaultInstanceForType() {
+      public ru.splat.messages.BetRequest.Bet.BetOutcome getDefaultInstanceForType() {
         return DEFAULT_INSTANCE;
       }
 
@@ -786,11 +797,11 @@ public final class BetRequest {
     }
 
     public static final int SERVICES_FIELD_NUMBER = 4;
-    private java.util.List<Integer> services_;
+    private java.util.List<java.lang.Integer> services_;
     /**
      * <code>repeated int32 services = 4;</code>
      */
-    public java.util.List<Integer>
+    public java.util.List<java.lang.Integer>
         getServicesList() {
       return services_;
     }
@@ -817,37 +828,46 @@ public final class BetRequest {
       return id_;
     }
 
-    public static final int BETOUTCOME_FIELD_NUMBER = 6;
-    private java.util.List<BetOutcome> betOutcome_;
+    public static final int TIME_FIELD_NUMBER = 6;
+    private long time_;
     /**
-     * <code>repeated .Bet.BetOutcome betOutcome = 6;</code>
+     * <code>optional int64 time = 6;</code>
      */
-    public java.util.List<BetOutcome> getBetOutcomeList() {
+    public long getTime() {
+      return time_;
+    }
+
+    public static final int BETOUTCOME_FIELD_NUMBER = 7;
+    private java.util.List<ru.splat.messages.BetRequest.Bet.BetOutcome> betOutcome_;
+    /**
+     * <code>repeated .Bet.BetOutcome betOutcome = 7;</code>
+     */
+    public java.util.List<ru.splat.messages.BetRequest.Bet.BetOutcome> getBetOutcomeList() {
       return betOutcome_;
     }
     /**
-     * <code>repeated .Bet.BetOutcome betOutcome = 6;</code>
+     * <code>repeated .Bet.BetOutcome betOutcome = 7;</code>
      */
-    public java.util.List<? extends BetOutcomeOrBuilder>
+    public java.util.List<? extends ru.splat.messages.BetRequest.Bet.BetOutcomeOrBuilder> 
         getBetOutcomeOrBuilderList() {
       return betOutcome_;
     }
     /**
-     * <code>repeated .Bet.BetOutcome betOutcome = 6;</code>
+     * <code>repeated .Bet.BetOutcome betOutcome = 7;</code>
      */
     public int getBetOutcomeCount() {
       return betOutcome_.size();
     }
     /**
-     * <code>repeated .Bet.BetOutcome betOutcome = 6;</code>
+     * <code>repeated .Bet.BetOutcome betOutcome = 7;</code>
      */
-    public BetOutcome getBetOutcome(int index) {
+    public ru.splat.messages.BetRequest.Bet.BetOutcome getBetOutcome(int index) {
       return betOutcome_.get(index);
     }
     /**
-     * <code>repeated .Bet.BetOutcome betOutcome = 6;</code>
+     * <code>repeated .Bet.BetOutcome betOutcome = 7;</code>
      */
-    public BetOutcomeOrBuilder getBetOutcomeOrBuilder(
+    public ru.splat.messages.BetRequest.Bet.BetOutcomeOrBuilder getBetOutcomeOrBuilder(
         int index) {
       return betOutcome_.get(index);
     }
@@ -884,8 +904,11 @@ public final class BetRequest {
       if (id_ != 0L) {
         output.writeInt64(5, id_);
       }
+      if (time_ != 0L) {
+        output.writeInt64(6, time_);
+      }
       for (int i = 0; i < betOutcome_.size(); i++) {
-        output.writeMessage(6, betOutcome_.get(i));
+        output.writeMessage(7, betOutcome_.get(i));
       }
     }
 
@@ -924,24 +947,28 @@ public final class BetRequest {
         size += com.google.protobuf.CodedOutputStream
           .computeInt64Size(5, id_);
       }
+      if (time_ != 0L) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt64Size(6, time_);
+      }
       for (int i = 0; i < betOutcome_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(6, betOutcome_.get(i));
+          .computeMessageSize(7, betOutcome_.get(i));
       }
       memoizedSize = size;
       return size;
     }
 
     private static final long serialVersionUID = 0L;
-    @Override
-    public boolean equals(final Object obj) {
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
       if (obj == this) {
        return true;
       }
-      if (!(obj instanceof Bet)) {
+      if (!(obj instanceof ru.splat.messages.BetRequest.Bet)) {
         return super.equals(obj);
       }
-      Bet other = (Bet) obj;
+      ru.splat.messages.BetRequest.Bet other = (ru.splat.messages.BetRequest.Bet) obj;
 
       boolean result = true;
       result = result && (getPunterId()
@@ -954,12 +981,14 @@ public final class BetRequest {
           .equals(other.getServicesList());
       result = result && (getId()
           == other.getId());
+      result = result && (getTime()
+          == other.getTime());
       result = result && getBetOutcomeList()
           .equals(other.getBetOutcomeList());
       return result;
     }
 
-    @Override
+    @java.lang.Override
     public int hashCode() {
       if (memoizedHashCode != 0) {
         return memoizedHashCode;
@@ -979,6 +1008,9 @@ public final class BetRequest {
       hash = (37 * hash) + ID_FIELD_NUMBER;
       hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
           getId());
+      hash = (37 * hash) + TIME_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          getTime());
       if (getBetOutcomeCount() > 0) {
         hash = (37 * hash) + BETOUTCOME_FIELD_NUMBER;
         hash = (53 * hash) + getBetOutcomeList().hashCode();
@@ -988,58 +1020,58 @@ public final class BetRequest {
       return hash;
     }
 
-    public static Bet parseFrom(
+    public static ru.splat.messages.BetRequest.Bet parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static Bet parseFrom(
+    public static ru.splat.messages.BetRequest.Bet parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static Bet parseFrom(byte[] data)
+    public static ru.splat.messages.BetRequest.Bet parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static Bet parseFrom(
+    public static ru.splat.messages.BetRequest.Bet parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static Bet parseFrom(java.io.InputStream input)
+    public static ru.splat.messages.BetRequest.Bet parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static Bet parseFrom(
+    public static ru.splat.messages.BetRequest.Bet parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-    public static Bet parseDelimitedFrom(java.io.InputStream input)
+    public static ru.splat.messages.BetRequest.Bet parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-    public static Bet parseDelimitedFrom(
+    public static ru.splat.messages.BetRequest.Bet parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
-    public static Bet parseFrom(
+    public static ru.splat.messages.BetRequest.Bet parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static Bet parseFrom(
+    public static ru.splat.messages.BetRequest.Bet parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -1051,7 +1083,7 @@ public final class BetRequest {
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
     }
-    public static Builder newBuilder(Bet prototype) {
+    public static Builder newBuilder(ru.splat.messages.BetRequest.Bet prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
     public Builder toBuilder() {
@@ -1059,9 +1091,9 @@ public final class BetRequest {
           ? new Builder() : new Builder().mergeFrom(this);
     }
 
-    @Override
+    @java.lang.Override
     protected Builder newBuilderForType(
-        BuilderParent parent) {
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
       Builder builder = new Builder(parent);
       return builder;
     }
@@ -1071,17 +1103,17 @@ public final class BetRequest {
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
         // @@protoc_insertion_point(builder_implements:Bet)
-        BetOrBuilder {
+        ru.splat.messages.BetRequest.BetOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return BetRequest.internal_static_Bet_descriptor;
+        return ru.splat.messages.BetRequest.internal_static_Bet_descriptor;
       }
 
-      protected FieldAccessorTable
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return BetRequest.internal_static_Bet_fieldAccessorTable
+        return ru.splat.messages.BetRequest.internal_static_Bet_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                Bet.class, Builder.class);
+                ru.splat.messages.BetRequest.Bet.class, ru.splat.messages.BetRequest.Bet.Builder.class);
       }
 
       // Construct using ru.splat.messages.BetRequest.Bet.newBuilder()
@@ -1090,7 +1122,7 @@ public final class BetRequest {
       }
 
       private Builder(
-          BuilderParent parent) {
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
         maybeForceBuilderInitialization();
       }
@@ -1112,9 +1144,11 @@ public final class BetRequest {
         bitField0_ = (bitField0_ & ~0x00000008);
         id_ = 0L;
 
+        time_ = 0L;
+
         if (betOutcomeBuilder_ == null) {
           betOutcome_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000020);
+          bitField0_ = (bitField0_ & ~0x00000040);
         } else {
           betOutcomeBuilder_.clear();
         }
@@ -1123,23 +1157,23 @@ public final class BetRequest {
 
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return BetRequest.internal_static_Bet_descriptor;
+        return ru.splat.messages.BetRequest.internal_static_Bet_descriptor;
       }
 
-      public Bet getDefaultInstanceForType() {
-        return Bet.getDefaultInstance();
+      public ru.splat.messages.BetRequest.Bet getDefaultInstanceForType() {
+        return ru.splat.messages.BetRequest.Bet.getDefaultInstance();
       }
 
-      public Bet build() {
-        Bet result = buildPartial();
+      public ru.splat.messages.BetRequest.Bet build() {
+        ru.splat.messages.BetRequest.Bet result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
         return result;
       }
 
-      public Bet buildPartial() {
-        Bet result = new Bet(this);
+      public ru.splat.messages.BetRequest.Bet buildPartial() {
+        ru.splat.messages.BetRequest.Bet result = new ru.splat.messages.BetRequest.Bet(this);
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         result.punterId_ = punterId_;
@@ -1151,10 +1185,11 @@ public final class BetRequest {
         }
         result.services_ = services_;
         result.id_ = id_;
+        result.time_ = time_;
         if (betOutcomeBuilder_ == null) {
-          if (((bitField0_ & 0x00000020) == 0x00000020)) {
+          if (((bitField0_ & 0x00000040) == 0x00000040)) {
             betOutcome_ = java.util.Collections.unmodifiableList(betOutcome_);
-            bitField0_ = (bitField0_ & ~0x00000020);
+            bitField0_ = (bitField0_ & ~0x00000040);
           }
           result.betOutcome_ = betOutcome_;
         } else {
@@ -1192,16 +1227,16 @@ public final class BetRequest {
         return (Builder) super.addRepeatedField(field, value);
       }
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof Bet) {
-          return mergeFrom((Bet)other);
+        if (other instanceof ru.splat.messages.BetRequest.Bet) {
+          return mergeFrom((ru.splat.messages.BetRequest.Bet)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(Bet other) {
-        if (other == Bet.getDefaultInstance()) return this;
+      public Builder mergeFrom(ru.splat.messages.BetRequest.Bet other) {
+        if (other == ru.splat.messages.BetRequest.Bet.getDefaultInstance()) return this;
         if (other.getPunterId() != 0) {
           setPunterId(other.getPunterId());
         }
@@ -1224,11 +1259,14 @@ public final class BetRequest {
         if (other.getId() != 0L) {
           setId(other.getId());
         }
+        if (other.getTime() != 0L) {
+          setTime(other.getTime());
+        }
         if (betOutcomeBuilder_ == null) {
           if (!other.betOutcome_.isEmpty()) {
             if (betOutcome_.isEmpty()) {
               betOutcome_ = other.betOutcome_;
-              bitField0_ = (bitField0_ & ~0x00000020);
+              bitField0_ = (bitField0_ & ~0x00000040);
             } else {
               ensureBetOutcomeIsMutable();
               betOutcome_.addAll(other.betOutcome_);
@@ -1241,7 +1279,7 @@ public final class BetRequest {
               betOutcomeBuilder_.dispose();
               betOutcomeBuilder_ = null;
               betOutcome_ = other.betOutcome_;
-              bitField0_ = (bitField0_ & ~0x00000020);
+              bitField0_ = (bitField0_ & ~0x00000040);
               betOutcomeBuilder_ = 
                 com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                    getBetOutcomeFieldBuilder() : null;
@@ -1262,11 +1300,11 @@ public final class BetRequest {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        Bet parsedMessage = null;
+        ru.splat.messages.BetRequest.Bet parsedMessage = null;
         try {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (Bet) e.getUnfinishedMessage();
+          parsedMessage = (ru.splat.messages.BetRequest.Bet) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
@@ -1355,17 +1393,17 @@ public final class BetRequest {
         return this;
       }
 
-      private java.util.List<Integer> services_ = java.util.Collections.emptyList();
+      private java.util.List<java.lang.Integer> services_ = java.util.Collections.emptyList();
       private void ensureServicesIsMutable() {
         if (!((bitField0_ & 0x00000008) == 0x00000008)) {
-          services_ = new java.util.ArrayList<Integer>(services_);
+          services_ = new java.util.ArrayList<java.lang.Integer>(services_);
           bitField0_ |= 0x00000008;
          }
       }
       /**
        * <code>repeated int32 services = 4;</code>
        */
-      public java.util.List<Integer>
+      public java.util.List<java.lang.Integer>
           getServicesList() {
         return java.util.Collections.unmodifiableList(services_);
       }
@@ -1404,7 +1442,7 @@ public final class BetRequest {
        * <code>repeated int32 services = 4;</code>
        */
       public Builder addAllServices(
-          Iterable<? extends Integer> values) {
+          java.lang.Iterable<? extends java.lang.Integer> values) {
         ensureServicesIsMutable();
         com.google.protobuf.AbstractMessageLite.Builder.addAll(
             values, services_);
@@ -1447,22 +1485,48 @@ public final class BetRequest {
         return this;
       }
 
-      private java.util.List<BetOutcome> betOutcome_ =
+      private long time_ ;
+      /**
+       * <code>optional int64 time = 6;</code>
+       */
+      public long getTime() {
+        return time_;
+      }
+      /**
+       * <code>optional int64 time = 6;</code>
+       */
+      public Builder setTime(long value) {
+        
+        time_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional int64 time = 6;</code>
+       */
+      public Builder clearTime() {
+        
+        time_ = 0L;
+        onChanged();
+        return this;
+      }
+
+      private java.util.List<ru.splat.messages.BetRequest.Bet.BetOutcome> betOutcome_ =
         java.util.Collections.emptyList();
       private void ensureBetOutcomeIsMutable() {
-        if (!((bitField0_ & 0x00000020) == 0x00000020)) {
-          betOutcome_ = new java.util.ArrayList<BetOutcome>(betOutcome_);
-          bitField0_ |= 0x00000020;
+        if (!((bitField0_ & 0x00000040) == 0x00000040)) {
+          betOutcome_ = new java.util.ArrayList<ru.splat.messages.BetRequest.Bet.BetOutcome>(betOutcome_);
+          bitField0_ |= 0x00000040;
          }
       }
 
       private com.google.protobuf.RepeatedFieldBuilderV3<
-          BetOutcome, BetOutcome.Builder, BetOutcomeOrBuilder> betOutcomeBuilder_;
+          ru.splat.messages.BetRequest.Bet.BetOutcome, ru.splat.messages.BetRequest.Bet.BetOutcome.Builder, ru.splat.messages.BetRequest.Bet.BetOutcomeOrBuilder> betOutcomeBuilder_;
 
       /**
-       * <code>repeated .Bet.BetOutcome betOutcome = 6;</code>
+       * <code>repeated .Bet.BetOutcome betOutcome = 7;</code>
        */
-      public java.util.List<BetOutcome> getBetOutcomeList() {
+      public java.util.List<ru.splat.messages.BetRequest.Bet.BetOutcome> getBetOutcomeList() {
         if (betOutcomeBuilder_ == null) {
           return java.util.Collections.unmodifiableList(betOutcome_);
         } else {
@@ -1470,7 +1534,7 @@ public final class BetRequest {
         }
       }
       /**
-       * <code>repeated .Bet.BetOutcome betOutcome = 6;</code>
+       * <code>repeated .Bet.BetOutcome betOutcome = 7;</code>
        */
       public int getBetOutcomeCount() {
         if (betOutcomeBuilder_ == null) {
@@ -1480,9 +1544,9 @@ public final class BetRequest {
         }
       }
       /**
-       * <code>repeated .Bet.BetOutcome betOutcome = 6;</code>
+       * <code>repeated .Bet.BetOutcome betOutcome = 7;</code>
        */
-      public BetOutcome getBetOutcome(int index) {
+      public ru.splat.messages.BetRequest.Bet.BetOutcome getBetOutcome(int index) {
         if (betOutcomeBuilder_ == null) {
           return betOutcome_.get(index);
         } else {
@@ -1490,10 +1554,10 @@ public final class BetRequest {
         }
       }
       /**
-       * <code>repeated .Bet.BetOutcome betOutcome = 6;</code>
+       * <code>repeated .Bet.BetOutcome betOutcome = 7;</code>
        */
       public Builder setBetOutcome(
-          int index, BetOutcome value) {
+          int index, ru.splat.messages.BetRequest.Bet.BetOutcome value) {
         if (betOutcomeBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -1507,10 +1571,10 @@ public final class BetRequest {
         return this;
       }
       /**
-       * <code>repeated .Bet.BetOutcome betOutcome = 6;</code>
+       * <code>repeated .Bet.BetOutcome betOutcome = 7;</code>
        */
       public Builder setBetOutcome(
-          int index, BetOutcome.Builder builderForValue) {
+          int index, ru.splat.messages.BetRequest.Bet.BetOutcome.Builder builderForValue) {
         if (betOutcomeBuilder_ == null) {
           ensureBetOutcomeIsMutable();
           betOutcome_.set(index, builderForValue.build());
@@ -1521,9 +1585,9 @@ public final class BetRequest {
         return this;
       }
       /**
-       * <code>repeated .Bet.BetOutcome betOutcome = 6;</code>
+       * <code>repeated .Bet.BetOutcome betOutcome = 7;</code>
        */
-      public Builder addBetOutcome(BetOutcome value) {
+      public Builder addBetOutcome(ru.splat.messages.BetRequest.Bet.BetOutcome value) {
         if (betOutcomeBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -1537,10 +1601,10 @@ public final class BetRequest {
         return this;
       }
       /**
-       * <code>repeated .Bet.BetOutcome betOutcome = 6;</code>
+       * <code>repeated .Bet.BetOutcome betOutcome = 7;</code>
        */
       public Builder addBetOutcome(
-          int index, BetOutcome value) {
+          int index, ru.splat.messages.BetRequest.Bet.BetOutcome value) {
         if (betOutcomeBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -1554,10 +1618,10 @@ public final class BetRequest {
         return this;
       }
       /**
-       * <code>repeated .Bet.BetOutcome betOutcome = 6;</code>
+       * <code>repeated .Bet.BetOutcome betOutcome = 7;</code>
        */
       public Builder addBetOutcome(
-          BetOutcome.Builder builderForValue) {
+          ru.splat.messages.BetRequest.Bet.BetOutcome.Builder builderForValue) {
         if (betOutcomeBuilder_ == null) {
           ensureBetOutcomeIsMutable();
           betOutcome_.add(builderForValue.build());
@@ -1568,10 +1632,10 @@ public final class BetRequest {
         return this;
       }
       /**
-       * <code>repeated .Bet.BetOutcome betOutcome = 6;</code>
+       * <code>repeated .Bet.BetOutcome betOutcome = 7;</code>
        */
       public Builder addBetOutcome(
-          int index, BetOutcome.Builder builderForValue) {
+          int index, ru.splat.messages.BetRequest.Bet.BetOutcome.Builder builderForValue) {
         if (betOutcomeBuilder_ == null) {
           ensureBetOutcomeIsMutable();
           betOutcome_.add(index, builderForValue.build());
@@ -1582,10 +1646,10 @@ public final class BetRequest {
         return this;
       }
       /**
-       * <code>repeated .Bet.BetOutcome betOutcome = 6;</code>
+       * <code>repeated .Bet.BetOutcome betOutcome = 7;</code>
        */
       public Builder addAllBetOutcome(
-          Iterable<? extends BetOutcome> values) {
+          java.lang.Iterable<? extends ru.splat.messages.BetRequest.Bet.BetOutcome> values) {
         if (betOutcomeBuilder_ == null) {
           ensureBetOutcomeIsMutable();
           com.google.protobuf.AbstractMessageLite.Builder.addAll(
@@ -1597,12 +1661,12 @@ public final class BetRequest {
         return this;
       }
       /**
-       * <code>repeated .Bet.BetOutcome betOutcome = 6;</code>
+       * <code>repeated .Bet.BetOutcome betOutcome = 7;</code>
        */
       public Builder clearBetOutcome() {
         if (betOutcomeBuilder_ == null) {
           betOutcome_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000020);
+          bitField0_ = (bitField0_ & ~0x00000040);
           onChanged();
         } else {
           betOutcomeBuilder_.clear();
@@ -1610,7 +1674,7 @@ public final class BetRequest {
         return this;
       }
       /**
-       * <code>repeated .Bet.BetOutcome betOutcome = 6;</code>
+       * <code>repeated .Bet.BetOutcome betOutcome = 7;</code>
        */
       public Builder removeBetOutcome(int index) {
         if (betOutcomeBuilder_ == null) {
@@ -1623,16 +1687,16 @@ public final class BetRequest {
         return this;
       }
       /**
-       * <code>repeated .Bet.BetOutcome betOutcome = 6;</code>
+       * <code>repeated .Bet.BetOutcome betOutcome = 7;</code>
        */
-      public BetOutcome.Builder getBetOutcomeBuilder(
+      public ru.splat.messages.BetRequest.Bet.BetOutcome.Builder getBetOutcomeBuilder(
           int index) {
         return getBetOutcomeFieldBuilder().getBuilder(index);
       }
       /**
-       * <code>repeated .Bet.BetOutcome betOutcome = 6;</code>
+       * <code>repeated .Bet.BetOutcome betOutcome = 7;</code>
        */
-      public BetOutcomeOrBuilder getBetOutcomeOrBuilder(
+      public ru.splat.messages.BetRequest.Bet.BetOutcomeOrBuilder getBetOutcomeOrBuilder(
           int index) {
         if (betOutcomeBuilder_ == null) {
           return betOutcome_.get(index);  } else {
@@ -1640,9 +1704,9 @@ public final class BetRequest {
         }
       }
       /**
-       * <code>repeated .Bet.BetOutcome betOutcome = 6;</code>
+       * <code>repeated .Bet.BetOutcome betOutcome = 7;</code>
        */
-      public java.util.List<? extends BetOutcomeOrBuilder>
+      public java.util.List<? extends ru.splat.messages.BetRequest.Bet.BetOutcomeOrBuilder> 
            getBetOutcomeOrBuilderList() {
         if (betOutcomeBuilder_ != null) {
           return betOutcomeBuilder_.getMessageOrBuilderList();
@@ -1651,35 +1715,35 @@ public final class BetRequest {
         }
       }
       /**
-       * <code>repeated .Bet.BetOutcome betOutcome = 6;</code>
+       * <code>repeated .Bet.BetOutcome betOutcome = 7;</code>
        */
-      public BetOutcome.Builder addBetOutcomeBuilder() {
+      public ru.splat.messages.BetRequest.Bet.BetOutcome.Builder addBetOutcomeBuilder() {
         return getBetOutcomeFieldBuilder().addBuilder(
-            BetOutcome.getDefaultInstance());
+            ru.splat.messages.BetRequest.Bet.BetOutcome.getDefaultInstance());
       }
       /**
-       * <code>repeated .Bet.BetOutcome betOutcome = 6;</code>
+       * <code>repeated .Bet.BetOutcome betOutcome = 7;</code>
        */
-      public BetOutcome.Builder addBetOutcomeBuilder(
+      public ru.splat.messages.BetRequest.Bet.BetOutcome.Builder addBetOutcomeBuilder(
           int index) {
         return getBetOutcomeFieldBuilder().addBuilder(
-            index, BetOutcome.getDefaultInstance());
+            index, ru.splat.messages.BetRequest.Bet.BetOutcome.getDefaultInstance());
       }
       /**
-       * <code>repeated .Bet.BetOutcome betOutcome = 6;</code>
+       * <code>repeated .Bet.BetOutcome betOutcome = 7;</code>
        */
-      public java.util.List<BetOutcome.Builder>
+      public java.util.List<ru.splat.messages.BetRequest.Bet.BetOutcome.Builder> 
            getBetOutcomeBuilderList() {
         return getBetOutcomeFieldBuilder().getBuilderList();
       }
       private com.google.protobuf.RepeatedFieldBuilderV3<
-          BetOutcome, BetOutcome.Builder, BetOutcomeOrBuilder>
+          ru.splat.messages.BetRequest.Bet.BetOutcome, ru.splat.messages.BetRequest.Bet.BetOutcome.Builder, ru.splat.messages.BetRequest.Bet.BetOutcomeOrBuilder> 
           getBetOutcomeFieldBuilder() {
         if (betOutcomeBuilder_ == null) {
           betOutcomeBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
-              BetOutcome, BetOutcome.Builder, BetOutcomeOrBuilder>(
+              ru.splat.messages.BetRequest.Bet.BetOutcome, ru.splat.messages.BetRequest.Bet.BetOutcome.Builder, ru.splat.messages.BetRequest.Bet.BetOutcomeOrBuilder>(
                   betOutcome_,
-                  ((bitField0_ & 0x00000020) == 0x00000020),
+                  ((bitField0_ & 0x00000040) == 0x00000040),
                   getParentForChildren(),
                   isClean());
           betOutcome_ = null;
@@ -1701,12 +1765,12 @@ public final class BetRequest {
     }
 
     // @@protoc_insertion_point(class_scope:Bet)
-    private static final Bet DEFAULT_INSTANCE;
+    private static final ru.splat.messages.BetRequest.Bet DEFAULT_INSTANCE;
     static {
-      DEFAULT_INSTANCE = new Bet();
+      DEFAULT_INSTANCE = new ru.splat.messages.BetRequest.Bet();
     }
 
-    public static Bet getDefaultInstance() {
+    public static ru.splat.messages.BetRequest.Bet getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
@@ -1724,12 +1788,12 @@ public final class BetRequest {
       return PARSER;
     }
 
-    @Override
+    @java.lang.Override
     public com.google.protobuf.Parser<Bet> getParserForType() {
       return PARSER;
     }
 
-    public Bet getDefaultInstanceForType() {
+    public ru.splat.messages.BetRequest.Bet getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
@@ -1753,14 +1817,14 @@ public final class BetRequest {
   private static  com.google.protobuf.Descriptors.FileDescriptor
       descriptor;
   static {
-    String[] descriptorData = {
-      "\n\020BetRequest.proto\"\272\001\n\003Bet\022\020\n\010punterId\030\001" +
+    java.lang.String[] descriptorData = {
+      "\n\020BetRequest.proto\"\310\001\n\003Bet\022\020\n\010punterId\030\001" +
       " \001(\005\022\013\n\003sum\030\002 \001(\005\022\021\n\tlocalTask\030\003 \001(\005\022\020\n\010" +
-      "services\030\004 \003(\005\022\n\n\002id\030\005 \001(\003\022#\n\nbetOutcome" +
-      "\030\006 \003(\0132\017.Bet.BetOutcome\032>\n\nBetOutcome\022\017\n" +
-      "\007eventId\030\001 \001(\005\022\n\n\002id\030\002 \001(\005\022\023\n\013coefficien" +
-      "t\030\003 \001(\001B\037\n\021ru.splat.messagesB\nBetRequest" +
-      "b\006proto3"
+      "services\030\004 \003(\005\022\n\n\002id\030\005 \001(\003\022\014\n\004time\030\006 \001(\003" +
+      "\022#\n\nbetOutcome\030\007 \003(\0132\017.Bet.BetOutcome\032>\n" +
+      "\nBetOutcome\022\017\n\007eventId\030\001 \001(\005\022\n\n\002id\030\002 \001(\005" +
+      "\022\023\n\013coefficient\030\003 \001(\001B\037\n\021ru.splat.messag" +
+      "esB\nBetRequestb\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -1779,13 +1843,13 @@ public final class BetRequest {
     internal_static_Bet_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_Bet_descriptor,
-        new String[] { "PunterId", "Sum", "LocalTask", "Services", "Id", "BetOutcome", });
+        new java.lang.String[] { "PunterId", "Sum", "LocalTask", "Services", "Id", "Time", "BetOutcome", });
     internal_static_Bet_BetOutcome_descriptor =
       internal_static_Bet_descriptor.getNestedTypes().get(0);
     internal_static_Bet_BetOutcome_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_Bet_BetOutcome_descriptor,
-        new String[] { "EventId", "Id", "Coefficient", });
+        new java.lang.String[] { "EventId", "Id", "Coefficient", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)

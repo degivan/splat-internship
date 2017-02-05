@@ -1,34 +1,37 @@
 //import ru.splat.messages
 
 
-import com.google.protobuf.Descriptors;
-import com.google.protobuf.Message;
 import junit.framework.TestCase;
-import junit.framework.TestSuite;
-import org.junit.Test;
-import junit.runner.BaseTestRunner;
-import org.junit.runner.RunWith;
 import ru.splat.messages.BetRequest;
 import ru.splat.messages.conventions.ServicesEnum;
 import ru.splat.messages.conventions.TaskTypesEnum;
 import ru.splat.messages.uptm.trmetadata.*;
-import ru.splat.messages.uptm.trstate.*;
-import ru.splat.protobuf.ProtobufFactory;
+import ru.splat.messages.uptm.trmetadata.bet.AddBetTask;
+import ru.splat.messages.uptm.trmetadata.bet.BetOutcome;
+import ru.splat.messages.uptm.trmetadata.bet.FixBetTask;
+import ru.splat.tmprotobuf.ProtobufFactory;
 
 import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Created by Дмитрий on 01.01.2017.
  */
 
 public class TMTest extends TestCase {
+    private Set<ServicesEnum> services;
+    private Set<Integer> servicesOrd;
     @Override
     public void setUp() throws Exception {
         super.setUp();
-
+        services = new HashSet<>();
+        services.add(ServicesEnum.BetService);
+        services.add(ServicesEnum.EventService);
+        services.add(ServicesEnum.BillingService);
+        services.add(ServicesEnum.PunterService);
+        servicesOrd = services.stream().map(Enum::ordinal)
+                .collect(Collectors.toSet());
     }
 
     @Override
@@ -41,30 +44,25 @@ public class TMTest extends TestCase {
     }
 
     //работоспособность ProtobufFactory
-    public void testProtobuf() throws Exception {
-        Set<ServicesEnum> services = new HashSet<>();
-        //поля с сервисами и id транзакции содержатся в TransactionMetadata
-        services.add(ServicesEnum.BetService);
-        services.add(ServicesEnum.EventService);
-        services.add(ServicesEnum.BillingService);
-        services.add(ServicesEnum.PunterService);
-
-        List<BetOutcome> betOutcomes = new LinkedList<>();
+    public void testBetProtobufP1() throws Exception {
+        Set<BetOutcome> betOutcomes = new HashSet<>();
         //BetOutcome bo = new BetOutcome(1L, 2L, 3.14);
-        betOutcomes.add(new BetOutcome(1L, 2L, 3.14));
-        LocalTask bet1 = new BetTask(TaskTypesEnum.ADD_BET, 1, betOutcomes);
+        betOutcomes.add(new BetOutcome(1, 2, 3.14));
+        LocalTask bet1 = new AddBetTask(TaskTypesEnum.ADD_BET, System.currentTimeMillis(),  1, betOutcomes);
         //buidling protobuf message
-        Message betMessage = ProtobufFactory.buildProtobuf(bet1, services);
+        BetRequest.Bet betMessage = (BetRequest.Bet)ProtobufFactory.buildProtobuf(bet1, services);
         //check punter id from generated message
-        assertEquals(betMessage.getField(betMessage.getDescriptorForType().findFieldByName("punterId")), 1);
-        //List<BetOutcome> servicesOut = betMessage.getField(betMessage.getDescriptorForType().findFieldByName("services"));
-        //List<BetOutcome> servicesOut = betMessage.
-        //List<Integer> selections = new LinkedList<>(); selections.add(134); selections.add(144);
-        //LocalTask event = new EventTask(TaskTypesEnum.ADD_SELECTION_LIMIT, selections);
-    }
-
-    public void testProtobufNullFields() {
+        assertEquals(betMessage.getPunterId(), 1);
+        Set<Integer> servicesOut = new HashSet<Integer>(betMessage.getServicesList());
+        assertEquals(servicesOut, servicesOrd);
 
     }
 
+    public void testBetProtobufP2() throws Exception{
+        //test ProtobufFactory for second phase
+        LocalTask bet1 = new FixBetTask(TaskTypesEnum.FIX_BET,  1L, System.currentTimeMillis());
+        BetRequest.Bet betMessage = (BetRequest.Bet)ProtobufFactory.buildProtobuf(bet1, services);
+        assertEquals(betMessage.getId(), 1L);
+        assertTrue(betMessage.getBetOutcomeList().isEmpty());
+    }
 }

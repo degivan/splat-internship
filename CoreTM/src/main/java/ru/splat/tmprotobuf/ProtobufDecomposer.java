@@ -1,4 +1,4 @@
-package ru.splat.protobuf;
+package ru.splat.tmprotobuf;
 
 import com.google.protobuf.Message;
 import javafx.util.Pair;

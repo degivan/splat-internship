@@ -1,16 +1,17 @@
-package ru.splat.messages.uptm.trmetadata;
+package ru.splat.messages.uptm.trmetadata.punter;
 
 import ru.splat.messages.conventions.ServicesEnum;
 import ru.splat.messages.conventions.TaskTypesEnum;
+import ru.splat.messages.uptm.trmetadata.LocalTask;
 
 /**
  * Created by Дмитрий on 17.12.2016.
  */
-public class PunterTask extends LocalTask {
-    private final Long punterId;
+public class AddPunterLimitsTask extends LocalTask {
+    private final Integer punterId;
     private final ServicesEnum service = ServicesEnum.PunterService;
-    public PunterTask(TaskTypesEnum type, Long _punterId) {
-        super(type);
+    public AddPunterLimitsTask(TaskTypesEnum type, Integer _punterId, Long time) {
+        super(type, time);
         this.punterId = _punterId;
     }
 
@@ -19,7 +20,7 @@ public class PunterTask extends LocalTask {
         return service;
     }
 
-    public Long getPunterId() {
+    public Integer getPunterId() {
         return punterId;
 
     }

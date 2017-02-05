@@ -1,22 +1,22 @@
-package ru.splat.messages.uptm.trmetadata;
+package ru.splat.messages.uptm.trmetadata.bet;
 
 /**
  * Created by Дмитрий on 01.02.2017.
  */
 public class BetOutcome {
-    private final Long outcomeId;
-    private final Long eventId;
+    private final Integer outcomeId;
+    private final Integer eventId;
     private final Double coefficient;
 
-    public BetOutcome(Long outcomeId, Long eventId, Double coef) {
+    public BetOutcome(Integer outcomeId, Integer eventId, Double coef) {
         this.outcomeId = outcomeId;
         this.eventId = eventId;
         this.coefficient = coef;
     }
-    public Long getOutcomeId() {
+    public Integer getOutcomeId() {
         return outcomeId;
     }
-    public Long getEventId() {
+    public Integer getEventId() {
         return eventId;
     }
     public Double getCoefficient() {

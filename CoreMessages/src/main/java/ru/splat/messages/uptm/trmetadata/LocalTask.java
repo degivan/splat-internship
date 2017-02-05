@@ -9,10 +9,14 @@ import ru.splat.messages.conventions.TaskTypesEnum;
 //инкапсулирует одну из локальных операций транзакции
 public abstract class LocalTask {
     private final TaskTypesEnum type; //тип локальной транзакции
+    private final Long time;
 
-    public LocalTask(TaskTypesEnum type) {
+    public LocalTask(TaskTypesEnum type, Long time) {
         this.type = type;
+        this.time = time;
     }
+
+
 
     public TaskTypesEnum getType() {
         return type;
