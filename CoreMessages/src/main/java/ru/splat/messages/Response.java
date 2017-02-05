@@ -32,29 +32,29 @@ public final class Response {
     int getServices(int index);
 
     /**
-     * <code>optional string stringResult = 2;</code>
+     * <code>optional string stringAttachment = 2;</code>
      */
-    java.lang.String getStringResult();
+    java.lang.String getStringAttachment();
     /**
-     * <code>optional string stringResult = 2;</code>
+     * <code>optional string stringAttachment = 2;</code>
      */
     com.google.protobuf.ByteString
-        getStringResultBytes();
+        getStringAttachmentBytes();
 
     /**
-     * <code>optional int64 longResult = 3;</code>
+     * <code>optional int64 longAttachment = 3;</code>
      */
-    long getLongResult();
+    long getLongAttachment();
 
     /**
-     * <code>optional double doubleResult = 4;</code>
+     * <code>optional double doubleAttachment = 4;</code>
      */
-    double getDoubleResult();
+    double getDoubleAttachment();
 
     /**
-     * <code>optional bool booleanResult = 5;</code>
+     * <code>optional bool booleanAttachment = 5;</code>
      */
-    boolean getBooleanResult();
+    boolean getBooleanAttachment();
 
     /**
      * <code>optional int32 result = 6;</code>
@@ -182,10 +182,10 @@ public final class Response {
     private java.lang.Object attachmentOneof_;
     public enum AttachmentOneofCase
         implements com.google.protobuf.Internal.EnumLite {
-      STRINGRESULT(2),
-      LONGRESULT(3),
-      DOUBLERESULT(4),
-      BOOLEANRESULT(5),
+      STRINGATTACHMENT(2),
+      LONGATTACHMENT(3),
+      DOUBLEATTACHMENT(4),
+      BOOLEANATTACHMENT(5),
       ATTACHMENTONEOF_NOT_SET(0);
       private final int value;
       private AttachmentOneofCase(int value) {
@@ -201,10 +201,10 @@ public final class Response {
 
       public static AttachmentOneofCase forNumber(int value) {
         switch (value) {
-          case 2: return STRINGRESULT;
-          case 3: return LONGRESULT;
-          case 4: return DOUBLERESULT;
-          case 5: return BOOLEANRESULT;
+          case 2: return STRINGATTACHMENT;
+          case 3: return LONGATTACHMENT;
+          case 4: return DOUBLEATTACHMENT;
+          case 5: return BOOLEANATTACHMENT;
           case 0: return ATTACHMENTONEOF_NOT_SET;
           default: return null;
         }
@@ -243,11 +243,11 @@ public final class Response {
     }
     private int servicesMemoizedSerializedSize = -1;
 
-    public static final int STRINGRESULT_FIELD_NUMBER = 2;
+    public static final int STRINGATTACHMENT_FIELD_NUMBER = 2;
     /**
-     * <code>optional string stringResult = 2;</code>
+     * <code>optional string stringAttachment = 2;</code>
      */
-    public java.lang.String getStringResult() {
+    public java.lang.String getStringAttachment() {
       java.lang.Object ref = "";
       if (attachmentOneofCase_ == 2) {
         ref = attachmentOneof_;
@@ -265,10 +265,10 @@ public final class Response {
       }
     }
     /**
-     * <code>optional string stringResult = 2;</code>
+     * <code>optional string stringAttachment = 2;</code>
      */
     public com.google.protobuf.ByteString
-        getStringResultBytes() {
+        getStringAttachmentBytes() {
       java.lang.Object ref = "";
       if (attachmentOneofCase_ == 2) {
         ref = attachmentOneof_;
@@ -286,33 +286,33 @@ public final class Response {
       }
     }
 
-    public static final int LONGRESULT_FIELD_NUMBER = 3;
+    public static final int LONGATTACHMENT_FIELD_NUMBER = 3;
     /**
-     * <code>optional int64 longResult = 3;</code>
+     * <code>optional int64 longAttachment = 3;</code>
      */
-    public long getLongResult() {
+    public long getLongAttachment() {
       if (attachmentOneofCase_ == 3) {
         return (java.lang.Long) attachmentOneof_;
       }
       return 0L;
     }
 
-    public static final int DOUBLERESULT_FIELD_NUMBER = 4;
+    public static final int DOUBLEATTACHMENT_FIELD_NUMBER = 4;
     /**
-     * <code>optional double doubleResult = 4;</code>
+     * <code>optional double doubleAttachment = 4;</code>
      */
-    public double getDoubleResult() {
+    public double getDoubleAttachment() {
       if (attachmentOneofCase_ == 4) {
         return (java.lang.Double) attachmentOneof_;
       }
       return 0D;
     }
 
-    public static final int BOOLEANRESULT_FIELD_NUMBER = 5;
+    public static final int BOOLEANATTACHMENT_FIELD_NUMBER = 5;
     /**
-     * <code>optional bool booleanResult = 5;</code>
+     * <code>optional bool booleanAttachment = 5;</code>
      */
-    public boolean getBooleanResult() {
+    public boolean getBooleanAttachment() {
       if (attachmentOneofCase_ == 5) {
         return (java.lang.Boolean) attachmentOneof_;
       }
@@ -434,22 +434,22 @@ public final class Response {
       if (!result) return false;
       switch (attachmentOneofCase_) {
         case 2:
-          result = result && getStringResult()
-              .equals(other.getStringResult());
+          result = result && getStringAttachment()
+              .equals(other.getStringAttachment());
           break;
         case 3:
-          result = result && (getLongResult()
-              == other.getLongResult());
+          result = result && (getLongAttachment()
+              == other.getLongAttachment());
           break;
         case 4:
           result = result && (
-              java.lang.Double.doubleToLongBits(getDoubleResult())
+              java.lang.Double.doubleToLongBits(getDoubleAttachment())
               == java.lang.Double.doubleToLongBits(
-                  other.getDoubleResult()));
+                  other.getDoubleAttachment()));
           break;
         case 5:
-          result = result && (getBooleanResult()
-              == other.getBooleanResult());
+          result = result && (getBooleanAttachment()
+              == other.getBooleanAttachment());
           break;
         case 0:
         default:
@@ -472,23 +472,23 @@ public final class Response {
       hash = (53 * hash) + getResult();
       switch (attachmentOneofCase_) {
         case 2:
-          hash = (37 * hash) + STRINGRESULT_FIELD_NUMBER;
-          hash = (53 * hash) + getStringResult().hashCode();
+          hash = (37 * hash) + STRINGATTACHMENT_FIELD_NUMBER;
+          hash = (53 * hash) + getStringAttachment().hashCode();
           break;
         case 3:
-          hash = (37 * hash) + LONGRESULT_FIELD_NUMBER;
+          hash = (37 * hash) + LONGATTACHMENT_FIELD_NUMBER;
           hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
-              getLongResult());
+              getLongAttachment());
           break;
         case 4:
-          hash = (37 * hash) + DOUBLERESULT_FIELD_NUMBER;
+          hash = (37 * hash) + DOUBLEATTACHMENT_FIELD_NUMBER;
           hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
-              java.lang.Double.doubleToLongBits(getDoubleResult()));
+              java.lang.Double.doubleToLongBits(getDoubleAttachment()));
           break;
         case 5:
-          hash = (37 * hash) + BOOLEANRESULT_FIELD_NUMBER;
+          hash = (37 * hash) + BOOLEANATTACHMENT_FIELD_NUMBER;
           hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
-              getBooleanResult());
+              getBooleanAttachment());
           break;
         case 0:
         default:
@@ -716,22 +716,22 @@ public final class Response {
           setResult(other.getResult());
         }
         switch (other.getAttachmentOneofCase()) {
-          case STRINGRESULT: {
+          case STRINGATTACHMENT: {
             attachmentOneofCase_ = 2;
             attachmentOneof_ = other.attachmentOneof_;
             onChanged();
             break;
           }
-          case LONGRESULT: {
-            setLongResult(other.getLongResult());
+          case LONGATTACHMENT: {
+            setLongAttachment(other.getLongAttachment());
             break;
           }
-          case DOUBLERESULT: {
-            setDoubleResult(other.getDoubleResult());
+          case DOUBLEATTACHMENT: {
+            setDoubleAttachment(other.getDoubleAttachment());
             break;
           }
-          case BOOLEANRESULT: {
-            setBooleanResult(other.getBooleanResult());
+          case BOOLEANATTACHMENT: {
+            setBooleanAttachment(other.getBooleanAttachment());
             break;
           }
           case ATTACHMENTONEOF_NOT_SET: {
@@ -847,9 +847,9 @@ public final class Response {
       }
 
       /**
-       * <code>optional string stringResult = 2;</code>
+       * <code>optional string stringAttachment = 2;</code>
        */
-      public java.lang.String getStringResult() {
+      public java.lang.String getStringAttachment() {
         java.lang.Object ref = "";
         if (attachmentOneofCase_ == 2) {
           ref = attachmentOneof_;
@@ -867,10 +867,10 @@ public final class Response {
         }
       }
       /**
-       * <code>optional string stringResult = 2;</code>
+       * <code>optional string stringAttachment = 2;</code>
        */
       public com.google.protobuf.ByteString
-          getStringResultBytes() {
+          getStringAttachmentBytes() {
         java.lang.Object ref = "";
         if (attachmentOneofCase_ == 2) {
           ref = attachmentOneof_;
@@ -888,9 +888,9 @@ public final class Response {
         }
       }
       /**
-       * <code>optional string stringResult = 2;</code>
+       * <code>optional string stringAttachment = 2;</code>
        */
-      public Builder setStringResult(
+      public Builder setStringAttachment(
           java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
@@ -901,9 +901,9 @@ public final class Response {
         return this;
       }
       /**
-       * <code>optional string stringResult = 2;</code>
+       * <code>optional string stringAttachment = 2;</code>
        */
-      public Builder clearStringResult() {
+      public Builder clearStringAttachment() {
         if (attachmentOneofCase_ == 2) {
           attachmentOneofCase_ = 0;
           attachmentOneof_ = null;
@@ -912,9 +912,9 @@ public final class Response {
         return this;
       }
       /**
-       * <code>optional string stringResult = 2;</code>
+       * <code>optional string stringAttachment = 2;</code>
        */
-      public Builder setStringResultBytes(
+      public Builder setStringAttachmentBytes(
           com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
@@ -927,27 +927,27 @@ public final class Response {
       }
 
       /**
-       * <code>optional int64 longResult = 3;</code>
+       * <code>optional int64 longAttachment = 3;</code>
        */
-      public long getLongResult() {
+      public long getLongAttachment() {
         if (attachmentOneofCase_ == 3) {
           return (java.lang.Long) attachmentOneof_;
         }
         return 0L;
       }
       /**
-       * <code>optional int64 longResult = 3;</code>
+       * <code>optional int64 longAttachment = 3;</code>
        */
-      public Builder setLongResult(long value) {
+      public Builder setLongAttachment(long value) {
         attachmentOneofCase_ = 3;
         attachmentOneof_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>optional int64 longResult = 3;</code>
+       * <code>optional int64 longAttachment = 3;</code>
        */
-      public Builder clearLongResult() {
+      public Builder clearLongAttachment() {
         if (attachmentOneofCase_ == 3) {
           attachmentOneofCase_ = 0;
           attachmentOneof_ = null;
@@ -957,27 +957,27 @@ public final class Response {
       }
 
       /**
-       * <code>optional double doubleResult = 4;</code>
+       * <code>optional double doubleAttachment = 4;</code>
        */
-      public double getDoubleResult() {
+      public double getDoubleAttachment() {
         if (attachmentOneofCase_ == 4) {
           return (java.lang.Double) attachmentOneof_;
         }
         return 0D;
       }
       /**
-       * <code>optional double doubleResult = 4;</code>
+       * <code>optional double doubleAttachment = 4;</code>
        */
-      public Builder setDoubleResult(double value) {
+      public Builder setDoubleAttachment(double value) {
         attachmentOneofCase_ = 4;
         attachmentOneof_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>optional double doubleResult = 4;</code>
+       * <code>optional double doubleAttachment = 4;</code>
        */
-      public Builder clearDoubleResult() {
+      public Builder clearDoubleAttachment() {
         if (attachmentOneofCase_ == 4) {
           attachmentOneofCase_ = 0;
           attachmentOneof_ = null;
@@ -987,27 +987,27 @@ public final class Response {
       }
 
       /**
-       * <code>optional bool booleanResult = 5;</code>
+       * <code>optional bool booleanAttachment = 5;</code>
        */
-      public boolean getBooleanResult() {
+      public boolean getBooleanAttachment() {
         if (attachmentOneofCase_ == 5) {
           return (java.lang.Boolean) attachmentOneof_;
         }
         return false;
       }
       /**
-       * <code>optional bool booleanResult = 5;</code>
+       * <code>optional bool booleanAttachment = 5;</code>
        */
-      public Builder setBooleanResult(boolean value) {
+      public Builder setBooleanAttachment(boolean value) {
         attachmentOneofCase_ = 5;
         attachmentOneof_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>optional bool booleanResult = 5;</code>
+       * <code>optional bool booleanAttachment = 5;</code>
        */
-      public Builder clearBooleanResult() {
+      public Builder clearBooleanAttachment() {
         if (attachmentOneofCase_ == 5) {
           attachmentOneofCase_ = 0;
           attachmentOneof_ = null;
@@ -1104,12 +1104,12 @@ public final class Response {
       descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n\016Response.proto\"\246\001\n\017ServiceResponse\022\020\n\010" +
-      "services\030\001 \003(\005\022\026\n\014stringResult\030\002 \001(\tH\000\022\024" +
-      "\n\nlongResult\030\003 \001(\003H\000\022\026\n\014doubleResult\030\004 \001" +
-      "(\001H\000\022\027\n\rbooleanResult\030\005 \001(\010H\000\022\016\n\006result\030" +
-      "\006 \001(\005B\022\n\020attachment_oneofB\035\n\021ru.splat.me" +
-      "ssagesB\010Responseb\006proto3"
+      "\n\016Response.proto\"\266\001\n\017ServiceResponse\022\020\n\010" +
+      "services\030\001 \003(\005\022\032\n\020stringAttachment\030\002 \001(\t" +
+      "H\000\022\030\n\016longAttachment\030\003 \001(\003H\000\022\032\n\020doubleAt" +
+      "tachment\030\004 \001(\001H\000\022\033\n\021booleanAttachment\030\005 " +
+      "\001(\010H\000\022\016\n\006result\030\006 \001(\005B\022\n\020attachment_oneo" +
+      "fB\035\n\021ru.splat.messagesB\010Responseb\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -1128,7 +1128,7 @@ public final class Response {
     internal_static_ServiceResponse_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_ServiceResponse_descriptor,
-        new java.lang.String[] { "Services", "StringResult", "LongResult", "DoubleResult", "BooleanResult", "Result", "AttachmentOneof", });
+        new java.lang.String[] { "Services", "StringAttachment", "LongAttachment", "DoubleAttachment", "BooleanAttachment", "Result", "AttachmentOneof", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)
