@@ -28,7 +28,7 @@ public class TMStarterImpl implements TMStarter {
     public void processTransaction(TransactionMetadata trMetadata) {
         List<LocalTask> taskList = trMetadata.getLocalTasks();
         Long transactionId = trMetadata.getTransactionId();
-        System.out.println("PhstransactionId " + transactionId);
+        System.out.println("TMStarter: transactionId " + transactionId);
         //отправка кафке
         //быдлокод
         Set<ServicesEnum> services = taskList.stream().map(task -> task.getService())
@@ -46,8 +46,11 @@ public class TMStarterImpl implements TMStarter {
 
     //отправка одного сообщения
     private void send(String topic, Long transactionId, Message message) {
+        System.out.println("TMStarter: topic " + topic);
+        producer.send(new ProducerRecord<Long, Message>(topic, transactionId, message));
+
         //дописать переотправку и батч
-        while(true)
+        /*while(true)
             try {
                 Future isSend = producer.send(new ProducerRecord<Long, Message>(topic, transactionId, message));
                 producer.flush();
@@ -56,7 +59,7 @@ public class TMStarterImpl implements TMStarter {
             catch (Exception e) {
                 System.out.println("TMStarter: send failed");
                 continue;
-            }
+            }*/
 
 
 

@@ -13,8 +13,11 @@ import ru.splat.messages.uptm.trmetadata.bet.BetOutcome;
 import ru.splat.messages.uptm.trmetadata.bet.FixBetTask;
 import ru.splat.messages.uptm.trmetadata.punter.AddPunterLimitsTask;
 import ru.splat.messages.uptm.trstate.ServiceResponse;
+import ru.splat.mocks.BetServiceMock;
 import ru.splat.tm.TMStarter;
 import ru.splat.tm.TMStarterImpl;
+import ru.splat.tmkafka.TMConsumer;
+import ru.splat.tmkafka.TMConsumerImpl;
 import ru.splat.tmprotobuf.ResponseParser;
 import ru.splat.tmprotobuf.ResponseParserImpl;
 import ru.splat.tmprotobuf.ProtobufFactory;
@@ -36,10 +39,12 @@ public class TMTest extends TestCase {
     private ProtobufFactory protobufFactory;
     private ResponseParser responseParser;
     private TMStarter tmStarter;
+    private TMConsumerImpl tmConsumer;
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
+
         services = new HashSet<>();
         services.add(ServicesEnum.BetService);
         services.add(ServicesEnum.EventService);
@@ -51,6 +56,7 @@ public class TMTest extends TestCase {
         protobufFactory = new ProtobufFactoryImpl();
         responseParser = new ResponseParserImpl();
         tmStarter = new TMStarterImpl();
+        //tmConsumer = new TMConsumerImpl();
     }
 
     @Override
@@ -61,6 +67,16 @@ public class TMTest extends TestCase {
     public TMTest() {
         //addTestSuite(TMTest.class);
     }
+
+    public void testTMConsumer() {  //test consumer and responseParser work
+        tmConsumer = new TMConsumerImpl();
+        BetServiceMock betServiceMock = new BetServiceMock();
+
+        betServiceMock.sendRoutine();
+        int pollCount = tmConsumer.pollRecords().count(); System.out.println("PollCount: " + pollCount);
+        assertEquals(pollCount, 0);
+    }
+
     //TMStarter
     public void testTMStarter() {
         /*try {
@@ -74,7 +90,7 @@ public class TMTest extends TestCase {
         List<LocalTask> tasks = new LinkedList<>(); tasks.add(fixBet1); tasks.add(punterTask1);
         TransactionMetadata transactionMetadata = new TransactionMetadata(111L, tasks);
 
-        tmStarter.processTransaction(transactionMetadata);  //результат у тестового консюмера
+        //tmStarter.processTransaction(transactionMetadata);  //результат у тестового консюмера
     }
 
 
@@ -111,6 +127,8 @@ public class TMTest extends TestCase {
         System.out.println(serviceResponse.getAttachment());
         assertEquals(serviceResponse.getAttachment(), true);
     }
+
+
 
 
 
