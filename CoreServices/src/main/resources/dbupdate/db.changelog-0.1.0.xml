@@ -109,8 +109,6 @@
             <column name="record_timestamp" type="bigint"/>
         </createTable>
 
-
-
         <createTable tableName="bet">
             <column autoIncrement="true" name="id" type="int"/>
             <column name="blob" type="bytea"/>

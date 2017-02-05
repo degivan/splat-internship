@@ -31,8 +31,11 @@ public class EventBusinessService implements BusinessService<EventInfo>,LimitSer
     EventRepository eventRepository;
 
     @ManagedOperation
-    public synchronized void setLimit(int id, int lim, int limitTime)
+    public synchronized void setLimit(int id, int lim, int limitTime, String timeType)
     {
+        if (timeType.equals("sec")) { limitTime *= 1000;}
+        else if (timeType.equals("min")) {limitTime *= 60*1000;}
+        else return;
        JmxUtil.set(new Limit(id, lim,limitTime), eventRepository, dequeMap);
     }
 

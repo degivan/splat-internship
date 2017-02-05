@@ -41,8 +41,11 @@ public class PunterBusinessService implements BusinessService<PunterInfo>, Limit
     }
 
     @ManagedOperation
-    public synchronized void setPunterLimit(int id, int lim, int limitTime)
+    public synchronized void setPunterLimit(int id, int lim, int limitTime, String timeType)
     {
+        if (timeType.equals("sec")) { limitTime *= 1000;}
+        else if (timeType.equals("min")) {limitTime *= 60*1000;}
+        else return;
         JmxUtil.set(new Limit(id, lim,limitTime),punterRepository,dequeMap);
     }
 

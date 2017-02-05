@@ -4,7 +4,7 @@ option java_outer_classname = "PunterRequest";
 
 message Punter {
   int32 punter_id = 1;
-  int32 local_task = 2;
-  repeated int32 services = 3;
-  int64 time = 4;
-}
+   int32 local_task = 2;
+   repeated int32 services = 3;
+   int64 time = 4;
+ }
