@@ -83,6 +83,7 @@ public class BillingBusinessService implements BusinessService<BillingInfo>
                     Response.ServiceResponse.newBuilder()
                             .setResult(check?ServiceResult.CONFIRMED.ordinal():ServiceResult.DENIED.ordinal())
                             .addAllServices(billingInfo.getServices()).build()
+
             ));
         }
 

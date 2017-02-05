@@ -12,8 +12,10 @@ import ru.splat.messages.uptm.trstate.ServiceResponse;
 public class ResponseParserImpl implements ResponseParser {
     @Override
     public ServiceResponse unpackMessage(Message message) {
-        if (message instanceof Response.ServiceResponse) {System.out.println("CONFIRMED");
-            return new ServiceResponse<Integer>(1, ServiceResult.CONFIRMED);}
-        else {System.out.println("DENIED"); return new ServiceResponse<Integer>(2, ServiceResult.DENIED);}
+        //if (message instanceof Response.ServiceResponse) {
+            Object attachment = ((Response.ServiceResponse) message).getAttachmentOneofCase();
+            return new ServiceResponse(attachment, ServiceResult.CONFIRMED);
+       // }
+        //else
     }
 }

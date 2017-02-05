@@ -10,17 +10,23 @@ import ru.splat.messages.uptm.trmetadata.LocalTask;
 public class CancelBetTask extends LocalTask{
     private final Long betId;
 
+
     public Long getBetId() {
         return betId;
     }
 
-    public CancelBetTask(TaskTypesEnum type, Long time, Long betId) {
-        super(type, time);
+    public CancelBetTask(Long betId, Long time) {
+        super(time);
         this.betId = betId;
     }
 
     @Override
+    public TaskTypesEnum getType() {
+        return TaskTypesEnum.CANCEL_BET;
+    }
+
+    @Override
     public ServicesEnum getService() {
-        return null;
+        return ServicesEnum.BetService;
     }
 }

@@ -1,6 +1,7 @@
 //import ru.splat.messages
 
 
+import com.google.protobuf.Message;
 import junit.framework.TestCase;
 import ru.splat.messages.BetRequest;
 import ru.splat.messages.Response;
@@ -10,6 +11,7 @@ import ru.splat.messages.uptm.trmetadata.*;
 import ru.splat.messages.uptm.trmetadata.bet.AddBetTask;
 import ru.splat.messages.uptm.trmetadata.bet.BetOutcome;
 import ru.splat.messages.uptm.trmetadata.bet.FixBetTask;
+import ru.splat.messages.uptm.trstate.ServiceResponse;
 import ru.splat.tmprotobuf.ResponseParser;
 import ru.splat.tmprotobuf.ResponseParserImpl;
 import ru.splat.tmprotobuf.ProtobufFactory;
@@ -27,7 +29,7 @@ public class TMTest extends TestCase {
     private Set<ServicesEnum> services;
     private Set<Integer> servicesOrd;
     private ProtobufFactory protobufFactory;
-    private ResponseParser protobufDecomposer;
+    private ResponseParser responseParser;
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -40,7 +42,7 @@ public class TMTest extends TestCase {
                 .collect(Collectors.toSet());
 
         protobufFactory = new ProtobufFactoryImpl();
-        protobufDecomposer = new ResponseParserImpl();
+        responseParser = new ResponseParserImpl();
     }
 
     @Override
@@ -74,10 +76,13 @@ public class TMTest extends TestCase {
         assertEquals(betMessage.getId(), 1L);
         assertTrue(betMessage.getBetOutcomeList().isEmpty());
     }
-
+    //проверить после получения от кафки
     public void testResponseParser() {
-        Response.ServiceResponse.newBuilder().addAllServices(servicesOrd)
-                .
+        Message message = Response.ServiceResponse.newBuilder().addAllServices(servicesOrd)
+               .setLongAttachment(100L).setResult(1).build();
+        ServiceResponse<Long> serviceResponse = responseParser.unpackMessage(message);
+        assertTrue(message instanceof Response.ServiceResponse);
+        //assertEquals(serviceResponse.getAttachment(), 100L);
     }
 
 

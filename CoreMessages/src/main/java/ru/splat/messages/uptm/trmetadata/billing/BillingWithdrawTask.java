@@ -12,13 +12,18 @@ public class BillingWithdrawTask extends LocalTask {
     private final Integer sum;
     private final ServicesEnum service = ServicesEnum.BillingService;
 
-    public BillingWithdrawTask(TaskTypesEnum type, Long time, Integer _punterId, Integer sum) {
-        super(type, time);
+    public BillingWithdrawTask(Integer _punterId, Integer sum, Long time) {
+        super(time);
         this.punterId = _punterId;
         this.sum = sum;
     }
     public Integer getSum() {
         return sum;
+    }
+
+    @Override
+    public TaskTypesEnum getType() {
+        return TaskTypesEnum.WITHDRAW;
     }
 
     @Override

@@ -13,12 +13,17 @@ public class AddSelectionLimitsTask extends LocalTask {
     private final Set<Integer> selections;
     private final ServicesEnum service = ServicesEnum.EventService;
 
-    public AddSelectionLimitsTask(TaskTypesEnum type, Long time,
-                                  Set<Integer> selections) {
-        super(type, time);
+    public AddSelectionLimitsTask(
+                                  Set<Integer> selections, Long time) {
+        super(time);
         this.selections = selections;
     }
 
+
+    @Override
+    public TaskTypesEnum getType() {
+        return TaskTypesEnum.ADD_SELECTION_LIMIT;
+    }
 
     public ServicesEnum getService() {
         return service;

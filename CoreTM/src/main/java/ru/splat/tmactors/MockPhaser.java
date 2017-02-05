@@ -24,12 +24,12 @@ public class MockPhaser extends UntypedActor {
 
     public void onReceive(Object o) throws Exception {
         if (o instanceof Long) {
-            Long trid = (Long) o;
+           /* Long trid = (Long) o;
            // ActorRef tmActor = getContext().actorFor("tmActor");
             List<LocalTask> taskList = new LinkedList<LocalTask>();
             AddPunterLimitsTask pt = new AddPunterLimitsTask(TaskTypesEnum.ADD_PUNTER_LIMITS, 10 - trid, System.currentTimeMillis());
             TransactionMetadata trMet = new TransactionMetadata(trid, taskList);
-            tmActor.tell(trMet, getSelf());
+            tmActor.tell(trMet, getSelf());*/
         }
 
     }

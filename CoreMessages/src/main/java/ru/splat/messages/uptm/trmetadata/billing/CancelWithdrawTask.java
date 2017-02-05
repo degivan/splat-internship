@@ -13,8 +13,8 @@ public class CancelWithdrawTask extends LocalTask {
     private final Integer sum;
     private final ServicesEnum service = ServicesEnum.BillingService;
 
-    public CancelWithdrawTask(TaskTypesEnum type, Long time, Integer punterId, Integer sum) {
-        super(type, time);
+    public CancelWithdrawTask(Integer punterId, Integer sum, Long time) {
+        super(time);
         this.punterId = punterId;
         this.sum = sum;
     }
@@ -28,7 +28,12 @@ public class CancelWithdrawTask extends LocalTask {
     }
 
     @Override
+    public TaskTypesEnum getType() {
+        return TaskTypesEnum.CANCEL_RESERVE;
+    }
+
+    @Override
     public ServicesEnum getService() {
-        return null;
+        return service;
     }
 }
