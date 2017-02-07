@@ -24,8 +24,8 @@ public  class TMActor extends UntypedActor {
             tmFinalizer.tell(message, getSelf());
             tmStarter.processTransaction((TransactionMetadata) message);
         }
-        else if (message instanceof SendBatchMessage) {
-            //tmStarter.sendBatch()
+        if (message instanceof SendBatchMessage) {
+            tmStarter.sendBatch();
         }
         else {
             unhandled(message);

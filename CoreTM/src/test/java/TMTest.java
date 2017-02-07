@@ -38,7 +38,7 @@ public class TMTest extends TestCase {
     private Set<Integer> servicesOrd;
     private ProtobufFactory protobufFactory;
     private ResponseParser responseParser;
-    private TMStarter tmStarter;
+    //private TMStarter tmStarter;
     private TMConsumerImpl tmConsumer;
 
     public void testTMActors() {
@@ -57,20 +57,20 @@ public class TMTest extends TestCase {
     }
 
     //TMStarter
-    public void testTMStarter() {
+    /*public void testTMStarter() {
         /*try {
             Thread.sleep(4000);
         } catch (InterruptedException e) {
             e.printStackTrace();
-        }*/
+        }
         Long time = System.currentTimeMillis();
         LocalTask fixBet1 = new FixBetTask(20L, time);
         LocalTask punterTask1 = new AddPunterLimitsTask(135, time);
         List<LocalTask> tasks = new LinkedList<>(); tasks.add(fixBet1); tasks.add(punterTask1);
         TransactionMetadata transactionMetadata = new TransactionMetadata(111L, tasks);
 
-        //tmStarter.processTransaction(transactionMetadata);  //результат у тестового консюмера
-    }
+        tmStarter.processTransaction(transactionMetadata);  //результат у тестового консюмера
+    }*/
 
 
 
@@ -124,7 +124,7 @@ public class TMTest extends TestCase {
 
         protobufFactory = new ProtobufFactoryImpl();
         responseParser = new ResponseParserImpl();
-        tmStarter = new TMStarterImpl();
+        //tmStarter = new TMStarterImpl();
         //tmConsumer = new TMConsumerImpl();
     }
 
