@@ -8,8 +8,13 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import ru.splat.messages.conventions.TaskTypesEnum;
 import ru.splat.tm.AbsActor;
+import ru.splat.tm.TMActor;
+import ru.splat.tm.TMConsumerActor;
 import ru.splat.tmactors.MockRegistry;
+import ru.splat.tmactors.PollMsg;
 import ru.splat.tmactors.TaskSent;
+import ru.splat.tmprotobuf.ResponseParser;
+import ru.splat.tmprotobuf.ResponseParserImpl;
 import scala.concurrent.duration.Duration;
 
 import java.util.concurrent.TimeUnit;
@@ -24,9 +29,10 @@ public class Main {
                 new ClassPathXmlApplicationContext("beans.xml");*/
 
         ActorSystem system = ActorSystem.create("testactors");
-        final ActorRef absActor = system.actorOf(Props.create(AbsActor.class), "absActor");
+        final ActorRef tmActor = system.actorOf(Props.create(TMActor.class), "TMActor");
+        final ActorRef consumerActor = system.actorOf(Props.create(TMConsumerActor.class, tmActor, new ResponseParserImpl()), "TMConsumerActor");
         Cancellable cancellable = system.scheduler().schedule(Duration.Zero(),
-                Duration.create(200, TimeUnit.MILLISECONDS), absActor, new TaskSent(1L, TaskTypesEnum.ADD_BET),
+                Duration.create(500, TimeUnit.MILLISECONDS), consumerActor, new PollMsg(),
                 system.dispatcher(), null);
         /*ActorsStarter actorsStarter = (ActorsStarter) appContext.getBean("ActorsStarter");
         actorsStarter.initActors();*/

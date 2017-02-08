@@ -10,21 +10,13 @@ import junit.framework.TestCase;
 import ru.splat.messages.BetRequest;
 import ru.splat.messages.Response;
 import ru.splat.messages.conventions.ServicesEnum;
-import ru.splat.messages.conventions.TaskTypesEnum;
 import ru.splat.messages.uptm.trmetadata.*;
 import ru.splat.messages.uptm.trmetadata.bet.AddBetTask;
 import ru.splat.messages.uptm.trmetadata.bet.BetOutcome;
 import ru.splat.messages.uptm.trmetadata.bet.FixBetTask;
-import ru.splat.messages.uptm.trmetadata.punter.AddPunterLimitsTask;
 import ru.splat.messages.uptm.trstate.ServiceResponse;
-import ru.splat.mocks.BetServiceMock;
-import ru.splat.tm.AbsActor;
-import ru.splat.tm.TMConsumerActor;
-import ru.splat.tm.TMStarter;
-import ru.splat.tm.TMStarterImpl;
-import ru.splat.tmactors.PollMessage;
-import ru.splat.tmactors.TaskSent;
-import ru.splat.tmkafka.TMConsumer;
+import ru.splat.tm.*;
+import ru.splat.tmactors.PollMsg;
 import ru.splat.tmkafka.TMConsumerImpl;
 import ru.splat.tmprotobuf.ResponseParser;
 import ru.splat.tmprotobuf.ResponseParserImpl;
@@ -33,8 +25,6 @@ import ru.splat.tmprotobuf.ProtobufFactoryImpl;
 import scala.concurrent.duration.Duration;
 
 import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -53,9 +43,10 @@ public class TMTest extends TestCase {
 
     public void testTMConsumerActor() {
         ActorSystem system = ActorSystem.create("testactors");
-        final ActorRef consumerActor = system.actorOf(Props.create(TMConsumerActor.class), "TMConsumerActor");
+        final ActorRef tmActor = system.actorOf(Props.create(TMActor.class), "TMActor");
+        final ActorRef consumerActor = system.actorOf(Props.create(TMConsumerActor.class, tmActor, responseParser), "TMConsumerActor");
         Cancellable cancellable = system.scheduler().schedule(Duration.Zero(),
-                Duration.create(200, TimeUnit.MILLISECONDS), consumerActor, new PollMessage(),
+                Duration.create(500, TimeUnit.MILLISECONDS), consumerActor, new PollMsg(),
                 system.dispatcher(), null);
     }
 

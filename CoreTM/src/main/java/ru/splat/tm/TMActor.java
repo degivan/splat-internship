@@ -13,7 +13,8 @@ import ru.splat.messages.conventions.TaskTypesEnum;
 import ru.splat.messages.uptm.trmetadata.LocalTask;
 import ru.splat.messages.uptm.trmetadata.TransactionMetadata;
 import ru.splat.messages.uptm.trstate.ServiceResponse;
-import ru.splat.tmactors.SendBatchMessage;
+import ru.splat.messages.uptm.trstate.TransactionState;
+import ru.splat.tmactors.ServiceResponseMsg;
 import ru.splat.tmactors.TaskSent;
 import ru.splat.tmprotobuf.ProtobufFactory;
 
@@ -27,16 +28,17 @@ import java.util.stream.Collectors;
 public  class TMActor extends AbstractActor {
     @Autowired
     private ProtobufFactory protobufFactory;
-    private TMStarter tmStarter;
-    private ActorRef tmFinalizer;
     private KafkaProducer<Long, Message> producer;
 
     @Override
     public Receive createReceive() {
         return receiveBuilder()
-                .match(TransactionMetadata.class, this::processTransaction)
+                .match(TransactionMetadata.class, m -> {
+                    createTransactionState(m);
+                    processTransaction(m);
+                })
                 .match(TaskSent.class, this::setIsSent)
-                .match(ServiceResponse.class, this::processResponse)
+                .match(ServiceResponseMsg.class, this::processResponse)
                 .build();
     }
 
@@ -44,8 +46,17 @@ public  class TMActor extends AbstractActor {
         System.out.println("task " + m.getTaskType().toString() + " of " + m.getTransactionId() + " is sent");
     }
 
+    //создание стейта транзакции при получении ответа от сервисов (а надо ли?)
     public void createTransactionState(Long transactionId, Map<TaskTypesEnum, ServiceResponse> localStates) {
 
+    }
+    //создание стейта транзакции из метадаты
+    public void createTransactionState(TransactionMetadata transactionMetadata) {
+        /*Map<TaskTypesEnum, ServiceResponse> responseMap = transactionMetadata.getLocalTasks().stream()
+                .map(localTask -> new ServiceResponse())
+
+        TransactionState transactionState = new TransactionState(transactionMetadata.getTransactionId(),
+                );*/
     }
 
 
@@ -74,14 +85,11 @@ public  class TMActor extends AbstractActor {
                 (metadata, e) -> if(e) getSelf().tell());*/
     }
 
-
-    private void processResponse(ServiceResponse sr) {
+    private void processResponse(ServiceResponseMsg sr) {
 
     }
 
-    public TMActor(TMStarter tmStarter, ActorRef tmFinalizer) {
-        this.tmStarter = tmStarter;
-        this.tmFinalizer = tmFinalizer;
+    public TMActor() {
         Properties propsProducer = new Properties();
         propsProducer.put("bootstrap.servers", "localhost:9092");
         propsProducer.put("acks", "all");
@@ -100,6 +108,7 @@ public  class TMActor extends AbstractActor {
         TOPICS_MAP.put(ServicesEnum.BillingService, "BillingReq");
         TOPICS_MAP.put(ServicesEnum.PunterService, "PunterReq");
     }
+
 
 
 }
