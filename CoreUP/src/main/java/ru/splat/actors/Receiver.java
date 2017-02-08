@@ -32,9 +32,9 @@ public class Receiver extends UntypedActor {
     private final ActorRef idGenerator;
     private final ActorRef tmActor;
 
-    private final Set<Long> userIds;
+    private final Set<Integer> userIds;
     private final Map<Long, Transaction.State> results;
-    private final Map<Long, ActorRef> current;
+    private final Map<Integer, ActorRef> current;
 
     public Receiver(ActorRef registry, ActorRef idGenerator, ActorRef tmActor) {
         this.registry = registry;
@@ -75,7 +75,7 @@ public class Receiver extends UntypedActor {
 
     private void processNewRequest(NewRequest message) {
         BetInfo betInfo = message.getBetInfo();
-        Long userId = betInfo.getUserId();
+        Integer userId = betInfo.getUserId();
         boolean alreadyActive = userIds.contains(userId);
 
         if(alreadyActive) {

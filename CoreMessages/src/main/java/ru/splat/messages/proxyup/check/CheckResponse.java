@@ -8,7 +8,7 @@ import ru.splat.messages.proxyup.ProxyUPMessage;
 public class CheckResponse extends ProxyUPMessage {
     private final CheckResult checkResult;
 
-    public CheckResponse(Long userId, CheckResult checkResult) {
+    public CheckResponse(Integer userId, CheckResult checkResult) {
         super(userId);
         this.checkResult = checkResult;
     }

@@ -14,8 +14,7 @@ public abstract class LocalTask {
         this.time = time;
     }
 
-
-
     public abstract TaskTypesEnum getType();
+
     public abstract ServicesEnum getService();
 }

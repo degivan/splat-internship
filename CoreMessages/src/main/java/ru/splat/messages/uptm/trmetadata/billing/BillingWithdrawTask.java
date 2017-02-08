@@ -2,6 +2,7 @@ package ru.splat.messages.uptm.trmetadata.billing;
 
 import ru.splat.messages.conventions.ServicesEnum;
 import ru.splat.messages.conventions.TaskTypesEnum;
+import ru.splat.messages.proxyup.bet.BetInfo;
 import ru.splat.messages.uptm.trmetadata.LocalTask;
 
 /**
@@ -17,6 +18,7 @@ public class BillingWithdrawTask extends LocalTask {
         this.punterId = _punterId;
         this.sum = sum;
     }
+
     public Integer getSum() {
         return sum;
     }
@@ -33,5 +35,11 @@ public class BillingWithdrawTask extends LocalTask {
 
     public Integer getPunterId() {
         return punterId;
+    }
+
+    public static BillingWithdrawTask create(BetInfo betInfo) {
+        return new BillingWithdrawTask(betInfo.getUserId(),
+                betInfo.getBet(),
+                System.currentTimeMillis());
     }
 }

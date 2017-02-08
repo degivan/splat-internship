@@ -10,7 +10,6 @@ import java.util.concurrent.TimeUnit;
 public class DBConnectionTest {
     private CountDownLatch lock = new CountDownLatch(1);
 
-
     @Test
     public void testFindUnfinishedTransactions() throws InterruptedException {
         DBConnection.processUnfinishedTransactions(transactions ->

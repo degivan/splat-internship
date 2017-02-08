@@ -39,8 +39,8 @@ public class UP {
      * @param userId user identifier
      * @return receiver which can receive messages for user with such identifier
      */
-    public ActorRef getReceiver(Long userId) {
-        return receivers.get(userId.intValue() % receivers.size());
+    public ActorRef getReceiver(Integer userId) {
+        return receivers.get(userId % receivers.size());
     }
 
     public ActorSystem getSystem() {

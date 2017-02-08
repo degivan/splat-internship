@@ -10,6 +10,7 @@ import ru.splat.messages.Transaction;
 import ru.splat.messages.uptm.TMResponse;
 import ru.splat.messages.uptm.trmetadata.MetadataPatterns;
 import ru.splat.messages.uptm.trmetadata.TransactionMetadata;
+import ru.splat.messages.uptm.trstate.ServiceResponse;
 import ru.splat.messages.uptm.trstate.TransactionState;
 import scala.concurrent.duration.Duration;
 
@@ -38,6 +39,12 @@ public class PhaserActor extends UntypedActor {
         super.preStart();
     }
 
+    //TODO: stop correctly
+    @Override
+    public void postStop() throws Exception {
+        super.postStop();
+    }
+
     @Override
     public void onReceive(Object message) throws Throwable {
         if(message instanceof PhaserRequest) {
@@ -54,30 +61,32 @@ public class PhaserActor extends UntypedActor {
     }
 
     private void processReceiveTimeout() {
-        transaction.setState(Transaction.State.CANCEL);
-
-        DBConnection.overwriteTransaction(transaction,
-                () -> {
-                    cancelTransaction(transaction);
-                    sendResult(transaction);
-                });
+        saveDBWithStateCancel(Transaction.State.CANCEL);
     }
 
     private void processTransactionState(TransactionState o) {
         if(isResponsePositive(o)) {
-            transaction.setState(Transaction.State.PHASE2_SEND);
-
-            DBConnection.overwriteTransaction(transaction,
-                    () ->  {
+            saveDBWithState(Transaction.State.PHASE2_SEND,
+                    () -> {
                         sendPhase2(transaction);
                         sendResult(transaction);
                     });
         } else {
-            transaction.setState(Transaction.State.DENIED);
-
-            DBConnection.overwriteTransaction(transaction,
-                    () -> sendResult(transaction));
+            saveDBWithStateCancel(Transaction.State.DENIED);
         }
+    }
+
+    private void saveDBWithState(Transaction.State state, ru.splat.db.Procedure after) {
+        transaction.nextState(state);
+        DBConnection.overwriteTransaction(transaction, after);
+    }
+
+    private void saveDBWithStateCancel(Transaction.State state) {
+        saveDBWithState(state,
+                () -> {
+                    cancelTransaction(transaction);
+                    sendResult(transaction);
+                });
     }
 
     private void sendResult(Transaction transaction) {
@@ -127,9 +136,12 @@ public class PhaserActor extends UntypedActor {
         after.accept(null);
     }
 
-    //TODO:
     private static boolean isResponsePositive(TransactionState transactionState) {
-        return false;
+        return transactionState
+                .getLocalStates()
+                .values()
+                .stream()
+                .allMatch(ServiceResponse::isPositive);
     }
 
     private abstract class State implements Procedure<Object> {

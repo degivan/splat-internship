@@ -18,8 +18,6 @@ import static ru.splat.messages.Transaction.Builder.*;
  * Puts transaction in DB and generates unique identifier for it.
  */
 public class IdGenerator extends UntypedActor {
-    //TODO: generate range of possible identifiers and then use them instead of querying database every time
-
     private static final Long RANGE = 50L;
 
     private Queue<CreateIdRequest> adjournedRequests = new LinkedList<>();

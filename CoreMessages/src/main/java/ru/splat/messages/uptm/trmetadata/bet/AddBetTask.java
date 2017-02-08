@@ -2,6 +2,7 @@ package ru.splat.messages.uptm.trmetadata.bet;
 
 import ru.splat.messages.conventions.ServicesEnum;
 import ru.splat.messages.conventions.TaskTypesEnum;
+import ru.splat.messages.proxyup.bet.BetInfo;
 import ru.splat.messages.uptm.trmetadata.LocalTask;
 
 import java.util.Set;
@@ -21,6 +22,7 @@ public class AddBetTask extends LocalTask {
     public Set<BetOutcome> getBetOutcomes() {
         return betOutcomes;
     }
+
     //конструктор первой фазы
     public AddBetTask(Integer punterId, Set<BetOutcome> betOutcomes, Long time) {
         super(time);
@@ -40,4 +42,9 @@ public class AddBetTask extends LocalTask {
     }
 
 
+    public static AddBetTask create(BetInfo betInfo) {
+        return new AddBetTask(betInfo.getUserId(),
+                betInfo.getBetOutcomes(),
+                System.currentTimeMillis());
+    }
 }

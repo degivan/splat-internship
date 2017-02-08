@@ -60,6 +60,30 @@ public class Transaction {
         this.betInfo = betInfo;
     }
 
+    public void nextState(State state) {
+        nextId();
+        setState(state);
+    }
+
+    private void nextId() {
+        if(current + 1 <= upperBound) {
+            current++;
+        } else {
+            throw new Error("tr_id out of bounds: " + toString());
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "Transaction{" +
+                "state=" + state +
+                ", betInfo=" + betInfo +
+                ", lowerBound=" + lowerBound +
+                ", upperBound=" + upperBound +
+                ", current=" + current +
+                '}';
+    }
+
     public enum State {
         CREATED, CANCEL, COMPLETED, DENIED, PHASE1_RESPONDED, PHASE2_SEND, CANCEL_COMPLETED
     }
