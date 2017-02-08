@@ -2,6 +2,7 @@ package ru.splat.messages.uptm.trmetadata.billing;
 
 import ru.splat.messages.conventions.ServicesEnum;
 import ru.splat.messages.conventions.TaskTypesEnum;
+import ru.splat.messages.proxyup.bet.BetInfo;
 import ru.splat.messages.uptm.trmetadata.LocalTask;
 
 /**
@@ -35,5 +36,11 @@ public class CancelWithdrawTask extends LocalTask {
     @Override
     public ServicesEnum getService() {
         return service;
+    }
+
+    public static CancelWithdrawTask create(BetInfo betInfo) {
+        return new CancelWithdrawTask(betInfo.getUserId(),
+                betInfo.getBet(),
+                System.currentTimeMillis());
     }
 }

@@ -1,45 +1,67 @@
 package ru.splat.messages.proxyup.bet;
 
-import java.util.List;
+import ru.splat.messages.uptm.trmetadata.bet.BetOutcome;
+
+import java.util.Set;
 
 /**
  * Information about new bet.
  */
 public class BetInfo {
-    private Long userId;
-    private Long bet;
-    private List<Long> eventsId;
-    private List<Long> selectionsId;
+    private Long betId = -1L; //temporary decision
+    private Integer userId;
+    private Integer bet;
+    private Set<BetOutcome> betOutcomes;
+    private Set<Integer> selectionsId;
 
-    public Long getBet() {
+    public Integer getBet() {
         return bet;
     }
 
-    public Long getUserId() {
+    public Integer getUserId() {
         return userId;
     }
 
-    public void setUserId(Long userId) {
+    public void setUserId(Integer userId) {
         this.userId = userId;
     }
 
-    public void setBet(Long bet) {
+    public void setBet(Integer bet) {
         this.bet = bet;
     }
 
-    public List<Long> getEventsId() {
-        return eventsId;
+    public Set<BetOutcome> getBetOutcomes() {
+        return betOutcomes;
     }
 
-    public void setEventsId(List<Long> eventsId) {
-        this.eventsId = eventsId;
+    public void setBetOutcomes(Set<BetOutcome> betOutcomes) {
+        this.betOutcomes = betOutcomes;
     }
 
-    public List<Long> getSelectionsId() {
+    public Set<Integer> getSelectionsId() {
         return selectionsId;
     }
 
-    public void setSelectionsId(List<Long> selectionsId) {
+    public void setSelectionsId(Set<Integer> selectionsId) {
         this.selectionsId = selectionsId;
+    }
+
+    public Long getBetId() {
+        return betId;
+    }
+
+    public void setBetId(Long betId) {
+        this.betId = betId;
+    }
+
+    @Override
+    public String toString() {
+        return "BetInfo{" +
+                "betId=" + betId +
+                ", userId=" + userId +
+                ", bet=" + bet +
+                ", betOutcomes=" + betOutcomes +
+                ", selectionsId=" + selectionsId +
+                '}';
     }
 }

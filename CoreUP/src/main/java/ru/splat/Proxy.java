@@ -40,7 +40,7 @@ public class Proxy {
         },up.getSystem().dispatcher());
     }
 
-    public void sendCheckRequest(Long transactionId, Long userId) {
+    public void sendCheckRequest(Long transactionId, Integer userId) {
         CheckRequest checkRequest = new CheckRequest(transactionId, userId);
         ActorRef receiver = up.getReceiver(userId);
 

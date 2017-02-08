@@ -2,6 +2,7 @@ package ru.splat.messages.uptm.trmetadata.bet;
 
 import ru.splat.messages.conventions.ServicesEnum;
 import ru.splat.messages.conventions.TaskTypesEnum;
+import ru.splat.messages.proxyup.bet.BetInfo;
 import ru.splat.messages.uptm.trmetadata.LocalTask;
 
 /**
@@ -31,5 +32,7 @@ public class FixBetTask extends LocalTask {
         return service;
     }
 
-
+    public static FixBetTask create(BetInfo betInfo) {
+        return new FixBetTask(betInfo.getBetId(), System.currentTimeMillis());
+    }
 }

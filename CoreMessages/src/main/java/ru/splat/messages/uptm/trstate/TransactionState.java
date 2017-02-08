@@ -30,4 +30,12 @@ public class TransactionState {
     public Map<ServicesEnum, ServiceResponse> getLocalStates() {
         return localStates;
     }
+
+    @Override
+    public String toString() {
+        return "TransactionState{" +
+                "transactionId=" + transactionId +
+                ", localStates=" + localStates +
+                '}';
+    }
 }

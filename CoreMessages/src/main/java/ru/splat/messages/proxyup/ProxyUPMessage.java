@@ -4,13 +4,13 @@ package ru.splat.messages.proxyup;
  * Identifies class as a message between Proxy and UP.
  */
 public class ProxyUPMessage {
-    private final Long userId;
+    private final Integer userId;
 
-    public ProxyUPMessage(Long userId) {
+    public ProxyUPMessage(Integer userId) {
         this.userId = userId;
     }
 
-    public Long getUserId() {
+    public Integer getUserId() {
         return userId;
     }
 }

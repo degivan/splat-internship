@@ -2,8 +2,10 @@ package ru.splat.messages.uptm.trmetadata.event;
 
 import ru.splat.messages.conventions.ServicesEnum;
 import ru.splat.messages.conventions.TaskTypesEnum;
+import ru.splat.messages.proxyup.bet.BetInfo;
 import ru.splat.messages.uptm.trmetadata.LocalTask;
 
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -14,7 +16,7 @@ public class AddSelectionLimitsTask extends LocalTask {
     private final ServicesEnum service = ServicesEnum.EventService;
 
     public AddSelectionLimitsTask(
-                                  Set<Integer> selections, Long time) {
+            Set<Integer> selections, Long time) {
         super(time);
         this.selections = selections;
     }
@@ -34,4 +36,8 @@ public class AddSelectionLimitsTask extends LocalTask {
     }
 
 
+    public static AddSelectionLimitsTask create(BetInfo betInfo) {
+        return new AddSelectionLimitsTask(new HashSet<>(betInfo.getSelectionsId()),
+                System.currentTimeMillis());
+    }
 }

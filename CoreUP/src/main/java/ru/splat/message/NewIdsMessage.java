@@ -15,4 +15,11 @@ public class NewIdsMessage implements InnerMessage {
     public Bounds getBounds() {
         return bounds;
     }
+
+    @Override
+    public String toString() {
+        return "NewIdsMessage{" +
+                "bounds=" + bounds.toString() +
+                '}';
+    }
 }

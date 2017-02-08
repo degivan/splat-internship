@@ -16,4 +16,11 @@ public class NewRequest extends ProxyUPMessage {
     public BetInfo getBetInfo() {
         return betInfo;
     }
+
+    @Override
+    public String toString() {
+        return "NewRequest{" +
+                "betInfo=" + betInfo +
+                '}';
+    }
 }

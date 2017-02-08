@@ -1,7 +1,6 @@
 import akka.actor.ActorSystem;
 import akka.testkit.JavaTestKit;
 import ru.splat.UP;
-import ru.splat.messages.Transaction;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -11,6 +10,7 @@ import ru.splat.messages.proxyup.bet.NewRequest;
 import scala.concurrent.duration.Duration;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -35,19 +35,19 @@ public class UPTest {
        new JavaTestKit(system) {{
            UP up = UP.create();
            up.start();
-           for(long i = 0; i < 2000; i++) {
+          /* for(int i = 0; i < 2000; i++) {
                up.getReceiver(i).tell(testRequest(i), getRef());
-           }
+           } */
            expectNoMsg(Duration.apply(20L, TimeUnit.SECONDS));
        }};
     }
 
-    private ProxyUPMessage testRequest(Long userId) {
+    private ProxyUPMessage testRequest(Integer userId) {
         BetInfo requestInfo = new BetInfo();
         requestInfo.setUserId(userId);
-        requestInfo.setBet(2L);
-        requestInfo.setSelectionsId(new ArrayList<>());
-        requestInfo.setEventsId(new ArrayList<>());
+        requestInfo.setBet(2);
+        requestInfo.setSelectionsId(new HashSet<>());
+        requestInfo.setBetOutcomes(new HashSet<>());
         return new NewRequest(requestInfo);
     }
 }

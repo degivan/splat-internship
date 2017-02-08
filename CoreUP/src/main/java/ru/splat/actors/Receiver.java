@@ -6,6 +6,7 @@ import akka.actor.UntypedActor;
 import akka.dispatch.OnSuccess;
 import akka.pattern.Patterns;
 import akka.util.Timeout;
+import ru.splat.LoggerGlobal;
 import ru.splat.messages.Transaction;
 import ru.splat.messages.proxyup.ProxyUPMessage;
 import ru.splat.messages.proxyup.bet.BetInfo;
@@ -32,9 +33,9 @@ public class Receiver extends UntypedActor {
     private final ActorRef idGenerator;
     private final ActorRef tmActor;
 
-    private final Set<Long> userIds;
+    private final Set<Integer> userIds;
     private final Map<Long, Transaction.State> results;
-    private final Map<Long, ActorRef> current;
+    private final Map<Integer, ActorRef> current;
 
     public Receiver(ActorRef registry, ActorRef idGenerator, ActorRef tmActor) {
         this.registry = registry;
@@ -65,6 +66,8 @@ public class Receiver extends UntypedActor {
     }
 
     private void processCheckRequest(CheckRequest message) {
+        LoggerGlobal.log("Processing CheckRequest: " + message.toString());
+
         State state = results.get(message.getTransactionId());
         if(state == null) {
             answer(NOT_ACTIVE_TR);
@@ -74,13 +77,19 @@ public class Receiver extends UntypedActor {
     }
 
     private void processNewRequest(NewRequest message) {
+        LoggerGlobal.log("Processing NewRequest: " + message.toString());
+
         BetInfo betInfo = message.getBetInfo();
-        Long userId = betInfo.getUserId();
+        Integer userId = betInfo.getUserId();
         boolean alreadyActive = userIds.contains(userId);
 
         if(alreadyActive) {
+            LoggerGlobal.log("Already active: " + userId);
+
             answer("ALREADY ACTIVE");
         } else {
+            LoggerGlobal.log("User now active: " + userId);
+
             userIds.add(userId);
             current.put(userId, getSender());
             idGenerator.tell(new CreateIdRequest(betInfo), getSelf());
@@ -99,10 +108,14 @@ public class Receiver extends UntypedActor {
     }
 
     private void processDoRecover(Transaction transaction) {
+        LoggerGlobal.log("Process DoRecover: " + transaction.toString());
+
         startTransaction(transaction);
     }
 
     private void processTransactionReady(Transaction transaction) {
+        LoggerGlobal.log("Process TransactionReady: " + transaction.toString());
+
         startTransaction(transaction);
         current.get(transaction.getBetInfo()
                 .getUserId()).tell(transaction, getSelf());
@@ -114,6 +127,8 @@ public class Receiver extends UntypedActor {
     }
 
     private void createPhaser(Transaction transaction) {
+        LoggerGlobal.log("Creating phaser for transaction: " + transaction.toString());
+
         ActorRef phaser = newActor(PhaserActor.class, "phaser" + transaction.getLowerBound(), tmActor, getSelf());
         ActorRef receiver = getSelf();
 
@@ -130,6 +145,8 @@ public class Receiver extends UntypedActor {
     }
 
     private void processRequestResult(Transaction transaction) {
+        LoggerGlobal.log("Process RequestResult: " + transaction.toString());
+
         saveState(transaction);
     }
 

@@ -19,4 +19,12 @@ public class Bounds {
     public Long getUpperBound() {
         return upperBound;
     }
+
+    @Override
+    public String toString() {
+        return "Bounds{" +
+                "lowerBound=" + lowerBound +
+                ", upperBound=" + upperBound +
+                '}';
+    }
 }

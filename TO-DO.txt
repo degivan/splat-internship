@@ -6,3 +6,9 @@ TM (05.02.17-06.02.17):
 -отправка в кафку батчем;
 -JMX;
 -C List на Set в TransactionMetadata и LocalTask-ах;
+
+
+Code-Review by NKalugin
+==========CoreUP===========
+==========CoreTM===========
+повсеместно перепилить UntypedActor-a на AbstractActor-a

@@ -15,4 +15,11 @@ public class CreateIdRequest implements InnerMessage {
     public BetInfo getBetInfo() {
         return betInfo;
     }
+
+    @Override
+    public String toString() {
+        return "CreateIdRequest{" +
+                "betInfo=" + betInfo +
+                '}';
+    }
 }

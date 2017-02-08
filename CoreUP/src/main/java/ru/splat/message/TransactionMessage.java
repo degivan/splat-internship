@@ -15,4 +15,11 @@ public class TransactionMessage implements InnerMessage {
     public Transaction getTransaction() {
         return transaction;
     }
+
+    @Override
+    public String toString() {
+        return "TransactionMessage{" +
+                "transaction=" + transaction +
+                '}';
+    }
 }
