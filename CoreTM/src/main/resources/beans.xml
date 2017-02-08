@@ -22,7 +22,7 @@
     <bean
             class="org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor"/>
 
-    <bean id="TMStarter" class="ru.splat.tm.TMStarterImpl" >
+    <!--<bean id="TMStarter" class="ru.splat.tm.TMStarterImpl" >
 
     </bean>
 
@@ -33,8 +33,9 @@
 
     <bean id="TMConsumer" class="ru.splat.tmkafka.TMConsumerImpl">
 
-    </bean>
-
+    </bean>-->
+    <bean id="ProtobufFactory" class="ru.splat.tmprotobuf.ProtobufFactoryImpl"/>
+    <bean id="ResponseParser" class="ru.splat.tmprotobuf.ResponseParserImpl"/>
 
 
 </beans>

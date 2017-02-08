@@ -1,6 +1,10 @@
 //import ru.splat.messages
 
 
+import akka.actor.ActorRef;
+import akka.actor.ActorSystem;
+import akka.actor.Cancellable;
+import akka.actor.Props;
 import com.google.protobuf.Message;
 import junit.framework.TestCase;
 import ru.splat.messages.BetRequest;
@@ -14,19 +18,25 @@ import ru.splat.messages.uptm.trmetadata.bet.FixBetTask;
 import ru.splat.messages.uptm.trmetadata.punter.AddPunterLimitsTask;
 import ru.splat.messages.uptm.trstate.ServiceResponse;
 import ru.splat.mocks.BetServiceMock;
+import ru.splat.tm.AbsActor;
+import ru.splat.tm.TMConsumerActor;
 import ru.splat.tm.TMStarter;
 import ru.splat.tm.TMStarterImpl;
+import ru.splat.tmactors.PollMessage;
+import ru.splat.tmactors.TaskSent;
 import ru.splat.tmkafka.TMConsumer;
 import ru.splat.tmkafka.TMConsumerImpl;
 import ru.splat.tmprotobuf.ResponseParser;
 import ru.splat.tmprotobuf.ResponseParserImpl;
 import ru.splat.tmprotobuf.ProtobufFactory;
 import ru.splat.tmprotobuf.ProtobufFactoryImpl;
+import scala.concurrent.duration.Duration;
 
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -41,20 +51,24 @@ public class TMTest extends TestCase {
     //private TMStarter tmStarter;
     private TMConsumerImpl tmConsumer;
 
-    public void testTMActors() {
-
+    public void testTMConsumerActor() {
+        ActorSystem system = ActorSystem.create("testactors");
+        final ActorRef consumerActor = system.actorOf(Props.create(TMConsumerActor.class), "TMConsumerActor");
+        Cancellable cancellable = system.scheduler().schedule(Duration.Zero(),
+                Duration.create(200, TimeUnit.MILLISECONDS), consumerActor, new PollMessage(),
+                system.dispatcher(), null);
     }
 
 
 
-    public void testTMConsumer() {  //test consumer and responseParser work
+    /*public void testTMConsumer() {  //test consumer and responseParser work
         tmConsumer = new TMConsumerImpl();
         BetServiceMock betServiceMock = new BetServiceMock();
 
         betServiceMock.sendRoutine();
         int pollCount = tmConsumer.pollRecords().count(); System.out.println("PollCount: " + pollCount);
         assertEquals(pollCount, 0);
-    }
+    }*/
 
     //TMStarter
     /*public void testTMStarter() {
