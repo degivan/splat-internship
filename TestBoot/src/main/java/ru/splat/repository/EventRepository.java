@@ -1,8 +1,10 @@
-package repository;
+package ru.splat.repository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
+import ru.splat.Constant;
+
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
@@ -13,7 +15,7 @@ public class EventRepository
 
     private static final double CURRENT_KOEF = 1.5;
     private static final String STATUS = "NOT DESIGNED";
-    private static final int LIMIT = 3;
+    private static final int LIMIT = (Constant.REQUEST_COUNT * 8)/10;
     private static final long LIMIT_TIME = 180000;
 
     public void insertDefaultData()

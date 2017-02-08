@@ -5,11 +5,11 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 ">
 
-    <bean id="punterIdempRepository" class="ru.splat.facade.repository.ExactlyOnceRepositoryImpl">
+    <bean id="punterIdempRepository" class="ru.splat.facade.ru.splat.repository.ExactlyOnceRepositoryImpl">
         <property name="tableName" value="punter_idemp"/>
     </bean>
 
-    <bean id="punterRepository" class="ru.splat.Punter.repository.PunterRepository"/>
+    <bean id="punterRepository" class="ru.splat.Punter.ru.splat.repository.PunterRepository"/>
 
     <bean id="businessService" class="ru.splat.Punter.business.PunterBusinessService"/>
 
@@ -18,9 +18,9 @@
         <property name="exactlyOnceRepository" ref="punterIdempRepository"/>
     </bean>
 
-    <bean id="billingRepository" class="ru.splat.Billing.repository.BillingRepository"/>
+    <bean id="billingRepository" class="ru.splat.Billing.ru.splat.repository.BillingRepository"/>
     <bean id="billingBusinessService" class="ru.splat.Billing.business.BillingBusinessService"/>
-    <bean id="billingIdempRepository" class="ru.splat.facade.repository.ExactlyOnceRepositoryImpl">
+    <bean id="billingIdempRepository" class="ru.splat.facade.ru.splat.repository.ExactlyOnceRepositoryImpl">
         <property name="tableName" value="billing_idemp"/>
     </bean>
 
@@ -30,8 +30,8 @@
     </bean>
 
 
-    <bean id="betRepository" class="ru.splat.Bet.repository.BetRepository"/>
-    <bean id="betIdempRepository" class="ru.splat.facade.repository.ExactlyOnceRepositoryImpl">
+    <bean id="betRepository" class="ru.splat.Bet.ru.splat.repository.BetRepository"/>
+    <bean id="betIdempRepository" class="ru.splat.facade.ru.splat.repository.ExactlyOnceRepositoryImpl">
         <property name="tableName" value="bet_idemp"/>
     </bean>
     <bean id="betBusinessService" class="ru.splat.Bet.business.BetBusinessService"/>
@@ -41,8 +41,8 @@
         <property name="exactlyOnceRepository" ref="betIdempRepository"/>
     </bean>
 
-    <bean id="eventRepository" class="ru.splat.Event.repository.EventRepository"/>
-    <bean id="eventIdempRepository" class="ru.splat.facade.repository.ExactlyOnceRepositoryImpl">
+    <bean id="eventRepository" class="ru.splat.Event.ru.splat.repository.EventRepository"/>
+    <bean id="eventIdempRepository" class="ru.splat.facade.ru.splat.repository.ExactlyOnceRepositoryImpl">
         <property name="tableName" value="event_idemp"/>
     </bean>
     <bean id="eventBusinessService" class="ru.splat.Event.business.EventBusinessService"/>

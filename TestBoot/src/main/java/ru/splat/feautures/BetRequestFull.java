@@ -1,6 +1,5 @@
-package ru.splat.mvc.features;
+package ru.splat.feautures;
 
-import java.util.List;
 import java.util.Map;
 
 public class BetRequestFull
@@ -18,15 +17,6 @@ public class BetRequestFull
         this.betInfo = betInfo;
         this.sum = sum;
         this.userId = userId;
-    }
-
-    @Override
-    public String toString() {
-        return "BetRequestFull{" +
-                "betInfo=" + betInfo +
-                ", sum=" + sum +
-                ", userId=" + userId +
-                '}';
     }
 
     public Map<Integer, BetRequest> getBetInfo() {

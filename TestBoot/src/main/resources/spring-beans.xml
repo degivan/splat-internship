@@ -5,7 +5,9 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 ">
 
-    <bean id="eventRepository" class="repository.EventRepository"/>
-    <bean id="eventDefaultDataService" class="EventDefaultDataService"/>
+    <bean id="eventRepository" class="ru.splat.repository.EventRepository"/>
+    <bean id="eventDefaultDataService" class="ru.splat.service.EventDefaultDataService"/>
+    <bean id="bootService" class="ru.splat.service.BootService"/>
+
 
 </beans>

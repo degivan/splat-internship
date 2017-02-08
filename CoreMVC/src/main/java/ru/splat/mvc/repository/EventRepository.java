@@ -7,7 +7,6 @@ import org.springframework.jdbc.core.RowMapper;
 import ru.splat.mvc.features.EventInfo;
 import ru.splat.mvc.features.MarketInfo;
 import ru.splat.mvc.features.OutcomeInfo;
-import ru.splat.mvc.util.PunterUtil;
 
 import java.util.List;
 

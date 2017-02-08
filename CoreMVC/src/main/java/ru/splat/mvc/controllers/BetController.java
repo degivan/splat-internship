@@ -31,7 +31,8 @@ public class BetController
     @RequestMapping(value = "/dobet", method = RequestMethod.POST)
     public @ResponseBody long getTransactionId(@RequestBody BetRequestFull betRequest)
     {
-        System.out.println();
+        System.out.println("wwww");
+        System.out.println(betRequest.toString());
         //заглушка
         return 2;
     }

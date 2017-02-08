@@ -1,4 +1,4 @@
-package ru.splat.mvc.features;
+package ru.splat.feautures;
 
 
 public class BetRequest
@@ -6,15 +6,15 @@ public class BetRequest
 
     private double coefficient;
     private int id;
-    private int marketId;
+    private int eventId;
 
     public BetRequest(){}
 
-    public BetRequest(double coefficient, int id, int marketId)
+    public BetRequest(double coefficient, int id, int eventId)
     {
         this.coefficient = coefficient;
         this.id = id;
-        this.marketId = marketId;
+        this.eventId = eventId;
     }
 
     @Override
@@ -22,7 +22,7 @@ public class BetRequest
         return "BetRequest{" +
                 "coefficient=" + coefficient +
                 ", id=" + id +
-                ", marketId=" + marketId +
+                ", eventId=" + eventId +
                 '}';
     }
 
@@ -42,11 +42,11 @@ public class BetRequest
         this.id = id;
     }
 
-    public int getMarketId() {
-        return marketId;
+    public int getEventId() {
+        return eventId;
     }
 
-    public void setMarketId(int marketId) {
-        this.marketId = marketId;
+    public void setEventId(int eventId) {
+        this.eventId = eventId;
     }
 }

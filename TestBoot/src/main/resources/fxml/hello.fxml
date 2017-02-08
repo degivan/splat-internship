@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+
+<?import javafx.collections.FXCollections?>
+<?import java.lang.String?>
+<GridPane alignment="TOP_CENTER"  fx:controller="ru.splat.fx.Controller" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+  <columnConstraints>
+      <ColumnConstraints hgrow="SOMETIMES" maxWidth="341.0" minWidth="10.0" prefWidth="41.0" />
+    <ColumnConstraints hgrow="SOMETIMES" maxWidth="341.0" minWidth="10.0" prefWidth="130.0" />
+    <ColumnConstraints hgrow="SOMETIMES" maxWidth="497.0" minWidth="10.0" prefWidth="63.0" />
+      <ColumnConstraints hgrow="SOMETIMES" maxWidth="497.0" minWidth="10.0" prefWidth="138.0" />
+      <ColumnConstraints hgrow="SOMETIMES" maxWidth="497.0" minWidth="10.0" prefWidth="67.0" />
+      <ColumnConstraints hgrow="SOMETIMES" maxWidth="497.0" minWidth="10.0" prefWidth="127.0" />
+      <ColumnConstraints hgrow="SOMETIMES" maxWidth="497.0" minWidth="10.0" prefWidth="39.0" />
+  </columnConstraints>
+  <rowConstraints>
+      <RowConstraints maxHeight="353.0" minHeight="10.0" prefHeight="16.0" vgrow="SOMETIMES" />
+    <RowConstraints maxHeight="353.0" minHeight="0.0" prefHeight="23.0" vgrow="SOMETIMES" />
+    <RowConstraints maxHeight="353.0" minHeight="0.0" prefHeight="30.0" vgrow="SOMETIMES" />
+    <RowConstraints maxHeight="373.0" minHeight="0.0" prefHeight="36.0" vgrow="SOMETIMES" />
+      <RowConstraints maxHeight="354.0" minHeight="0.0" prefHeight="143.0" vgrow="SOMETIMES" />
+      <RowConstraints maxHeight="354.0" minHeight="10.0" prefHeight="156.0" vgrow="SOMETIMES" />
+  </rowConstraints>
+   <children>
+      <TextField fx:id="tfRequestTimeout" GridPane.columnIndex="3" GridPane.rowIndex="2" />
+      <TextField fx:id="tfRequestCount" prefHeight="25.0" prefWidth="111.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+      <Button alignment="TOP_CENTER" contentDisplay="TOP" onAction="#onClickStart" mnemonicParsing="false" prefHeight="25.0" prefWidth="75.0" text="Старт" GridPane.columnIndex="2" GridPane.rowIndex="4" />
+      <Label alignment="TOP_CENTER" contentDisplay="TOP" prefHeight="17.0" prefWidth="138.0" text="Количество ставок" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+      <Label alignment="TOP_CENTER" contentDisplay="TOP" prefHeight="17.0" prefWidth="140.0" text="Промежуток времени " GridPane.columnIndex="3" GridPane.rowIndex="1" />
+      <Label alignment="TOP_CENTER" contentDisplay="TOP" prefHeight="17.0" prefWidth="132.0" text="Количество игроков" GridPane.columnIndex="5" GridPane.rowIndex="1" />
+      <TextField fx:id="tfPunterCount" GridPane.columnIndex="5" GridPane.rowIndex="2" />
+      <Button alignment="TOP_CENTER" contentDisplay="TOP" onAction="#onClickStop" mnemonicParsing="false" prefHeight="25.0" prefWidth="82.0" text="Стоп" GridPane.columnIndex="4" GridPane.rowIndex="4" />
+       <ComboBox fx:id="timeCombo" prefWidth="150.0" promptText="Выбрать" GridPane.columnIndex="3" GridPane.rowIndex="3">
+           <items>
+               <FXCollections fx:factory="observableArrayList">
+                   <String fx:value="Мин" />
+                   <String fx:value="Сек" />
+               </FXCollections>
+           </items>
+       </ComboBox>
+   </children>
+</GridPane>
