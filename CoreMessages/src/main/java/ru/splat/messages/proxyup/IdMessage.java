@@ -14,4 +14,11 @@ public class IdMessage extends ProxyUPMessage {
     public Long getTransactionId() {
         return transactionId;
     }
+
+    @Override
+    public String toString() {
+        return "IdMessage{" +
+                "transactionId=" + transactionId +
+                '}';
+    }
 }

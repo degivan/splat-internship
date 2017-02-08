@@ -14,6 +14,7 @@ import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Projections;
 import org.bson.Document;
 import org.bson.conversions.Bson;
+import ru.splat.LoggerGlobal;
 import ru.splat.messages.Transaction;
 
 import java.io.IOException;
@@ -37,8 +38,6 @@ public class DBConnection {
     private static final Document rangeQuery;
     private static ObjectMapper mapper;
 
-    private static final Logger log = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
-
     static {
         db = MongoClients.create()
                 .getDatabase("test");
@@ -59,7 +58,7 @@ public class DBConnection {
         findUnfinishedTransactions()
                 .forEach(processResult(list), createCallback(processData, after, list));
 
-        log.log(Level.INFO, "Unfinished transactions processed.");
+        LoggerGlobal.log("Unfinished transactions processed.");
     }
 
     /**
@@ -73,7 +72,7 @@ public class DBConnection {
                     (aVoid, throwable) -> {
                         after.accept(transaction);
 
-                        log.log(Level.INFO, "New transaction in the database:"
+                        LoggerGlobal.log("New transaction in the database:"
                                 + transaction.toString());
                     });
         } catch (JsonProcessingException e) {
@@ -108,7 +107,7 @@ public class DBConnection {
 
             after.accept(new Bounds(lower, upper));
 
-            log.log(Level.INFO, "Indexes created from " + lower + " to " + upper);
+            LoggerGlobal.log("Indexes created from " + lower + " to " + upper);
         }));
 
     }

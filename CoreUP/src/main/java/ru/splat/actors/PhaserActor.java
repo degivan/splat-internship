@@ -4,6 +4,7 @@ import akka.actor.ActorRef;
 import akka.actor.ReceiveTimeout;
 import akka.actor.UntypedActor;
 import akka.japi.Procedure;
+import ru.splat.LoggerGlobal;
 import ru.splat.db.DBConnection;
 import ru.splat.message.PhaserRequest;
 import ru.splat.messages.Transaction;
@@ -61,10 +62,14 @@ public class PhaserActor extends UntypedActor {
     }
 
     private void processReceiveTimeout() {
+        LoggerGlobal.log("Timeout received in phaser for transaction: " + transaction.toString());
+
         saveDBWithStateCancel(Transaction.State.CANCEL);
     }
 
     private void processTransactionState(TransactionState o) {
+        LoggerGlobal.log("Processing TransactionState: " + o.toString());
+
         if(isResponsePositive(o)) {
             saveDBWithState(Transaction.State.PHASE2_SEND,
                     () -> {
@@ -90,10 +95,14 @@ public class PhaserActor extends UntypedActor {
     }
 
     private void sendResult(Transaction transaction) {
+        LoggerGlobal.log("Result send to receiver for transaction: " + transaction.toString());
+
         receiver.tell(transaction, getSelf());
     }
 
     private void processPhaserRequest(PhaserRequest o) {
+        LoggerGlobal.log("Process PhaserRequest: " + o.toString());
+
         transaction = o.getTransaction();
 
         switch(transaction.getState()) {
@@ -110,7 +119,8 @@ public class PhaserActor extends UntypedActor {
     }
 
     private void sendPhase2(Transaction transaction) {
-        //TODO change active transaction_id
+        LoggerGlobal.log("Sending phase2 for transaction: " +transaction.toString());
+
         sendMetadataAndAfter(MetadataPatterns::createPhase2,
                 transaction,
                 v -> getContext().become(phase2));
@@ -148,7 +158,7 @@ public class PhaserActor extends UntypedActor {
         @Override
         public void apply(Object message) throws Exception {
             if(message instanceof TransactionState) {
-                processTMResponse((TransactionState) message);
+                processTransactionState((TransactionState) message);
             } else if(message instanceof ReceiveTimeout) {
                 //do nothing
             } else if(message instanceof TMResponse) {
@@ -161,12 +171,16 @@ public class PhaserActor extends UntypedActor {
             return (trState.getTransactionId()).equals(transaction.getCurrent());
         }
 
-        abstract void processTMResponse(TransactionState trState);
+        void processTransactionState(TransactionState trState) {
+            LoggerGlobal.log("Processing " + trState.toString() + " in context: " + getContext().toString());
+        }
     }
 
     private class Phase2 extends State {
         @Override
-        void processTMResponse(TransactionState trState) {
+        void processTransactionState(TransactionState trState) {
+            super.processTransactionState(trState);
+
             if(checkIdCorrect(trState, transaction)) {
                 if(isResponsePositive(trState)) {
                     transaction.setState(Transaction.State.COMPLETED);
@@ -181,7 +195,9 @@ public class PhaserActor extends UntypedActor {
 
     private class Cancel extends State {
         @Override
-        void processTMResponse(TransactionState trState) {
+        void processTransactionState(TransactionState trState) {
+            super.processTransactionState(trState);
+
             if(checkIdCorrect(trState, transaction)) {
                 if(isResponsePositive(trState)) {
                     transaction.setState(Transaction.State.CANCEL_COMPLETED);

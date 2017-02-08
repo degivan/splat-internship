@@ -21,4 +21,12 @@ public class RegisterRequest implements InnerMessage {
     public Long getTransactionId() {
         return transactionId;
     }
+
+    @Override
+    public String toString() {
+        return "RegisterRequest{" +
+                "transactionId=" + transactionId +
+                ", actor=" + actor +
+                '}';
+    }
 }

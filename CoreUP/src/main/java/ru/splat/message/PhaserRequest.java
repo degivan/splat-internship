@@ -9,4 +9,9 @@ public class PhaserRequest extends TransactionMessage {
     public PhaserRequest(Transaction transaction) {
         super(transaction);
     }
+
+    @Override
+    public String toString() {
+        return "PhaserRequest{} " + super.toString();
+    }
 }

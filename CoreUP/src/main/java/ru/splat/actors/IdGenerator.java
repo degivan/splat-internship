@@ -2,12 +2,15 @@ package ru.splat.actors;
 
 import akka.actor.ActorRef;
 import akka.actor.UntypedActor;
+import ru.splat.LoggerGlobal;
 import ru.splat.db.Bounds;
 import ru.splat.db.DBConnection;
 import ru.splat.message.CreateIdRequest;
 import ru.splat.message.CreateIdResponse;
 import ru.splat.message.NewIdsMessage;
+import ru.splat.messages.Transaction;
 import ru.splat.messages.Transaction.State;
+import sun.rmi.runtime.Log;
 
 import java.util.LinkedList;
 import java.util.Queue;
@@ -36,6 +39,8 @@ public class IdGenerator extends UntypedActor {
     }
 
     private void processNewIdsMessage(NewIdsMessage message) {
+        LoggerGlobal.log("Process NewIdsMessage: " + message.toString());
+
         bounds = message.getBounds();
         messagesRequested = false;
 
@@ -44,26 +49,35 @@ public class IdGenerator extends UntypedActor {
     }
 
     private boolean processCreateIdRequest(CreateIdRequest message) {
+        LoggerGlobal.log("Process CreateIdRequest: " + message.toString());
+
         if(outOfIndexes()) {
+            LoggerGlobal.log("Out of indexes!");
+
             adjournedRequests.add(message);
             if(!messagesRequested) {
                 DBConnection.createIdentifiers(
                         bounds -> getSelf().tell(new NewIdsMessage(bounds), getSelf()));
                 messagesRequested = true;
+
+                LoggerGlobal.log("Messages requested");
             }
+
             return false;
         } else {
             ActorRef receiver = getSender();
             Bounds bounds = getIndexes();
-
-            DBConnection.newTransaction(
-                builder()
+            Transaction transaction = builder()
                     .betInfo(message.getBetInfo())
                     .state(State.CREATED)
                     .lower(bounds.getLowerBound())
                     .upper(bounds.getUpperBound())
-                    .build(),
-                transaction -> receiver.tell(new CreateIdResponse(transaction), getSelf()));
+                    .build();
+
+            LoggerGlobal.log("Saving new transaction: " + transaction);
+
+            DBConnection.newTransaction(transaction,
+                tr -> receiver.tell(new CreateIdResponse(transaction), getSelf()));
 
             return true;
         }

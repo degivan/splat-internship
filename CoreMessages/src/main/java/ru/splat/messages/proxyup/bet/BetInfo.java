@@ -53,4 +53,15 @@ public class BetInfo {
     public void setBetId(Long betId) {
         this.betId = betId;
     }
+
+    @Override
+    public String toString() {
+        return "BetInfo{" +
+                "betId=" + betId +
+                ", userId=" + userId +
+                ", bet=" + bet +
+                ", betOutcomes=" + betOutcomes +
+                ", selectionsId=" + selectionsId +
+                '}';
+    }
 }

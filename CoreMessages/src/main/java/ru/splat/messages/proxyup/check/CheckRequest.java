@@ -9,4 +9,9 @@ public class CheckRequest extends IdMessage {
     public CheckRequest(Long transactionId, Integer userId) {
         super(transactionId, userId);
     }
+
+    @Override
+    public String toString() {
+        return "CheckRequest{} " + super.toString();
+    }
 }
