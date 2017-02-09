@@ -9,6 +9,8 @@ public class ServiceResponse<T> {
     private final T attachment;
     private final ServiceResult result;
 
+
+
     public ServiceResponse(T attachment, ServiceResult result) {
         this.attachment = attachment;
         this.result = result;
