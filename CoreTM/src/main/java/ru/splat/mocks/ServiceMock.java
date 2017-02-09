@@ -18,10 +18,10 @@ import java.util.concurrent.Future;
 /**
  * Created by Дмитрий on 05.02.2017.
  */
-public class BetServiceMock {
+public class ServiceMock {
     KafkaProducer<Long, Message> producer;
     KafkaConsumer<Long, Message> consumer;
-    public BetServiceMock() {
+    public ServiceMock() {
         Properties propsConsumer = new Properties();
         propsConsumer.put("bootstrap.servers", "localhost:9092");
         propsConsumer.put("group.id", "test");
@@ -42,10 +42,10 @@ public class BetServiceMock {
     public void sendRoutine() {
         Message message1 = Response.ServiceResponse.newBuilder()
                 .setLongAttachment(100L).setResult(1).build();
-        sendMockResponse("BetRes", 14L, message1);
+        sendMockResponse("BetRes", 111L, message1);
         Message message2 = Response.ServiceResponse.newBuilder()    //к BetService это не относится, ну и ладно
                 .setBooleanAttachment(true).setResult(1).build();
-        sendMockResponse("PunterRes", 15L, message2);
+        sendMockResponse("PunterRes", 111L, message2);
 
     }
 

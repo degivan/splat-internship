@@ -1,5 +1,6 @@
-package ru.splat.tmactors;
+package ru.splat.tmmessages;
 
+import ru.splat.messages.conventions.ServicesEnum;
 import ru.splat.messages.uptm.trstate.ServiceResponse;
 
 /**
@@ -8,10 +9,12 @@ import ru.splat.messages.uptm.trstate.ServiceResponse;
 public class ServiceResponseMsg {
     private final ServiceResponse message;
     private final Long transactionId;
+    private final ServicesEnum service;
 
-    public ServiceResponseMsg(Long transactionId, ServiceResponse message ) {
+    public ServiceResponseMsg(Long transactionId, ServiceResponse message, ServicesEnum service) {
         this.message = message;
         this.transactionId = transactionId;
+        this.service = service;
     }
 
     public ServiceResponse getMessage() {
@@ -20,5 +23,9 @@ public class ServiceResponseMsg {
 
     public Long getTransactionId() {
         return transactionId;
+    }
+
+    public ServicesEnum getService() {
+        return service;
     }
 }

@@ -12,11 +12,6 @@ public class TransactionState {
     private final Long transactionId;
     //таски от всех сервисов
     private Map<ServicesEnum, ServiceResponse> localStates;
-    private boolean isSent = false;
-
-    public void setSent(boolean sent) {
-        isSent = sent;
-    }
 
     //конструктор вызывается при инициализации транзакции через TMActor или при получении сообщения от сервисов с информацией о тасках
     public TransactionState(Long transactionId, Map<ServicesEnum, ServiceResponse> localStates) {

@@ -34,7 +34,7 @@
     <bean id="TMConsumer" class="ru.splat.tmkafka.TMConsumerImpl">
 
     </bean>-->
-    <bean id="ProtobufFactory" class="ru.splat.tmprotobuf.ProtobufFactoryImpl"/>
+    <bean id="ProtobufFactory" class="ru.splat.tmprotobuf.ProtobufFactory"/>
     <bean id="ResponseParser" class="ru.splat.tmprotobuf.ResponseParserImpl"/>
 
 

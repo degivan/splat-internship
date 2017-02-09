@@ -15,13 +15,11 @@ import ru.splat.messages.uptm.trmetadata.bet.AddBetTask;
 import ru.splat.messages.uptm.trmetadata.bet.BetOutcome;
 import ru.splat.messages.uptm.trmetadata.bet.FixBetTask;
 import ru.splat.messages.uptm.trstate.ServiceResponse;
-import ru.splat.tm.*;
-import ru.splat.tmactors.PollMsg;
-import ru.splat.tmkafka.TMConsumerImpl;
-import ru.splat.tmprotobuf.ResponseParser;
-import ru.splat.tmprotobuf.ResponseParserImpl;
+import ru.splat.tmactors.*;
+import ru.splat.tmmessages.PollMsg;
+import ru.splat.tmmessages.TaskSentMsg;
 import ru.splat.tmprotobuf.ProtobufFactory;
-import ru.splat.tmprotobuf.ProtobufFactoryImpl;
+import ru.splat.tmprotobuf.ResponseParser;
 import scala.concurrent.duration.Duration;
 
 import java.util.HashSet;
@@ -36,25 +34,35 @@ import java.util.stream.Collectors;
 public class TMTest extends TestCase {
     private Set<ServicesEnum> services;
     private Set<Integer> servicesOrd;
-    private ProtobufFactory protobufFactory;
     private ResponseParser responseParser;
     //private TMStarter tmStarter;
-    private TMConsumerImpl tmConsumer;
+
+    public void testActors() {
+        //in Main
+    }
 
     public void testTMConsumerActor() {
         ActorSystem system = ActorSystem.create("testactors");
         final ActorRef tmActor = system.actorOf(Props.create(TMActor.class), "TMActor");
         final ActorRef consumerActor = system.actorOf(Props.create(TMConsumerActor.class, tmActor, responseParser), "TMConsumerActor");
         Cancellable cancellable = system.scheduler().schedule(Duration.Zero(),
-                Duration.create(500, TimeUnit.MILLISECONDS), consumerActor, new PollMsg(),
+                Duration.create(1000, TimeUnit.MILLISECONDS), consumerActor, new PollMsg(),
                 system.dispatcher(), null);
     }
 
 
+    public void testTMActorSend() {
+        ActorSystem system = ActorSystem.create("testactors");
+        final ActorRef tmActor = system.actorOf(Props.create(TMActor.class), "TMActor");
+        Cancellable cancellable = system.scheduler().schedule(Duration.Zero(),
+                Duration.create(2000, TimeUnit.MILLISECONDS), tmActor, new TaskSentMsg(111L, ServicesEnum.BetService),
+                system.dispatcher(), null);
 
+
+    }
     /*public void testTMConsumer() {  //test consumer and responseParser work
         tmConsumer = new TMConsumerImpl();
-        BetServiceMock betServiceMock = new BetServiceMock();
+        ServiceMock betServiceMock = new ServiceMock();
 
         betServiceMock.sendRoutine();
         int pollCount = tmConsumer.pollRecords().count(); System.out.println("PollCount: " + pollCount);
@@ -80,14 +88,14 @@ public class TMTest extends TestCase {
 
 
 
-    //работоспособность ProtobufFactoryImpl
+    //работоспособность ProtobufFactory
     public void testBetProtobufP1() throws Exception {
         Set<BetOutcome> betOutcomes = new HashSet<>();
         //BetOutcome bo = new BetOutcome(1L, 2L, 3.14);
         betOutcomes.add(new BetOutcome(1, 2, 3.14));
         LocalTask bet1 = new AddBetTask(1, betOutcomes, System.currentTimeMillis());
         //buidling protobuf message
-        BetRequest.Bet betMessage = (BetRequest.Bet) protobufFactory.buildProtobuf(bet1, services);
+        BetRequest.Bet betMessage = (BetRequest.Bet) ProtobufFactory.buildProtobuf(bet1, services);
         //check punter id from generated message
         assertEquals(betMessage.getPunterId(), 1);
         Set<Integer> servicesOut = new HashSet<Integer>(betMessage.getServicesList());
@@ -96,9 +104,9 @@ public class TMTest extends TestCase {
     }
 
     public void testBetProtobufP2() throws Exception{
-        //test ProtobufFactoryImpl for second phase
+        //test ProtobufFactory for second phase
         LocalTask bet1 = new FixBetTask(1L, System.currentTimeMillis());
-        BetRequest.Bet betMessage = (BetRequest.Bet) protobufFactory.buildProtobuf(bet1, services);
+        BetRequest.Bet betMessage = (BetRequest.Bet) ProtobufFactory.buildProtobuf(bet1, services);
         assertEquals(betMessage.getId(), 1L);
         assertTrue(betMessage.getBetOutcomeList().isEmpty());
     }
@@ -106,7 +114,7 @@ public class TMTest extends TestCase {
     public void testResponseParser() {
         Message message = Response.ServiceResponse.newBuilder().addAllServices(servicesOrd)
                .setBooleanAttachment(true).setResult(1).build();
-        ServiceResponse serviceResponse = responseParser.unpackMessage(message);
+        ServiceResponse serviceResponse = ResponseParser.unpackMessage(message);
         assertTrue(message instanceof Response.ServiceResponse);
         System.out.println(serviceResponse.getAttachment());
         assertEquals(serviceResponse.getAttachment(), true);
@@ -127,8 +135,6 @@ public class TMTest extends TestCase {
         servicesOrd = services.stream().map(Enum::ordinal)
                 .collect(Collectors.toSet());
 
-        protobufFactory = new ProtobufFactoryImpl();
-        responseParser = new ResponseParserImpl();
         //tmStarter = new TMStarterImpl();
         //tmConsumer = new TMConsumerImpl();
     }

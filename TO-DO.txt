@@ -1,14 +1,13 @@
 ﻿TO-DO
 TM (05.02.17-06.02.17):
--заменить System.out на приличный логгер;
+-добавить логгирование;
 -общий контекст Spring с УП;
 -протестировать взаимодействие акторов УП и ТМ;
--отправка в кафку батчем;
--JMX;
--C List на Set в TransactionMetadata и LocalTask-ах;
+-обработка повторных ответов от сервиса;
 
 
 Code-Review by NKalugin
 ==========CoreUP===========
 ==========CoreTM===========
 повсеместно перепилить UntypedActor-a на AbstractActor-a
+объединить модули CoreTM, CoreUP и CoreMVC

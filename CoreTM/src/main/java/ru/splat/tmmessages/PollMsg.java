@@ -1,4 +1,4 @@
-package ru.splat.tmactors;
+package ru.splat.tmmessages;
 
 /**
  * Created by Дмитрий on 05.02.2017.

@@ -1,14 +1,7 @@
-package ru.splat.tmactors;
+package ru.splat.tmmessages;
 
 import akka.actor.ActorRef;
 import akka.actor.UntypedActor;
-import ru.splat.messages.conventions.TaskTypesEnum;
-import ru.splat.messages.uptm.trmetadata.LocalTask;
-import ru.splat.messages.uptm.trmetadata.punter.AddPunterLimitsTask;
-import ru.splat.messages.uptm.trmetadata.TransactionMetadata;
-
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Created by Дмитрий on 17.01.2017.
