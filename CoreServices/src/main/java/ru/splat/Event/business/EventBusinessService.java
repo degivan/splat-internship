@@ -142,20 +142,26 @@ public class EventBusinessService implements BusinessService<EventInfo>,LimitSer
 
         lastDeleteTime = scanDeque(lastDeleteTime);
 
-        Map<Integer, Set<EventInfo>> localTaskComplex = new TreeMap<>(Collections.reverseOrder());
+        Map<Integer, TreeSet<EventInfo>> localTaskComplex = new TreeMap<>(Collections.reverseOrder());
 
         for (EventInfo eventInfo : transactionRequests)
         {
             if (!localTaskComplex.containsKey(eventInfo.getLocalTask()))
             {
-                localTaskComplex.put(eventInfo.getLocalTask(), new HashSet<>());
+                localTaskComplex.put(eventInfo.getLocalTask(), new TreeSet<EventInfo>(new Comparator<EventInfo>() {
+
+                    @Override
+                    public int compare(EventInfo o1, EventInfo o2) {
+                        return (o1.getTime()) == o2.getTime() ? 0 : (o1.getTime() > o2.getTime() ? -1 : 1);
+                    }
+                }));
             }
             localTaskComplex.get(eventInfo.getLocalTask()).add(eventInfo);
         }
 
         List<TransactionResult> results = new ArrayList<>();
 
-        for (Map.Entry<Integer, Set<EventInfo>> entry : localTaskComplex.entrySet())
+        for (Map.Entry<Integer, TreeSet<EventInfo>> entry : localTaskComplex.entrySet())
         {
             if (entry.getKey() == TaskTypesEnum.ADD_SELECTION_LIMIT.ordinal())
                 results.addAll(addSelectionLimit(entry.getValue().stream().collect(Collectors.toList())));

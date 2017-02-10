@@ -3,6 +3,7 @@ package ru.splat.Punter.business;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jmx.export.annotation.ManagedOperation;
 import org.springframework.jmx.export.annotation.ManagedResource;
+import ru.splat.Event.feautures.EventInfo;
 import ru.splat.facade.feautures.Proxy;
 import ru.splat.facade.feautures.Limit;
 import ru.splat.facade.service.LimitService;
@@ -164,7 +165,13 @@ public class PunterBusinessService implements BusinessService<PunterInfo>, Limit
         {
             if (!localTaskComplex.containsKey(punterInfo.getLocalTask()))
             {
-                localTaskComplex.put(punterInfo.getLocalTask(), new HashSet<>());
+                localTaskComplex.put(punterInfo.getLocalTask(), new TreeSet<PunterInfo>(new Comparator<PunterInfo>() {
+
+                    @Override
+                    public int compare(PunterInfo o1, PunterInfo o2) {
+                        return (o1.getTime()) == o2.getTime() ? 0 : (o1.getTime() > o2.getTime() ? -1 : 1);
+                    }
+                }));
             }
             localTaskComplex.get(punterInfo.getLocalTask()).add(punterInfo);
         }

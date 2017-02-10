@@ -92,6 +92,10 @@
             <artifactId>jstl</artifactId>
             <version>1.2</version>
         </dependency>
+        <dependency>
+            <groupId>ru.splat</groupId>
+            <artifactId>CoreMessages</artifactId>
+        </dependency>
 
     </dependencies>
 

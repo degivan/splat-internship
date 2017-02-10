@@ -25,6 +25,15 @@ public class EventDefaultDataService
         eventRepository.insertOutcome(MARKET_COUNT*OUTCOME_COUNT*EVENT_COUNT);
     }
 
+    public boolean isEmptyEvent()
+    {
+       return (eventRepository.isExistEvent() == null || eventRepository.isExistEvent().isEmpty());
+    }
+
+    public void deleteData()
+    {
+        eventRepository.delete();
+    }
 
 
 }

@@ -21,7 +21,7 @@ public class RequestTask implements Runnable {
 
         BootService bootService = new BootService();
 
-        while (!Thread.currentThread().interrupted())
+        while (!Thread.currentThread().interrupted() && !Thread.interrupted())
         {
             int i=0;
             long timeStart = System.currentTimeMillis();
@@ -30,8 +30,16 @@ public class RequestTask implements Runnable {
             {
                 try {
                     bootService.makeRequest(punterCount);
-                } catch (Exception e) {
+                }catch (InterruptedException ie)
+                {
+                    Thread.currentThread().interrupt();
+                }
+                catch (Exception e) {
                     e.printStackTrace();
+                }
+                finally {
+                    i = requestCount;
+                    residual = requestTimeout;
                 }
                 residual = System.currentTimeMillis() - timeStart;
                 i++;
