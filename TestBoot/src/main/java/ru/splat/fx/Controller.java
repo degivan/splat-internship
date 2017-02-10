@@ -10,6 +10,10 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import ru.splat.Constant;
 import ru.splat.service.EventDefaultDataService;
 import ru.splat.task.RequestTask;
+import ru.splat.task.StateRequestTask;
+
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -79,6 +83,12 @@ public class Controller
         }
     }
 
+    public void addTransactionId(long id) {
+        trIdSet.add(id);
+    }
+    public void removeTransactionId(long id) {trIdSet.remove(id);}
+
+
     @FXML
     public void onClickStart()
     {
@@ -93,6 +103,8 @@ public class Controller
             for (int i = 0; i < 8; i++) {
                 executorService.submit(new RequestTask(requestCount, requestTimeout, punterCount));
             }
+            executorService.submit(new StateRequestTask()); //проверка стейтов по trId
+
         }
     }
 
@@ -144,5 +156,9 @@ public class Controller
         eventDefaultDataService.deleteData();
         alert.setContentText("Данные в БД успешно удалены");
         alert.showAndWait();
+    }
+
+    public Set<Long> getTrIdSet() {
+        return trIdSet;
     }
 }

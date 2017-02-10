@@ -11,3 +11,9 @@ Code-Review by NKalugin
 ==========CoreTM===========
 повсеместно перепилить UntypedActor-a на AbstractActor-a
 объединить модули CoreTM, CoreUP и CoreMVC
+
+TestBoot:
+-DI для контроллера (доступ к сету/мапе)
+-переделать сет<trId> в мапу<trId, time> и отслеживать просроченные ответы
+-логгирование
+-настраиваемая частота обращений.
