@@ -1,5 +1,4 @@
-package ru.splat.feautures;
-
+package ru.splat.messages.bet;
 
 public class BetRequest
 {

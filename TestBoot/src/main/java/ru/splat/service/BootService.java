@@ -3,8 +3,8 @@ package ru.splat.service;
 
 import com.google.gson.Gson;
 import ru.splat.Constant;
-import ru.splat.feautures.BetRequest;
-import ru.splat.feautures.BetRequestFull;
+import ru.splat.messages.bet.BetRequest;
+import ru.splat.messages.bet.BetRequestFull;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;

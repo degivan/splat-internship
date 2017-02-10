@@ -8,7 +8,7 @@
        http://www.springframework.org/schema/task/spring-task-3.0.xsd
 ">
 
-    <bean id="taskRepository" class="ru.splat.facade.shedule.ru.splat.repository.TaskRepository"/>
+    <bean id="taskRepository" class="ru.splat.facade.shedule.repository.TaskRepository"/>
 
     <bean id="cleaningTablePunterIdemp" class="ru.splat.facade.shedule.SheduleCleaningDB">
         <property name="tableName" value="punter_idemp"/>

@@ -3,7 +3,7 @@ package ru.splat.mvc.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import ru.splat.mvc.features.BetRequestFull;
+import ru.splat.messages.bet.BetRequestFull;
 import ru.splat.mvc.features.ReposResult;
 import ru.splat.mvc.service.ShowEvents;
 
@@ -31,7 +31,6 @@ public class BetController
     @RequestMapping(value = "/dobet", method = RequestMethod.POST)
     public @ResponseBody long getTransactionId(@RequestBody BetRequestFull betRequest)
     {
-        System.out.println("wwww");
         System.out.println(betRequest.toString());
         //заглушка
         return 2;

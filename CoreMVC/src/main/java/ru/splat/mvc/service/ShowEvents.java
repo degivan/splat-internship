@@ -17,8 +17,7 @@ import java.util.stream.Collectors;
 public class ShowEvents
 {
 
-    @Autowired
-    EventRepository eventRepository;
+    EventRepository eventRepository = new EventRepository();
 
     public ReposResult initMainPage()
     {

@@ -3,10 +3,14 @@ package ru.splat.repository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import ru.splat.Constant;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
+import java.util.Map;
 
 public class EventRepository
 {
@@ -18,9 +22,19 @@ public class EventRepository
     private static final int LIMIT = (Constant.REQUEST_COUNT * 8)/10;
     private static final long LIMIT_TIME = 180000;
 
-    public void insertDefaultData()
+    public List<Integer> isExistEvent()
     {
+        return jdbcTemplate.query("SELECT id FROM event  LIMIT 1", new RowMapper<Integer>() {
+            @Override
+            public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
+                return rs.getInt("id");
+            }
+        });
+    }
 
+    public void delete()
+    {
+        jdbcTemplate.update("delete from outcome;delete from market; delete from event;");
     }
 
     public void insertEvent(Integer eventCount)
