@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import ru.splat.Constant;
 import ru.splat.feautures.BetRequest;
 import ru.splat.feautures.BetRequestFull;
+import ru.splat.feautures.StateRequest;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -76,4 +77,6 @@ public class BootService
         BetRequestFull betRequestFull = new BetRequestFull(map,random.nextInt(50), random.nextInt(Constant.PUNTER_COUNT));
         return betRequestFull;
     }
+
+    
 }
