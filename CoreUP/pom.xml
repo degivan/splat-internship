@@ -10,11 +10,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>CoreUP</artifactId>
-    <packaging>pom</packaging>
-    <properties>
+    <packaging>jar</packaging>
+    <!--<properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-    </properties>
+    </properties>-->
 
     <repositories>
         <repository>

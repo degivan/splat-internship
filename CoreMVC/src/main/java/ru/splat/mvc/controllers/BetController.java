@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.splat.Proxy;
 import ru.splat.UP;
 import ru.splat.messages.bet.BetRequestFull;
+import ru.splat.messages.proxyup.bet.BetInfo;
 import ru.splat.messages.proxyup.bet.NewResponse;
 import ru.splat.messages.proxyup.check.CheckResult;
 import ru.splat.mvc.features.ReposResult;
@@ -36,12 +37,12 @@ public class BetController
 
     @RequestMapping(value = "/dobet", method = RequestMethod.POST)
     public @ResponseBody
-    NewResponse getTransactionId(@RequestBody BetRequestFull betRequest) throws Exception
+    NewResponse getTransactionId(@RequestBody BetInfo betInfo) throws Exception
     {
-        System.out.println(betRequest.toString());
+        System.out.println(betInfo.toString());
 
         //заглушка
-        return proxy.sendNewRequest();
+        return proxy.sendNewRequest(betInfo);
     }
 
     @RequestMapping(value = "/checkbet", method = RequestMethod.GET)

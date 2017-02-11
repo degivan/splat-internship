@@ -10,12 +10,14 @@ import ru.splat.messages.proxyup.bet.NewResponse;
 import ru.splat.messages.proxyup.check.CheckRequest;
 import ru.splat.messages.proxyup.check.CheckResponse;
 import ru.splat.messages.proxyup.check.CheckResult;
+import ru.splat.messages.uptm.trmetadata.bet.BetOutcome;
 import scala.concurrent.Await;
 import scala.concurrent.Awaitable;
 import scala.concurrent.Future;
 import scala.concurrent.duration.Duration;
 
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * Placeholder for Proxy.
@@ -29,6 +31,8 @@ public class Proxy {
 
     public NewResponse sendNewRequest(BetInfo betInfo) throws Exception {
         ActorRef receiver = up.getReceiver(betInfo.getUserId());
+        betInfo.setSelectionsId(betInfo.getBetOutcomes().stream().map(BetOutcome::getOutcomeId)
+        .collect(Collectors.toSet()));
         NewRequest newRequest = new NewRequest(betInfo);
 
         Future<Object> future = Patterns.ask(receiver, newRequest, Timeout.apply(10, TimeUnit.SECONDS));

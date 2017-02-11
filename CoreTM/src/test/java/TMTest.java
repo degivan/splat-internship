@@ -94,7 +94,7 @@ public class TMTest extends TestCase {
     public void testBetProtobufP1() throws Exception {
         Set<BetOutcome> betOutcomes = new HashSet<>();
         //BetOutcome bo = new BetOutcome(1L, 2L, 3.14);
-        betOutcomes.add(new BetOutcome(1, 2, 3.14));
+        betOutcomes.add(new BetOutcome(1, 2, 3.14, 1));
         LocalTask bet1 = new AddBetTask(1, betOutcomes, System.currentTimeMillis());
         //buidling protobuf message
         BetRequest.Bet betMessage = (BetRequest.Bet) ProtobufFactory.buildProtobuf(bet1, services);

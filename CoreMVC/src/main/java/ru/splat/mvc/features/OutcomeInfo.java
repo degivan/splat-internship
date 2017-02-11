@@ -4,17 +4,17 @@ package ru.splat.mvc.features;
 public class OutcomeInfo
 {
 
-    private int id;
+    private int outcomeId;
     private String name;
     private double coefficient;
     private int marketId;
 
     public int getId() {
-        return id;
+        return outcomeId;
     }
 
     public void setId(int id) {
-        this.id = id;
+        this.outcomeId = id;
     }
 
     public String getName() {

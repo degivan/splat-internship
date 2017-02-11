@@ -1,5 +1,5 @@
 function BetRequest(){
-    this.sum = null;
+    this.bet = null;
     this.userId = null;
     this.betInfo = {};
 }
@@ -16,6 +16,7 @@ app.controller('customersCtrl', function ($http,$interval,$timeout) {
 
     $http.get("/init").then(function (response) {
         ctrl.languageSettings = response.data;
+        console.log(response.data);
     });
 
 
@@ -30,7 +31,7 @@ app.controller('customersCtrl', function ($http,$interval,$timeout) {
         ctrl.buttonDisabled = !ctrl.buttonDisabled;
         var betRequest = new BetRequest();
         betRequest.userId = ctrl.userId;
-        betRequest.sum = ctrl.sum;
+        betRequest.bet = ctrl.sum;
         betRequest.betInfo = ctrl.selects;
 
         ctrl.buttonDisabled = !ctrl.buttonDisabled;

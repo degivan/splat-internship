@@ -2,6 +2,7 @@ package ru.splat;
 
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
+import akka.actor.Cancellable;
 import akka.actor.Props;
 import ru.splat.actors.Receiver;
 import ru.splat.actors.IdGenerator;
@@ -11,9 +12,12 @@ import ru.splat.db.Procedure;
 import ru.splat.message.RecoverRequest;
 import ru.splat.tm.actors.TMActor;
 import ru.splat.tm.actors.TMConsumerActor;
+import ru.splat.tm.messages.PollMsg;
+import scala.concurrent.duration.Duration;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Wraps actor system.
@@ -58,6 +62,10 @@ public class UP {
         Proxy proxy = Proxy.createWith(this);
 
         doRecover(() -> newActor(system, TMConsumerActor.class, TM_CONSUMER_NAME, tmActor));
+        LoggerGlobal.log("ACTOR SYSTEM INITALIZED");
+        /*Cancellable cancellable = system.scheduler().schedule(Duration.Zero(),
+                Duration.create(4000, TimeUnit.MILLISECONDS), consumerActor, new PollMsg(),
+                system.dispatcher(), null);*/
 
         return proxy;
     }

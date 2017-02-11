@@ -27,9 +27,11 @@ public class EventRepository
             return eventInfo;
         };
 
-        String SQL_SELECT_PUNTER_LIMITS = "SELECT event.id, event.name FROM event WHERE status = 'normal'";
+        String SQL_SELECT_PUNTER_LIMITS = "SELECT event.id, event.name FROM event";
         return  jdbcTemplate.query(SQL_SELECT_PUNTER_LIMITS, rm);
     }
+
+
 
     public List<MarketInfo> getMarkets(int event_id)
     {
