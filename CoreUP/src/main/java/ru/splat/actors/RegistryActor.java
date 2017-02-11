@@ -6,9 +6,11 @@ import ru.splat.LoggerGlobal;
 import ru.splat.message.RegisterRequest;
 import ru.splat.message.RegisterResponse;
 import ru.splat.messages.uptm.trstate.TransactionState;
+import scala.concurrent.duration.Duration;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Иван on 21.12.2016.
@@ -32,8 +34,22 @@ public class RegistryActor extends AbstractActor {
     private void processTransactionState(TransactionState o) {
         LoggerGlobal.log("Processing TransactionState: " + o.toString());
 
-        actors.get(o.getTransactionId())
-                .tell(o, self());
+        ActorRef phaser = actors.get(o.getTransactionId());
+        if(phaser == null) {
+            LoggerGlobal.log("Phaser for transactionId: " + o.getTransactionId() + " wasn't created yet.");
+
+            resendOverDelay(o);
+        } else {
+            phaser.tell(o, self());
+        }
+    }
+
+    private void resendOverDelay(TransactionState o) {
+        context().system()
+                .scheduler()
+                .scheduleOnce(
+                    Duration.create(500L, TimeUnit.MILLISECONDS),
+                    self(), o, context().dispatcher(), ActorRef.noSender());
     }
 
     private void processRegisterRequest(RegisterRequest request) {

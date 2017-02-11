@@ -38,7 +38,7 @@ public class UPTest {
            for(int i = 0; i < 1; i++) {
                up.getReceiver(i).tell(testRequest(i), getRef());
            }
-           expectNoMsg(Duration.apply(20L, TimeUnit.SECONDS));
+           expectNoMsg(Duration.apply(40L, TimeUnit.SECONDS));
        }};
     }
 

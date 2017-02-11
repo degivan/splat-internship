@@ -48,8 +48,6 @@ public class TMConsumerActor extends AbstractActor{
         consumer.subscribe(Arrays.asList(topicsList));
         //responseParser = new ResponseParserImpl();
         System.out.println("consumer actor is here");
-
-
     }
 
 

@@ -10,6 +10,7 @@ import ru.splat.db.DBConnection;
 import ru.splat.db.Procedure;
 import ru.splat.message.RecoverRequest;
 import ru.splat.tm.actors.TMActor;
+import ru.splat.tm.actors.TMConsumerActor;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,6 +24,7 @@ public class UP {
     private static final String REGISTRY_NAME = "registry";
     private static final String ID_GEN_NAME = "id_gen";
     private static final int REGISTRY_SIZE = 10;
+    private static final String TM_CONSUMER_NAME = "tm_consumer";
 
     private final ActorSystem system;
     private final ActorRef registry;
@@ -49,14 +51,12 @@ public class UP {
 
     //system bet
     public void start() {
-        ActorRef tmActor = newActor(system, TMActor.class, TM_ACTOR_NAME);
+        ActorRef tmActor = newActor(system, TMActor.class, TM_ACTOR_NAME, registry);
         ActorRef idGenerator = newActor(system, IdGenerator.class, ID_GEN_NAME);
         createReceivers(1, idGenerator, tmActor);
 
-        TM1.create(tmActor);
-
         doRecover(() -> {
-            TM2.createWith(registry);
+            newActor(system, TMConsumerActor.class, TM_CONSUMER_NAME, tmActor);
             Proxy.createWith(this);
         });
     }
@@ -70,6 +70,7 @@ public class UP {
     public static UP create() {
         ActorSystem system = ActorSystem.create();
         ActorRef registryActor = newActor(system, RegistryActor.class, REGISTRY_NAME, REGISTRY_SIZE);
+
         return new UP(system, registryActor);
     }
 
