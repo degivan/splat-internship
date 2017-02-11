@@ -1,1 +1,1 @@
-﻿Переработон ServiceResponse
+﻿Переработан ServiceResponse

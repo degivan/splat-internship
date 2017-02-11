@@ -6,10 +6,10 @@ import akka.actor.Props;
 import ru.splat.actors.Receiver;
 import ru.splat.actors.IdGenerator;
 import ru.splat.actors.RegistryActor;
-import ru.splat.actors.TMActor;
 import ru.splat.db.DBConnection;
 import ru.splat.db.Procedure;
 import ru.splat.message.RecoverRequest;
+import ru.splat.tmactors.TMActor;
 
 import java.util.HashMap;
 import java.util.Map;
