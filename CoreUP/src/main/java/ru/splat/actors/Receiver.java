@@ -3,19 +3,15 @@ package ru.splat.actors;
 import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
 import akka.actor.Props;
-import akka.actor.UntypedActor;
 import akka.dispatch.OnSuccess;
-import akka.japi.pf.ReceiveBuilder;
-import akka.japi.pf.UnitPFBuilder;
 import akka.pattern.Patterns;
 import akka.util.Timeout;
 import ru.splat.LoggerGlobal;
+import ru.splat.message.*;
 import ru.splat.messages.Transaction;
-import ru.splat.messages.proxyup.ProxyUPMessage;
 import ru.splat.messages.proxyup.bet.BetInfo;
 import ru.splat.messages.proxyup.bet.NewRequest;
 import ru.splat.messages.proxyup.check.CheckRequest;
-import ru.splat.message.*;
 import scala.concurrent.Future;
 
 import java.util.HashMap;
@@ -57,23 +53,10 @@ public class Receiver extends AbstractActor {
         this.registry = registry;
         this.idGenerator = idGenerator;
         this.tmActor = tmActor;
+
         userIds = new HashSet<>();
         results = new HashMap<>();
         current = new HashMap<>();
-
-        /*UnitPFBuilder<Object> builder = ReceiveBuilder.create();
-
-        builder.match(NewRequest.class, this::processNewRequest)
-                .match(CheckRequest.class, this::processCheckRequest)
-                .match(CreateIdResponse.class,
-                       m -> processTransactionReady(m.getTransaction()))
-                .match(RecoverRequest.class,
-                       m -> processDoRecover(m.getTransaction()))
-                .match(PhaserResponse.class,
-                       m -> processRequestResult(m.getTransaction()))
-                .matchAny(this::unhandled);
-
-        receive(builder.build());*/
     }
 
     private void processCheckRequest(CheckRequest message) {

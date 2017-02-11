@@ -3,8 +3,6 @@ package ru.splat.actors;
 import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
 import akka.actor.ReceiveTimeout;
-import akka.japi.Procedure;
-import akka.japi.pf.ReceiveBuilder;
 import akka.japi.pf.UnitPFBuilder;
 import ru.splat.LoggerGlobal;
 import ru.splat.db.DBConnection;
@@ -19,7 +17,6 @@ import scala.PartialFunction;
 import scala.concurrent.duration.Duration;
 import scala.runtime.BoxedUnit;
 
-import java.lang.reflect.ParameterizedType;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -45,16 +42,6 @@ public class PhaserActor extends AbstractActor {
     public PhaserActor(ActorRef tmActor, ActorRef receiver) {
         this.tmActor = tmActor;
         this.receiver = receiver;
-
-        /*UnitPFBuilder<Object> builder = ReceiveBuilder.create();
-
-        builder.match(PhaserRequest.class, this::processPhaserRequest)
-                .match(TransactionState.class, this::processTransactionState)
-                .match(ReceiveTimeout.class, m -> processReceiveTimeout())
-                .match(TMResponse.class, m -> {/*TODO: Change state to PHASE1_RESPONDED })
-                .matchAny(this::unhandled);
-
-        receive(builder.build());*/
     }
 
     @Override

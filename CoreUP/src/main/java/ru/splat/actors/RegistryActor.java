@@ -2,8 +2,6 @@ package ru.splat.actors;
 
 import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
-import akka.japi.pf.ReceiveBuilder;
-import akka.japi.pf.UnitPFBuilder;
 import ru.splat.LoggerGlobal;
 import ru.splat.message.RegisterRequest;
 import ru.splat.message.RegisterResponse;
@@ -29,14 +27,6 @@ public class RegistryActor extends AbstractActor {
 
     public RegistryActor(Integer size) {
         actors = new HashMap<>(size);
-
-        /*UnitPFBuilder<Object> builder = ReceiveBuilder.create();
-
-        builder.match(RegisterRequest.class, this::processRegisterRequest)
-            .match(TransactionState.class, this::processTransactionState)
-            .matchAny(this::unhandled);
-
-        receive(builder.build());*/
     }
 
     private void processTransactionState(TransactionState o) {

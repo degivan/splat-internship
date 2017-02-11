@@ -63,3 +63,4 @@ hs_err_pid*
 .idea/
 src/main/java/ru/splat/Event/
 target/
+/CoreTM/

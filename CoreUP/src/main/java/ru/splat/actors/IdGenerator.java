@@ -2,9 +2,6 @@ package ru.splat.actors;
 
 import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
-import akka.actor.UntypedActor;
-import akka.japi.pf.ReceiveBuilder;
-import akka.japi.pf.UnitPFBuilder;
 import ru.splat.LoggerGlobal;
 import ru.splat.db.Bounds;
 import ru.splat.db.DBConnection;
@@ -13,12 +10,11 @@ import ru.splat.message.CreateIdResponse;
 import ru.splat.message.NewIdsMessage;
 import ru.splat.messages.Transaction;
 import ru.splat.messages.Transaction.State;
-import sun.rmi.runtime.Log;
 
 import java.util.LinkedList;
 import java.util.Queue;
 
-import static ru.splat.messages.Transaction.Builder.*;
+import static ru.splat.messages.Transaction.Builder.builder;
 
 /**
  * Puts transaction in DB and generates unique identifier for it.
@@ -36,16 +32,6 @@ public class IdGenerator extends AbstractActor {
                 .match(NewIdsMessage.class, this::processNewIdsMessage)
                 .matchAny(this::unhandled).build();
     }
-
-    /*public IdGenerator() {
-        UnitPFBuilder<Object> builder = ReceiveBuilder.create();
-
-        builder.match(CreateIdRequest.class, this::processCreateIdRequest)
-            .match(NewIdsMessage.class, this::processNewIdsMessage)
-            .matchAny(this::unhandled);
-
-        receive(builder.build());
-    }*/
 
     private void processNewIdsMessage(NewIdsMessage message) {
         LoggerGlobal.log("Process NewIdsMessage: " + message.toString());
