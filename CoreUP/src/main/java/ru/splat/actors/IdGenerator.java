@@ -1,5 +1,6 @@
 package ru.splat.actors;
 
+import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
 import akka.actor.UntypedActor;
 import ru.splat.LoggerGlobal;
@@ -20,7 +21,7 @@ import static ru.splat.messages.Transaction.Builder.*;
 /**
  * Puts transaction in DB and generates unique identifier for it.
  */
-public class IdGenerator extends UntypedActor {
+public class IdGenerator extends AbstractActor {
     private static final Long RANGE = 50L;
 
     private Queue<CreateIdRequest> adjournedRequests = new LinkedList<>();
@@ -28,7 +29,14 @@ public class IdGenerator extends UntypedActor {
     private boolean messagesRequested = false;
 
     @Override
-    public void onReceive(Object message) throws Throwable {
+    public Receive createReceive() {
+        return receiveBuilder().match(CreateIdRequest.class, this::processCreateIdRequest)
+                .match(NewIdsMessage.class, this::processNewIdsMessage)
+                .matchAny(this::unhandled)
+                .build();
+    }
+
+    /*public void onReceive(Object message) throws Throwable {
         if(message instanceof CreateIdRequest) {
             processCreateIdRequest((CreateIdRequest) message);
         } else if(message instanceof NewIdsMessage) {
@@ -36,7 +44,7 @@ public class IdGenerator extends UntypedActor {
         } else {
             unhandled(message);
         }
-    }
+    }*/
 
     private void processNewIdsMessage(NewIdsMessage message) {
         LoggerGlobal.log("Process NewIdsMessage: " + message.toString());
@@ -92,4 +100,6 @@ public class IdGenerator extends UntypedActor {
     private boolean outOfIndexes() {
         return (bounds.getUpperBound() - bounds.getLowerBound() < RANGE);
     }
+
+
 }

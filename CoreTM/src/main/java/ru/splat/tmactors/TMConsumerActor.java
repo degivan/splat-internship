@@ -32,6 +32,7 @@ public class TMConsumerActor extends AbstractActor{
     public Receive createReceive() {
         return receiveBuilder()
                 .match(PollMsg.class, this::poll)
+                .matchAny(this::unhandled)
                 .build();
     }
 

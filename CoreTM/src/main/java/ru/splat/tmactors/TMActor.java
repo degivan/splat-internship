@@ -42,6 +42,7 @@ public  class TMActor extends AbstractActor {
                 .match(TaskSentMsg.class, this::setIsSent)
                 .match(RetrySendMsg.class, m -> send(m.getTopic(), m.getTransactionId(), m.getMessage()))
                 .match(ServiceResponseMsg.class, this::processResponse)
+                .matchAny(this::unhandled)
                 .build();
     }
 
