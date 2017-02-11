@@ -9,7 +9,7 @@ import ru.splat.actors.RegistryActor;
 import ru.splat.db.DBConnection;
 import ru.splat.db.Procedure;
 import ru.splat.message.RecoverRequest;
-import ru.splat.tmactors.TMActor;
+import ru.splat.tm.actors.TMActor;
 
 import java.util.HashMap;
 import java.util.Map;

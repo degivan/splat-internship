@@ -3,7 +3,6 @@ package ru.splat.actors;
 import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
 import akka.actor.ReceiveTimeout;
-import akka.actor.UntypedActor;
 import akka.japi.Procedure;
 import akka.japi.pf.ReceiveBuilder;
 import akka.japi.pf.UnitPFBuilder;
@@ -205,7 +204,7 @@ public class PhaserActor extends AbstractActor {
     }
 
     private static UnitPFBuilder<Object> state() {
-        UnitPFBuilder<Object> builder = ReceiveBuilder.create();
+        UnitPFBuilder<Object> builder = new UnitPFBuilder<>();
 
         builder.match(TMResponse.class,
                 m -> {/* TODO: check that it's confirmation for phase2 and change state */});

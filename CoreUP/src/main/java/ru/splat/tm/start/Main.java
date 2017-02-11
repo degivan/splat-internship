@@ -1,4 +1,4 @@
-package ru.splat.tmstart;
+package ru.splat.tm.start;
 
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
@@ -8,11 +8,11 @@ import ru.splat.messages.uptm.trmetadata.LocalTask;
 import ru.splat.messages.uptm.trmetadata.TransactionMetadata;
 import ru.splat.messages.uptm.trmetadata.bet.FixBetTask;
 import ru.splat.messages.uptm.trmetadata.punter.AddPunterLimitsTask;
-import ru.splat.mocks.ServiceMock;
-import ru.splat.tmactors.TMActor;
-import ru.splat.tmactors.TMConsumerActor;
-import ru.splat.tmmessages.MockRegistry;
-import ru.splat.tmmessages.PollMsg;
+import ru.splat.tm.mocks.ServiceMock;
+import ru.splat.tm.actors.TMActor;
+import ru.splat.tm.actors.TMConsumerActor;
+import ru.splat.tm.messages.MockRegistry;
+import ru.splat.tm.messages.PollMsg;
 import scala.concurrent.duration.Duration;
 
 import java.util.LinkedList;
