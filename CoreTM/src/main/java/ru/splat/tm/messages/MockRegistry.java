@@ -3,6 +3,7 @@ package ru.splat.tm.messages;
 import akka.actor.AbstractActor;
 import ru.splat.messages.uptm.TMResponse;
 import ru.splat.messages.uptm.trstate.TransactionState;
+import ru.splat.tm.LoggerGlobal;
 
 /**
  * Created by Дмитрий on 18.01.2017.

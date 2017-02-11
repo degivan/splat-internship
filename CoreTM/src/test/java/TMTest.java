@@ -15,6 +15,7 @@ import ru.splat.messages.uptm.trmetadata.bet.AddBetTask;
 import ru.splat.messages.uptm.trmetadata.bet.BetOutcome;
 import ru.splat.messages.uptm.trmetadata.bet.FixBetTask;
 import ru.splat.messages.uptm.trstate.ServiceResponse;
+import ru.splat.tm.LoggerGlobal;
 import ru.splat.tm.actors.*;
 import ru.splat.tm.messages.MockRegistry;
 import ru.splat.tm.messages.PollMsg;
@@ -117,7 +118,7 @@ public class TMTest extends TestCase {
                .setBooleanAttachment(true).setResult(1).build();
         ServiceResponse serviceResponse = ResponseParser.unpackMessage(message);
         assertTrue(message instanceof Response.ServiceResponse);
-        LoggerGlobal.log(serviceResponse.getAttachment());
+        LoggerGlobal.log(serviceResponse.getAttachment().toString());
         assertEquals(serviceResponse.getAttachment(), true);
     }
 

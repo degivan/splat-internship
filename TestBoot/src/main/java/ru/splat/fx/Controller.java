@@ -13,7 +13,7 @@ import ru.splat.task.RequestTask;
 import ru.splat.task.StateRequestTask;
 
 import java.util.HashSet;
-import java.util.Set;
+import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -36,7 +36,7 @@ public class Controller
     private int punterCount;
     private long requestTimeout;
     private int requestCount;
-    private Set<Long> trIdSet;
+    private ConcurrentSkipListSet<Long> trIdSet;
 
     private Alert alert;
 
@@ -71,7 +71,7 @@ public class Controller
             requestTimeout = requestTimeout * 1000;
         }
 
-        trIdSet = new HashSet<>();
+
 
         try
         {
@@ -82,12 +82,6 @@ public class Controller
             requestCount = Constant.REQUEST_COUNT;
         }
     }
-
-    public void addTransactionId(long id) {
-        trIdSet.add(id);
-    }
-    public void removeTransactionId(long id) {trIdSet.remove(id);}
-
 
     @FXML
     public void onClickStart()
@@ -101,9 +95,9 @@ public class Controller
             init();
             executorService = Executors.newFixedThreadPool(9);
             for (int i = 0; i < 8; i++) {
-                executorService.submit(new RequestTask(requestCount, requestTimeout, punterCount));
+                executorService.submit(new RequestTask(requestCount, requestTimeout, punterCount, this.trIdSet));
             }
-            executorService.submit(new StateRequestTask()); //проверка стейтов по trId
+            executorService.submit(new StateRequestTask(this.trIdSet)); //проверка стейтов по trId
 
         }
     }
@@ -121,6 +115,7 @@ public class Controller
 
     @FXML
     public void initialize(){
+        trIdSet = new ConcurrentSkipListSet<Long>();
         tfRequestTimeout.setText(String.valueOf(Constant.REQUEST_TIMEOUT));
         tfPunterCount.setText(String.valueOf(Constant.PUNTER_COUNT));
         tfRequestCount.setText(String.valueOf(Constant.REQUEST_COUNT));
@@ -158,7 +153,7 @@ public class Controller
         alert.showAndWait();
     }
 
-    public Set<Long> getTrIdSet() {
+    public ConcurrentSkipListSet<Long> getTrIdSet() {
         return trIdSet;
     }
 }

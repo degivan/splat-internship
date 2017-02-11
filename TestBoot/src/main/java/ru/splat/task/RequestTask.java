@@ -4,19 +4,22 @@ import org.springframework.stereotype.Component;
 import ru.splat.fx.Controller;
 import ru.splat.service.BootService;
 
+import java.util.concurrent.ConcurrentSkipListSet;
+
 @Component
 public class RequestTask implements Runnable {
 
     private int requestCount;
     private long requestTimeout;
     private int punterCount;
-    //@Autowired???
-    private Controller controller;
+    private ConcurrentSkipListSet<Long> trIdSet;
 
-    public RequestTask(int requestCount, long requestTimeout, int punterCount) {
+
+    public RequestTask(int requestCount, long requestTimeout, int punterCount, ConcurrentSkipListSet<Long> trIdSet) {
         this.requestCount = requestCount;
         this.requestTimeout = requestTimeout;
         this.punterCount = punterCount;
+        this.trIdSet = trIdSet;
     }
 
     @Override
@@ -32,7 +35,7 @@ public class RequestTask implements Runnable {
             while (i < requestCount && residual < requestTimeout)
             {
                 try {
-                    controller.addTransactionId(bootService.makeRequest(punterCount));  //добавление нового id в сет
+                    trIdSet.add(bootService.makeRequest(punterCount));  //добавление нового id в сет
                 }catch (InterruptedException ie)
                 {
                     Thread.currentThread().interrupt();
