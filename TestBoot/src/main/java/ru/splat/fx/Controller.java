@@ -5,6 +5,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
+import javafx.stage.Stage;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import ru.splat.Constant;
@@ -15,6 +16,9 @@ import java.util.concurrent.Executors;
 
 public class Controller
 {
+
+    public static Stage stage;
+
     @FXML
     private Button button;
 
@@ -37,6 +41,11 @@ public class Controller
 
     private ExecutorService executorService;
 
+    public void interruptThreads()
+    {
+        if (executorService != null){ executorService.shutdownNow();}
+        executorService = null;
+    }
     private void init()
     {
         try
@@ -95,8 +104,7 @@ public class Controller
     @FXML
     public void onClickStop()
     {
-        if (executorService != null){ executorService.shutdownNow();}
-        executorService = null;
+        interruptThreads();
 
         alert.setContentText("Конец работы тестового бота");
 
@@ -116,6 +124,7 @@ public class Controller
         alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Information");
         alert.setHeaderText(null);
+
     }
 
     //TODO подумать про зависимости лимитов в бд и во входных данных.
@@ -124,6 +133,8 @@ public class Controller
     {
         if (eventDefaultDataService.isEmptyEvent())
         {
+            init();
+
             eventDefaultDataService.insertDefaultData();
 
             alert.setContentText("Данные в БД успешно созданы");
@@ -141,4 +152,5 @@ public class Controller
         alert.setContentText("Данные в БД успешно удалены");
         alert.showAndWait();
     }
+
 }
