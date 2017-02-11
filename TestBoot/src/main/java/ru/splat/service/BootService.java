@@ -76,4 +76,6 @@ public class BootService
         BetRequestFull betRequestFull = new BetRequestFull(map,random.nextInt(50), random.nextInt(Constant.PUNTER_COUNT));
         return betRequestFull;
     }
+
+    
 }

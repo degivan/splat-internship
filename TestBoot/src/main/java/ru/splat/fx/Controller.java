@@ -11,6 +11,10 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import ru.splat.Constant;
 import ru.splat.service.EventDefaultDataService;
 import ru.splat.task.RequestTask;
+import ru.splat.task.StateRequestTask;
+
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -36,6 +40,7 @@ public class Controller
     private int punterCount;
     private long requestTimeout;
     private int requestCount;
+    private Set<Long> trIdSet;
 
     private Alert alert;
 
@@ -46,6 +51,7 @@ public class Controller
         if (executorService != null){ executorService.shutdownNow();}
         executorService = null;
     }
+
     private void init()
     {
         try
@@ -74,6 +80,8 @@ public class Controller
             requestTimeout = requestTimeout * 1000;
         }
 
+        trIdSet = new HashSet<>();
+
         try
         {
             requestCount = Integer.valueOf(tfRequestCount.getCharacters().toString());
@@ -83,6 +91,12 @@ public class Controller
             requestCount = Constant.REQUEST_COUNT;
         }
     }
+
+    public void addTransactionId(long id) {
+        trIdSet.add(id);
+    }
+    public void removeTransactionId(long id) {trIdSet.remove(id);}
+
 
     @FXML
     public void onClickStart()
@@ -98,6 +112,8 @@ public class Controller
             for (int i = 0; i < 8; i++) {
                 executorService.submit(new RequestTask(requestCount, requestTimeout, punterCount));
             }
+            executorService.submit(new StateRequestTask()); //проверка стейтов по trId
+
         }
     }
 
@@ -153,4 +169,7 @@ public class Controller
         alert.showAndWait();
     }
 
+    public Set<Long> getTrIdSet() {
+        return trIdSet;
+    }
 }

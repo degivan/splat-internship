@@ -1,7 +1,10 @@
 package ru.splat.actors;
 
+import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
 import akka.actor.UntypedActor;
+import akka.japi.pf.ReceiveBuilder;
+import akka.japi.pf.UnitPFBuilder;
 import ru.splat.LoggerGlobal;
 import ru.splat.db.Bounds;
 import ru.splat.db.DBConnection;
@@ -20,22 +23,21 @@ import static ru.splat.messages.Transaction.Builder.*;
 /**
  * Puts transaction in DB and generates unique identifier for it.
  */
-public class IdGenerator extends UntypedActor {
+public class IdGenerator extends AbstractActor {
     private static final Long RANGE = 50L;
 
     private Queue<CreateIdRequest> adjournedRequests = new LinkedList<>();
     private Bounds bounds = new Bounds(0L, 0L);
     private boolean messagesRequested = false;
 
-    @Override
-    public void onReceive(Object message) throws Throwable {
-        if(message instanceof CreateIdRequest) {
-            processCreateIdRequest((CreateIdRequest) message);
-        } else if(message instanceof NewIdsMessage) {
-            processNewIdsMessage((NewIdsMessage) message);
-        } else {
-            unhandled(message);
-        }
+    public IdGenerator() {
+        UnitPFBuilder<Object> builder = ReceiveBuilder.create();
+
+        builder.match(CreateIdRequest.class, this::processCreateIdRequest)
+            .match(NewIdsMessage.class, this::processNewIdsMessage)
+            .matchAny(this::unhandled);
+
+        receive(builder.build());
     }
 
     private void processNewIdsMessage(NewIdsMessage message) {
@@ -57,7 +59,7 @@ public class IdGenerator extends UntypedActor {
             adjournedRequests.add(message);
             if(!messagesRequested) {
                 DBConnection.createIdentifiers(
-                        bounds -> getSelf().tell(new NewIdsMessage(bounds), getSelf()));
+                        bounds -> self().tell(new NewIdsMessage(bounds), self()));
                 messagesRequested = true;
 
                 LoggerGlobal.log("Messages requested");
@@ -65,7 +67,7 @@ public class IdGenerator extends UntypedActor {
 
             return false;
         } else {
-            ActorRef receiver = getSender();
+            ActorRef receiver = sender();
             Bounds bounds = getIndexes();
             Transaction transaction = builder()
                     .betInfo(message.getBetInfo())
@@ -77,7 +79,7 @@ public class IdGenerator extends UntypedActor {
             LoggerGlobal.log("Saving new transaction: " + transaction);
 
             DBConnection.newTransaction(transaction,
-                tr -> receiver.tell(new CreateIdResponse(transaction), getSelf()));
+                tr -> receiver.tell(new CreateIdResponse(transaction), self()));
 
             return true;
         }

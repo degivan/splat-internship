@@ -9,5 +9,11 @@ TM (05.02.17-06.02.17):
 Code-Review by NKalugin
 ==========CoreUP===========
 ==========CoreTM===========
-повсеместно перепилить UntypedActor-a на AbstractActor-a
+повсеместно перепилить UntypedActor-a на AbstractActor-a //done для CoreUP
 объединить модули CoreTM, CoreUP и CoreMVC
+
+TestBoot:
+-DI для контроллера (доступ к сету/мапе)
+-переделать сет<trId> в мапу<trId, time> и отслеживать просроченные ответы
+-логгирование
+-настраиваемая частота обращений.
