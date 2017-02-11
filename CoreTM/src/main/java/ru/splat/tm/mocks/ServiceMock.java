@@ -1,4 +1,4 @@
-package ru.splat.mocks;
+package ru.splat.tm.mocks;
 
 import com.google.protobuf.Message;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -10,10 +10,12 @@ import ru.splat.kafka.deserializer.ProtoBufMessageDeserializer;
 import ru.splat.kafka.serializer.ProtoBufMessageSerializer;
 import ru.splat.messages.BetRequest;
 import ru.splat.messages.Response;
+import ru.splat.tm.LoggerGlobal;
 
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.logging.Logger;
 
 /**
  * Created by Дмитрий on 05.02.2017.
@@ -55,12 +57,12 @@ public class ServiceMock {
         try {
             future.get();
         } catch (InterruptedException e) {
-            System.out.println("InterruptedException");
+            LoggerGlobal.log("InterruptedException");
         } catch (ExecutionException e) {
-            System.out.println("ExecutionException");
+            LoggerGlobal.log("ExecutionException");
         }
         finally {
-            System.out.println("sent to " + topic);
+            LoggerGlobal.log("sent to " + topic);
         }
     }
 

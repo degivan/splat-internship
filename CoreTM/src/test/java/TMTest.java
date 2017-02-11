@@ -15,11 +15,12 @@ import ru.splat.messages.uptm.trmetadata.bet.AddBetTask;
 import ru.splat.messages.uptm.trmetadata.bet.BetOutcome;
 import ru.splat.messages.uptm.trmetadata.bet.FixBetTask;
 import ru.splat.messages.uptm.trstate.ServiceResponse;
-import ru.splat.tmactors.*;
-import ru.splat.tmmessages.PollMsg;
-import ru.splat.tmmessages.TaskSentMsg;
-import ru.splat.tmprotobuf.ProtobufFactory;
-import ru.splat.tmprotobuf.ResponseParser;
+import ru.splat.tm.actors.*;
+import ru.splat.tm.messages.MockRegistry;
+import ru.splat.tm.messages.PollMsg;
+import ru.splat.tm.messages.TaskSentMsg;
+import ru.splat.tm.protobuf.ProtobufFactory;
+import ru.splat.tm.protobuf.ResponseParser;
 import scala.concurrent.duration.Duration;
 
 import java.util.HashSet;
@@ -43,11 +44,13 @@ public class TMTest extends TestCase {
 
     public void testTMConsumerActor() {
         ActorSystem system = ActorSystem.create("testactors");
-        final ActorRef tmActor = system.actorOf(Props.create(TMActor.class), "TMActor");
-        final ActorRef consumerActor = system.actorOf(Props.create(TMConsumerActor.class, tmActor, responseParser), "TMConsumerActor");
+        final ActorRef registry = system.actorOf(Props.create(MockRegistry.class), "MockRegistry");
+        final ActorRef tmActor = system.actorOf(Props.create(TMActor.class, registry), "TMActor");
+        final ActorRef consumerActor = system.actorOf(Props.create(TMConsumerActor.class, tmActor), "TMConsumerActor");
         Cancellable cancellable = system.scheduler().schedule(Duration.Zero(),
                 Duration.create(1000, TimeUnit.MILLISECONDS), consumerActor, new PollMsg(),
                 system.dispatcher(), null);
+
     }
 
 
@@ -57,15 +60,13 @@ public class TMTest extends TestCase {
         Cancellable cancellable = system.scheduler().schedule(Duration.Zero(),
                 Duration.create(2000, TimeUnit.MILLISECONDS), tmActor, new TaskSentMsg(111L, ServicesEnum.BetService),
                 system.dispatcher(), null);
-
-
     }
     /*public void testTMConsumer() {  //test consumer and responseParser work
         tmConsumer = new TMConsumerImpl();
         ServiceMock betServiceMock = new ServiceMock();
 
         betServiceMock.sendRoutine();
-        int pollCount = tmConsumer.pollRecords().count(); System.out.println("PollCount: " + pollCount);
+        int pollCount = tmConsumer.pollRecords().count(); LoggerGlobal.log("PollCount: " + pollCount);
         assertEquals(pollCount, 0);
     }*/
 
@@ -116,7 +117,7 @@ public class TMTest extends TestCase {
                .setBooleanAttachment(true).setResult(1).build();
         ServiceResponse serviceResponse = ResponseParser.unpackMessage(message);
         assertTrue(message instanceof Response.ServiceResponse);
-        System.out.println(serviceResponse.getAttachment());
+        LoggerGlobal.log(serviceResponse.getAttachment());
         assertEquals(serviceResponse.getAttachment(), true);
     }
 

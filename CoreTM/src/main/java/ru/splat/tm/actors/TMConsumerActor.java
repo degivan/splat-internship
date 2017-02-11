@@ -10,6 +10,7 @@ import ru.splat.kafka.deserializer.ProtoBufMessageDeserializer;
 import ru.splat.messages.Response;
 import ru.splat.messages.conventions.ServicesEnum;
 import ru.splat.messages.uptm.trstate.ServiceResponse;
+import ru.splat.tm.LoggerGlobal;
 import ru.splat.tm.messages.PollMsg;
 import ru.splat.tm.messages.ServiceResponseMsg;
 import ru.splat.tm.protobuf.ResponseParser;
@@ -47,19 +48,19 @@ public class TMConsumerActor extends AbstractActor{
                 new ProtoBufMessageDeserializer(Response.ServiceResponse.getDefaultInstance()));
         consumer.subscribe(Arrays.asList(topicsList));
         //responseParser = new ResponseParserImpl();
-        System.out.println("consumer actor is here");
+        LoggerGlobal.log("consumer actor is here");
     }
 
 
 
     private void poll(PollMsg p) {
         ConsumerRecords<Long, Response.ServiceResponse> records = consumer.poll(100);
-        System.out.println("TMConsumer: messages consumed");
+        LoggerGlobal.log("TMConsumer: messages consumed");
         for (ConsumerRecord<Long, Response.ServiceResponse> record : records) {
-            //System.out.println("message received: " + record.key());
+            //LoggerGlobal.log("message received: " + record.key());
             ServiceResponse sr = ResponseParser.unpackMessage(record.value());
             ServiceResponseMsg srm = new ServiceResponseMsg(record.key(), sr, TOPICS_MAP.get(record.topic()));
-            System.out.println("message received: " + record.key() + " " + sr.getAttachment());
+            LoggerGlobal.log("message received: " + record.key() + " " + sr.getAttachment());
             tmActor.tell(srm, getSelf());
         }
     }

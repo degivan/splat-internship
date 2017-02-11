@@ -37,7 +37,7 @@
 
         <dependency>
             <groupId>ru.splat</groupId>
-            <artifactId>CoreKafka</artifactId>
+            <artifactId>CoreTM</artifactId>
             <version>0.1-SNAPSHOT</version>
         </dependency>
         <!-- akka -->
@@ -53,28 +53,9 @@
         </dependency>
         <!-- MS -->
         <dependency>
-            <groupId>org.apache.kafka</groupId>
-            <artifactId>kafka-log4j-appender</artifactId>
-            <version>0.10.0.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.kafka</groupId>
-            <artifactId>kafka-clients</artifactId>
-            <version>0.10.0.0</version>
-        </dependency>
-
-
-        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
             <version>1.7.13</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.google.protobuf</groupId>
-            <artifactId>protobuf-java</artifactId>
-            <version>3.1.0</version>
         </dependency>
 
         <dependency>

@@ -1,11 +1,10 @@
-package ru.splat.tmactors;
+package ru.splat.tm.actors;
 
 import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
 import com.google.protobuf.Message;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.common.network.Receive;
 import org.apache.kafka.common.serialization.LongSerializer;
 import ru.splat.kafka.serializer.ProtoBufMessageSerializer;
 import ru.splat.messages.conventions.ServicesEnum;
@@ -15,10 +14,11 @@ import ru.splat.messages.uptm.trmetadata.LocalTask;
 import ru.splat.messages.uptm.trmetadata.TransactionMetadata;
 import ru.splat.messages.uptm.trstate.ServiceResponse;
 import ru.splat.messages.uptm.trstate.TransactionState;
-import ru.splat.tmmessages.RetrySendMsg;
-import ru.splat.tmmessages.ServiceResponseMsg;
-import ru.splat.tmmessages.TaskSentMsg;
-import ru.splat.tmprotobuf.ProtobufFactory;
+import ru.splat.tm.LoggerGlobal;
+import ru.splat.tm.messages.RetrySendMsg;
+import ru.splat.tm.messages.ServiceResponseMsg;
+import ru.splat.tm.messages.TaskSentMsg;
+import ru.splat.tm.protobuf.ProtobufFactory;
 
 import java.util.*;
 import java.util.concurrent.Future;
@@ -67,7 +67,7 @@ public  class TMActor extends AbstractActor {
     public void processTransaction(TransactionMetadata trMetadata) {
         List<LocalTask> taskList = trMetadata.getLocalTasks();
         Long transactionId = trMetadata.getTransactionId();
-        System.out.println("TMActor: transactionId " + transactionId);
+        LoggerGlobal.log("TMActor: transactionId " + transactionId);
         Set<ServicesEnum> services = taskList.stream().map(task -> task.getService())
                 .collect(Collectors.toSet());
         taskList.forEach(task->{
@@ -78,8 +78,8 @@ public  class TMActor extends AbstractActor {
 
 
     private void send(String topic, Long transactionId, Message message) {
-        System.out.println("TMActor: sending " + transactionId + " to " + topic);
-        Future isSend = producer.send(new ProducerRecord<Long, Message>(topic, transactionId, message),
+        LoggerGlobal.log("TMActor: sending " + transactionId + " to " + topic);
+        Future isSend = producer.send(new ProducerRecord<>(topic, transactionId, message),
                 (metadata, e) -> {
                     if (e != null) getSelf().tell(new RetrySendMsg(topic, transactionId, message), getSelf());
                     else getSelf().tell(new TaskSentMsg(transactionId, TOPIC_TO_SERVICE_MAP.get(topic)), getSelf());
@@ -92,7 +92,7 @@ public  class TMActor extends AbstractActor {
             return;
         }
         ServiceResponse response = serviceResponseMsg.getMessage();
-        System.out.println("TMActor: response for " + trId + " :" + response.getResult());
+        LoggerGlobal.log("TMActor: response for " + trId + " :" + response.getResult());
         states.get(trId).getLocalStates()   //may there be null pointer?
                 .put(serviceResponseMsg.getService(), response);
         TransactionState transactionState = states.get(trId);
@@ -107,7 +107,7 @@ public  class TMActor extends AbstractActor {
     }
 
     public void setIsSent(TaskSentMsg m) {
-        System.out.println("task " + m.getService().toString() + " of " + m.getTransactionId() + " is sent");
+        LoggerGlobal.log("task " + m.getService().toString() + " of " + m.getTransactionId() + " is sent");
         Long trId = m.getTransactionId();
         states.get(trId).getLocalStates()   //may there be null pointer?
                 .get(m.getService()).setRequestSent(true);
@@ -120,7 +120,7 @@ public  class TMActor extends AbstractActor {
         //for testing
         /*ServiceResponse rs = states.get(m.getTransactionId()).getLocalStates()
                 .get(m.getService());
-        System.out.println("sent: " + rs.isRequestSent() + "received: " + rs.isResponseReceived() + "positive " + rs.isPositive());*/
+        LoggerGlobal.log("sent: " + rs.isRequestSent() + "received: " + rs.isResponseReceived() + "positive " + rs.isPositive());*/
     }
 
     public TMActor(ActorRef registry) {

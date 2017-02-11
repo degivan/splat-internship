@@ -8,11 +8,12 @@ import ru.splat.messages.uptm.trmetadata.LocalTask;
 import ru.splat.messages.uptm.trmetadata.TransactionMetadata;
 import ru.splat.messages.uptm.trmetadata.bet.FixBetTask;
 import ru.splat.messages.uptm.trmetadata.punter.AddPunterLimitsTask;
-import ru.splat.tm.mocks.ServiceMock;
+import ru.splat.tm.LoggerGlobal;
 import ru.splat.tm.actors.TMActor;
-import ru.splat.tm.actors.TMConsumerActor;
 import ru.splat.tm.messages.MockRegistry;
 import ru.splat.tm.messages.PollMsg;
+import ru.splat.tm.mocks.ServiceMock;
+import ru.splat.tm.actors.TMConsumerActor;
 import scala.concurrent.duration.Duration;
 
 import java.util.LinkedList;
@@ -50,7 +51,7 @@ public class Main {
                 Duration.create(6000, TimeUnit.MILLISECONDS), tmActor, new TaskSentMsg(111L, ServicesEnum.BetService),
                 system.dispatcher(), null);*/
 
-        System.out.println("Hello");
+        LoggerGlobal.log("Hello");
 
 
 

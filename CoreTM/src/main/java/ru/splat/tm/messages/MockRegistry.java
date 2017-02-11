@@ -10,18 +10,18 @@ import ru.splat.messages.uptm.trstate.TransactionState;
 public class MockRegistry extends AbstractActor {
 
     public MockRegistry() {
-        System.out.println("Registry ready");
+        LoggerGlobal.log("Registry ready");
     }
 
     private void processState(TransactionState m) {
-        System.out.println("Registry: state received" + m.getTransactionId() +
+        LoggerGlobal.log("Registry: state received" + m.getTransactionId() +
                 " with " + m.getLocalStates().size());
     }
 
     @Override
     public Receive createReceive() {
         return receiveBuilder()
-                .match(TMResponse.class, m -> System.out.println("Registry: all requests for " + m.getTransactionId()+ " are sent"))
+                .match(TMResponse.class, m -> LoggerGlobal.log("Registry: all requests for " + m.getTransactionId()+ " are sent"))
                 .match(TransactionState.class, this::processState)
                 .build();
     }
