@@ -19,11 +19,11 @@
     </properties>
 
     <repositories>
-        <repository>
+        <!--<repository>
             <id>typesafe</id>
             <name>Typesafe Repository</name>
             <url>http://repo.typesafe.com/typesafe/releases/</url>
-        </repository>
+        </repository>-->
 
         <repository>
             <id>akka-snapshots</id>

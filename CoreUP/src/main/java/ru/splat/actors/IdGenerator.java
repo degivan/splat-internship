@@ -30,7 +30,14 @@ public class IdGenerator extends AbstractActor {
     private Bounds bounds = new Bounds(0L, 0L);
     private boolean messagesRequested = false;
 
-    public IdGenerator() {
+    @Override
+    public Receive createReceive() {
+        return receiveBuilder().match(CreateIdRequest.class, this::processCreateIdRequest)
+                .match(NewIdsMessage.class, this::processNewIdsMessage)
+                .matchAny(this::unhandled).build();
+    }
+
+    /*public IdGenerator() {
         UnitPFBuilder<Object> builder = ReceiveBuilder.create();
 
         builder.match(CreateIdRequest.class, this::processCreateIdRequest)
@@ -38,7 +45,7 @@ public class IdGenerator extends AbstractActor {
             .matchAny(this::unhandled);
 
         receive(builder.build());
-    }
+    }*/
 
     private void processNewIdsMessage(NewIdsMessage message) {
         LoggerGlobal.log("Process NewIdsMessage: " + message.toString());
@@ -94,6 +101,7 @@ public class IdGenerator extends AbstractActor {
     private boolean outOfIndexes() {
         return (bounds.getUpperBound() - bounds.getLowerBound() < RANGE);
     }
+
 
 
 }

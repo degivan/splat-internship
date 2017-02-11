@@ -18,16 +18,25 @@ import java.util.Map;
 public class RegistryActor extends AbstractActor {
     private final Map<Long, ActorRef> actors;
 
+
+    @Override
+    public Receive createReceive() {
+        return receiveBuilder().match(RegisterRequest.class, this::processRegisterRequest)
+                .match(TransactionState.class, this::processTransactionState)
+                .matchAny(this::unhandled).build();
+
+    }
+
     public RegistryActor(Integer size) {
         actors = new HashMap<>(size);
 
-        UnitPFBuilder<Object> builder = ReceiveBuilder.create();
+        /*UnitPFBuilder<Object> builder = ReceiveBuilder.create();
 
         builder.match(RegisterRequest.class, this::processRegisterRequest)
             .match(TransactionState.class, this::processTransactionState)
             .matchAny(this::unhandled);
 
-        receive(builder.build());
+        receive(builder.build());*/
     }
 
     private void processTransactionState(TransactionState o) {
@@ -43,4 +52,6 @@ public class RegistryActor extends AbstractActor {
         actors.put(request.getTransactionId(), request.getActor());
         sender().tell(new RegisterResponse(), self());
     }
+
+
 }

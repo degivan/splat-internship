@@ -40,6 +40,19 @@ public class Receiver extends AbstractActor {
     private final Map<Long, Transaction.State> results;
     private final Map<Integer, ActorRef> current;
 
+    @Override
+    public Receive createReceive() {
+        return receiveBuilder().match(NewRequest.class, this::processNewRequest)
+                .match(CheckRequest.class, this::processCheckRequest)
+                .match(CreateIdResponse.class,
+                        m -> processTransactionReady(m.getTransaction()))
+                .match(RecoverRequest.class,
+                        m -> processDoRecover(m.getTransaction()))
+                .match(PhaserResponse.class,
+                        m -> processRequestResult(m.getTransaction()))
+                .matchAny(this::unhandled).build();
+    }
+
     public Receiver(ActorRef registry, ActorRef idGenerator, ActorRef tmActor) {
         this.registry = registry;
         this.idGenerator = idGenerator;
@@ -48,7 +61,7 @@ public class Receiver extends AbstractActor {
         results = new HashMap<>();
         current = new HashMap<>();
 
-        UnitPFBuilder<Object> builder = ReceiveBuilder.create();
+        /*UnitPFBuilder<Object> builder = ReceiveBuilder.create();
 
         builder.match(NewRequest.class, this::processNewRequest)
                 .match(CheckRequest.class, this::processCheckRequest)
@@ -60,7 +73,7 @@ public class Receiver extends AbstractActor {
                        m -> processRequestResult(m.getTransaction()))
                 .matchAny(this::unhandled);
 
-        receive(builder.build());
+        receive(builder.build());*/
     }
 
     private void processCheckRequest(CheckRequest message) {
@@ -153,4 +166,6 @@ public class Receiver extends AbstractActor {
     private ActorRef newActor(Class<?> clazz, String name, Object... args) {
         return getContext().actorOf(Props.create(clazz, args), name);
     }
+
+
 }

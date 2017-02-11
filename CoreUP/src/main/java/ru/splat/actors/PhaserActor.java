@@ -34,19 +34,28 @@ public class PhaserActor extends AbstractActor {
 
     private Transaction transaction;
 
+    @Override
+    public Receive createReceive() {
+        return receiveBuilder().match(PhaserRequest.class, this::processPhaserRequest)
+                .match(TransactionState.class, this::processTransactionState)
+                .match(ReceiveTimeout.class, m -> processReceiveTimeout())
+                .match(TMResponse.class, m -> {/*TODO: Change state to PHASE1_RESPONDED */})
+                .matchAny(this::unhandled).build();
+    }
+
     public PhaserActor(ActorRef tmActor, ActorRef receiver) {
         this.tmActor = tmActor;
         this.receiver = receiver;
 
-        UnitPFBuilder<Object> builder = ReceiveBuilder.create();
+        /*UnitPFBuilder<Object> builder = ReceiveBuilder.create();
 
         builder.match(PhaserRequest.class, this::processPhaserRequest)
                 .match(TransactionState.class, this::processTransactionState)
                 .match(ReceiveTimeout.class, m -> processReceiveTimeout())
-                .match(TMResponse.class, m -> {/*TODO: Change state to PHASE1_RESPONDED */})
+                .match(TMResponse.class, m -> {/*TODO: Change state to PHASE1_RESPONDED })
                 .matchAny(this::unhandled);
 
-        receive(builder.build());
+        receive(builder.build());*/
     }
 
     @Override
@@ -59,6 +68,8 @@ public class PhaserActor extends AbstractActor {
     public void postStop() throws Exception {
         super.postStop();
     }
+
+
 
     private void processPhaserRequest(PhaserRequest o) {
         LoggerGlobal.log("Process PhaserRequest: " + o.toString());
