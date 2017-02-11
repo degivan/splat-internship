@@ -9,12 +9,26 @@ public class BetOutcome {
     private Double coefficient;
     private Integer marketId;
 
-    public BetOutcome(Integer outcomeId, Integer eventId, Double coef, Integer marketId) {
+    public BetOutcome() {
+    }
+
+    public BetOutcome(Integer marketId, Integer eventId, Integer outcomeId, Double coefficient) {
         this.outcomeId = outcomeId;
         this.eventId = eventId;
-        this.coefficient = coef;
+        this.coefficient = coefficient;
         this.marketId = marketId;
     }
+
+    @Override
+    public String toString() {
+        return "BetOutcome{" +
+                "outcomeId=" + outcomeId +
+                ", eventId=" + eventId +
+                ", coefficient=" + coefficient +
+                ", marketId=" + marketId +
+                '}';
+    }
+
     public Integer getOutcomeId() {
         return outcomeId;
     }

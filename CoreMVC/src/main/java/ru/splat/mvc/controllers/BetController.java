@@ -5,7 +5,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import ru.splat.Proxy;
 import ru.splat.UP;
-import ru.splat.messages.bet.BetRequestFull;
 import ru.splat.messages.proxyup.bet.BetInfo;
 import ru.splat.messages.proxyup.bet.NewResponse;
 import ru.splat.messages.proxyup.check.CheckResult;
@@ -26,6 +25,13 @@ public class BetController
     public String printWelcome()
     {
         return "index";
+    }
+
+    @RequestMapping(value = "/test", method = RequestMethod.GET)
+    public @ResponseBody CheckResult chekBet()
+    {
+        CheckResult checkResult = CheckResult.ACCEPTED;
+        return checkResult;
     }
 
     @RequestMapping(value = "/init", method = RequestMethod.GET)
@@ -51,7 +57,6 @@ public class BetController
         System.out.println(transactionId);
 
         //заглушка
-        String status = "{\"status\": \"accepted\"}";
         return proxy.sendCheckRequest(transactionId, userId);
     }
 

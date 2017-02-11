@@ -6,11 +6,11 @@ import ru.splat.repository.EventRepository;
 
 public class EventDefaultDataService
 {
-    public static final int EVENT_COUNT = 100;
+    public static final int EVENT_COUNT = 4;
 
-    public static final int MARKET_COUNT = 100;
+    public static final int MARKET_COUNT = 3;
 
-    private static final int OUTCOME_COUNT = 5;
+    private static final int OUTCOME_COUNT = 2;
 
 
 
