@@ -58,7 +58,7 @@ public class DBConnection {
         findUnfinishedTransactions()
                 .forEach(processResult(list), createCallback(processData, after, list));
 
-        LoggerGlobal.log("Unfinished transactions processed.");
+        LoggerGlobal.log("Unfinished transactions sended.");
     }
 
     /**

@@ -9,7 +9,7 @@ TM (05.02.17-06.02.17):
 Code-Review by NKalugin
 ==========CoreUP===========
 ==========CoreTM===========
-повсеместно перепилить UntypedActor-a на AbstractActor-a
+повсеместно перепилить UntypedActor-a на AbstractActor-a //done для CoreUP
 объединить модули CoreTM, CoreUP и CoreMVC
 
 TestBoot:

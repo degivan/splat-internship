@@ -1,9 +1,12 @@
 package ru.splat.actors;
 
+import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
 import akka.actor.Props;
 import akka.actor.UntypedActor;
 import akka.dispatch.OnSuccess;
+import akka.japi.pf.ReceiveBuilder;
+import akka.japi.pf.UnitPFBuilder;
 import akka.pattern.Patterns;
 import akka.util.Timeout;
 import ru.splat.LoggerGlobal;
@@ -26,8 +29,8 @@ import static ru.splat.messages.Transaction.State;
 /**
  * Actor which receives messages from users and from id_generator.
  */
-public class Receiver extends UntypedActor {
-    public static final String NOT_ACTIVE_TR = "TRANSACTION IS NOT IN PROCESS";
+public class Receiver extends AbstractActor {
+    private static final String NOT_ACTIVE_TR = "TRANSACTION IS NOT IN PROCESS";
 
     private final ActorRef registry;
     private final ActorRef idGenerator;
@@ -41,28 +44,23 @@ public class Receiver extends UntypedActor {
         this.registry = registry;
         this.idGenerator = idGenerator;
         this.tmActor = tmActor;
-
         userIds = new HashSet<>();
         results = new HashMap<>();
         current = new HashMap<>();
-    }
 
-    @Override
-    public void onReceive(Object message) throws Throwable {
-        if(message instanceof InnerMessage) {
-            processInnerMessage((InnerMessage) message);
-        } else if(message instanceof ProxyUPMessage) {
-            processProxyMessage((ProxyUPMessage) message);
-        }
-    }
+        UnitPFBuilder<Object> builder = ReceiveBuilder.create();
 
-    //new request from proxy
-    private void processProxyMessage(ProxyUPMessage message) {
-        if(message instanceof NewRequest) {
-            processNewRequest((NewRequest) message);
-        } else {
-            processCheckRequest((CheckRequest) message);
-        }
+        builder.match(NewRequest.class, this::processNewRequest)
+                .match(CheckRequest.class, this::processCheckRequest)
+                .match(CreateIdResponse.class,
+                       m -> processTransactionReady(m.getTransaction()))
+                .match(RecoverRequest.class,
+                       m -> processDoRecover(m.getTransaction()))
+                .match(PhaserResponse.class,
+                       m -> processRequestResult(m.getTransaction()))
+                .matchAny(this::unhandled);
+
+        receive(builder.build());
     }
 
     private void processCheckRequest(CheckRequest message) {
@@ -91,26 +89,20 @@ public class Receiver extends UntypedActor {
             LoggerGlobal.log("User now active: " + userId);
 
             userIds.add(userId);
-            current.put(userId, getSender());
-            idGenerator.tell(new CreateIdRequest(betInfo), getSelf());
-        }
-    }
-
-    //message from one of actors
-    private void processInnerMessage(InnerMessage message) {
-        if(message instanceof CreateIdResponse) {
-            processTransactionReady(((CreateIdResponse)message).getTransaction());
-        } else if(message instanceof RecoverRequest) {
-            processDoRecover(((RecoverRequest)message).getTransaction());
-        } else if(message instanceof PhaserResponse) {
-            processRequestResult(((PhaserResponse) message).getTransaction());
+            current.put(userId, sender());
+            idGenerator.tell(new CreateIdRequest(betInfo), self());
         }
     }
 
     private void processDoRecover(Transaction transaction) {
         LoggerGlobal.log("Process DoRecover: " + transaction.toString());
 
-        startTransaction(transaction);
+        if(!userIds.contains(transaction.getBetInfo().getUserId())) {
+            startTransaction(transaction);
+        } else {
+            //TODO: answer back to user
+            LoggerGlobal.log("Transaction aborted: " + transaction.toString());
+        }
     }
 
     private void processTransactionReady(Transaction transaction) {
@@ -118,7 +110,7 @@ public class Receiver extends UntypedActor {
 
         startTransaction(transaction);
         current.get(transaction.getBetInfo()
-                .getUserId()).tell(transaction, getSelf());
+                .getUserId()).tell(transaction, self());
     }
 
     private void startTransaction(Transaction transaction) {
@@ -129,8 +121,8 @@ public class Receiver extends UntypedActor {
     private void createPhaser(Transaction transaction) {
         LoggerGlobal.log("Creating phaser for transaction: " + transaction.toString());
 
-        ActorRef phaser = newActor(PhaserActor.class, "phaser" + transaction.getLowerBound(), tmActor, getSelf());
-        ActorRef receiver = getSelf();
+        ActorRef phaser = newActor(PhaserActor.class, "phaser" + transaction.getLowerBound(), tmActor, self());
+        ActorRef receiver = self();
 
         Future<Object> future = Patterns.ask(registry,
                 new RegisterRequest(transaction.getLowerBound(), phaser),
@@ -155,7 +147,7 @@ public class Receiver extends UntypedActor {
     }
 
     private void answer(Object msg) {
-        getSender().tell(msg, getSelf());
+        sender().tell(msg, self());
     }
 
     private ActorRef newActor(Class<?> clazz, String name, Object... args) {

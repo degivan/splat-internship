@@ -35,9 +35,9 @@ public class UPTest {
        new JavaTestKit(system) {{
            UP up = UP.create();
            up.start();
-          /* for(int i = 0; i < 2000; i++) {
+           for(int i = 0; i < 1; i++) {
                up.getReceiver(i).tell(testRequest(i), getRef());
-           } */
+           }
            expectNoMsg(Duration.apply(20L, TimeUnit.SECONDS));
        }};
     }
