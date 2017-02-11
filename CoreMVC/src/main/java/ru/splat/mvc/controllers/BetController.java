@@ -3,15 +3,21 @@ package ru.splat.mvc.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import ru.splat.Proxy;
+import ru.splat.UP;
 import ru.splat.messages.bet.BetRequestFull;
+import ru.splat.messages.proxyup.bet.NewResponse;
+import ru.splat.messages.proxyup.check.CheckResult;
 import ru.splat.mvc.features.ReposResult;
 import ru.splat.mvc.service.ShowEvents;
+
+import javax.annotation.PostConstruct;
 
 
 @Controller
 public class BetController
 {
-
+    private Proxy proxy;
     @Autowired
     private ShowEvents showEvents;
 
@@ -29,19 +35,28 @@ public class BetController
     }
 
     @RequestMapping(value = "/dobet", method = RequestMethod.POST)
-    public @ResponseBody long getTransactionId(@RequestBody BetRequestFull betRequest)
+    public @ResponseBody
+    NewResponse getTransactionId(@RequestBody BetRequestFull betRequest) throws Exception
     {
         System.out.println(betRequest.toString());
+
         //заглушка
-        return 2;
+        return proxy.sendNewRequest();
     }
 
     @RequestMapping(value = "/checkbet", method = RequestMethod.GET)
-    public @ResponseBody String chekBet(@RequestParam(value="transactionId", defaultValue="false") long transactionId)
-    {
+    public @ResponseBody
+    CheckResult chekBet(@RequestParam(value="transactionId", defaultValue="false") long transactionId, int userId) throws Exception {
         System.out.println(transactionId);
+
         //заглушка
         String status = "{\"status\": \"accepted\"}";
-        return status;
+        return proxy.sendCheckRequest(transactionId, userId);
+    }
+
+    @PostConstruct
+    public void init() {
+        UP up = UP.create();
+        proxy = up.start();
     }
 }

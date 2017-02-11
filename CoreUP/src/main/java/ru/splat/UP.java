@@ -50,15 +50,16 @@ public class UP {
     }
 
     //system bet
-    public void start() {
+    public Proxy start() {
         ActorRef tmActor = newActor(system, TMActor.class, TM_ACTOR_NAME, registry);
         ActorRef idGenerator = newActor(system, IdGenerator.class, ID_GEN_NAME);
         createReceivers(1, idGenerator, tmActor);
 
-        doRecover(() -> {
-            newActor(system, TMConsumerActor.class, TM_CONSUMER_NAME, tmActor);
-            Proxy.createWith(this);
-        });
+        Proxy proxy = Proxy.createWith(this);
+
+        doRecover(() -> newActor(system, TMConsumerActor.class, TM_CONSUMER_NAME, tmActor));
+
+        return proxy;
     }
 
     public static void main(String[] args) {
@@ -70,7 +71,6 @@ public class UP {
     public static UP create() {
         ActorSystem system = ActorSystem.create();
         ActorRef registryActor = newActor(system, RegistryActor.class, REGISTRY_NAME, REGISTRY_SIZE);
-
         return new UP(system, registryActor);
     }
 
