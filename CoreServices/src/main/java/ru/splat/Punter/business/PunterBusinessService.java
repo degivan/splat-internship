@@ -74,7 +74,7 @@ public class PunterBusinessService implements BusinessService<PunterInfo>, Limit
             Proxy proxy = dequeMap.get(punterInfo.getId());
 
             boolean answer = false;
-
+            if (proxy != null)
             if (currentTime - punterInfo.getTime() <= proxy.getLimitTime())
             {
                 Deque<Long> deque = proxy.getDeque();

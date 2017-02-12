@@ -48,6 +48,7 @@ public  class ProtobufFactory{
             BetRequest.Bet.Builder builder = BetRequest.Bet.newBuilder()
                     .setLocalTask(task.getType().ordinal())
                     .setPunterId(task.getPunterId())
+                    .setTime(localTask.getTime())
                     //.setId(((AddBetTask)localTask).getBetId())
                     .addAllBetOutcome(betOutcomes)   //неверно
                     .addAllServices(services);
@@ -61,6 +62,7 @@ public  class ProtobufFactory{
             BetRequest.Bet.Builder builder = BetRequest.Bet.newBuilder()
                     .setLocalTask(task.getType().ordinal())
                     .setId(task.getBetId())
+                    .setTime(localTask.getTime())
                     .addAllServices(services);
             message = builder.build();
             return message;
@@ -72,6 +74,7 @@ public  class ProtobufFactory{
             BetRequest.Bet.Builder builder = BetRequest.Bet.newBuilder()
                     .setLocalTask(task.getType().ordinal())
                     .setId(task.getBetId())
+                    .setTime(localTask.getTime())
                     .addAllServices(services);
             message = builder.build();
             return message;
@@ -84,6 +87,7 @@ public  class ProtobufFactory{
                     newBuilder()
                     .setLocalTask(localTask.getType().ordinal())
                     .setPunterId(task.getPunterId())
+                    .setTime(localTask.getTime())
                     .setSum(task.getSum())
                     .addAllServices(services);
 
@@ -97,6 +101,7 @@ public  class ProtobufFactory{
                     newBuilder()
                     .setLocalTask(localTask.getType().ordinal())
                     .setPunterId(task.getPunterId())
+                    .setTime(localTask.getTime())
                     .setSum(task.getSum())
                     .addAllServices(services);
             message = builder.build();
@@ -107,6 +112,7 @@ public  class ProtobufFactory{
             AddSelectionLimitsTask task = (AddSelectionLimitsTask)localTask;
             Message.Builder builder = EventRequest.Event.newBuilder()
                     .setLocalTask(task.getType().ordinal())
+                    .setTime(localTask.getTime())
                     .addAllSelections(task.getSelections())
                     .addAllServices(services);
             message = builder.build();
@@ -118,6 +124,7 @@ public  class ProtobufFactory{
             Message.Builder builder = EventRequest.Event.newBuilder()
                     .setLocalTask(task.getType().ordinal())
                     .addAllSelections(task.getSelections())
+                    .setTime(localTask.getTime())
                     .addAllServices(services);
             message = builder.build();
             return message;
@@ -128,6 +135,7 @@ public  class ProtobufFactory{
             Message.Builder builder =  PunterRequest.Punter.newBuilder()
                     .setLocalTask(localTask.getType().ordinal())
                     .setPunterId(task.getPunterId())
+                    .setTime(localTask.getTime())
                     .addAllServices(services);
             message = builder.build();
             return message;
@@ -138,6 +146,7 @@ public  class ProtobufFactory{
             Message.Builder builder =  PunterRequest.Punter.newBuilder()
                     .setLocalTask(localTask.getType().ordinal())
                     .setPunterId(task.getPunterId())
+                    .setTime(localTask.getTime())
                     .addAllServices(services);
             message = builder.build();
             return message;

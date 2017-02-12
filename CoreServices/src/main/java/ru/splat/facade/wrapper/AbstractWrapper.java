@@ -19,7 +19,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 public abstract class AbstractWrapper<KafkaRecord extends Message, InternalTrType extends TransactionRequest>
 {
 
-    private Logger LOGGER = getLogger(AbstractWrapper.class);
+    private Logger LOGGER = getLogger(this.getClass());
 
     private long consumerTimeout;
 

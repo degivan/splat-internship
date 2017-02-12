@@ -46,7 +46,7 @@ public class Proxy {
             }
         },up.getSystem().dispatcher());
 
-        return (NewResponse) Await.result((Awaitable)future, timeout.duration());
+        return (NewResponse) Await.result(future, timeout.duration());
 
     }
 
@@ -65,7 +65,7 @@ public class Proxy {
             }
         },up.getSystem().dispatcher());
 
-        return (CheckResult)Await.result((Awaitable)future, timeout.duration());
+        return (CheckResult)Await.result(future, timeout.duration());
     }
 
     public static Proxy createWith(UP up) {

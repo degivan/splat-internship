@@ -15,7 +15,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 public class ServiceFacade<KafkaRecord extends Message, InternalTrType extends TransactionRequest>
 {
-    private Logger LOGGER = getLogger(ServiceFacade.class);
+    private Logger LOGGER;
 
     private ExactlyOnceRepositoryInterface<TransactionResult> exactlyOnceRepository;
 
@@ -84,5 +84,6 @@ public class ServiceFacade<KafkaRecord extends Message, InternalTrType extends T
     public void setBusinessService(BusinessService<InternalTrType> businessService)
     {
         this.businessService = businessService;
+        LOGGER = getLogger(ServiceFacade.class);
     }
 }

@@ -79,7 +79,6 @@ public class Receiver extends AbstractActor {
 
         if(alreadyActive) {
             LoggerGlobal.log("Already active: " + userId);
-
             answer("ALREADY ACTIVE");
         } else {
             LoggerGlobal.log("User now active: " + userId);
