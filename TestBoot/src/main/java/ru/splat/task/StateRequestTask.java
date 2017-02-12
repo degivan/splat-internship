@@ -1,7 +1,7 @@
 package ru.splat.task;
 
-import ru.splat.fx.Controller;
 import ru.splat.messages.bet.BetState;
+import ru.splat.messages.proxyup.bet.NewResponse;
 import ru.splat.service.StateCheckService;
 
 import java.util.Iterator;
@@ -11,9 +11,9 @@ import java.util.concurrent.ConcurrentSkipListSet;
  * Created by Дмитрий on 10.02.2017.
  */
 public class StateRequestTask implements Runnable{
-    private ConcurrentSkipListSet<Long> trIdSet;
+    private ConcurrentSkipListSet<NewResponse> trIdSet;
 
-    public StateRequestTask(ConcurrentSkipListSet<Long> trIdSet) {
+    public StateRequestTask(ConcurrentSkipListSet<NewResponse> trIdSet) {
         this.trIdSet = trIdSet;
     }
 
@@ -22,14 +22,16 @@ public class StateRequestTask implements Runnable{
 
         StateCheckService stateCheckService = new StateCheckService();
         while (!Thread.currentThread().interrupted() && !Thread.interrupted()) {    //настроить частоту обращений
-            Iterator<Long> iterator = trIdSet.iterator();
+            Iterator<NewResponse> iterator = trIdSet.iterator();
             while (iterator.hasNext()) {
                 try {
-                    Long trId = iterator.next();
-                    BetState state = stateCheckService.makeRequest(trId);
-                    System.out.println("TrState for " + trId + ": " + state.toString());
-                    if (!state.equals(BetState.PROCESSING))
-                        iterator.remove();
+                    NewResponse response = iterator.next();
+
+                    int state = stateCheckService.makeRequest(response);
+                    if (state == 1) { System.out.println("TrState for " + response.getTransactionId() + ": ACCEPTED"); iterator.remove();}
+                    else if (state == 2) { System.out.println("TrState for " + response.getTransactionId() + ": DENIED"); iterator.remove();}
+                    else if (state == 3) System.out.println("TrState for " + response.getTransactionId() + ": PENDING");
+
                 } catch (InterruptedException ie)
                 {
                     Thread.currentThread().interrupt();

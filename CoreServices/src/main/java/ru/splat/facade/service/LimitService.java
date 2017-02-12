@@ -33,9 +33,9 @@ public interface LimitService<Request extends  TransactionRequest> {
 
         List<Integer> notContainsInDequeMap = integerSet.stream().filter(p -> !dequeMap.containsKey(p)).
                 map(p -> p).collect(Collectors.toList());
-
+        LOGGER.info("not contains ide deque map " + notContainsInDequeMap.toString());
         List<Limit> punterLimitList = repository.getLimits(notContainsInDequeMap);
-
+        LOGGER.info("PUNTERLIMITSLIST " + punterLimitList.toString());
         if (punterLimitList!=null && !punterLimitList.isEmpty())
             for (Limit punterLimit:punterLimitList)
             {

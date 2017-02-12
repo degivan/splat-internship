@@ -11,6 +11,7 @@ import ru.splat.message.*;
 import ru.splat.messages.Transaction;
 import ru.splat.messages.proxyup.bet.BetInfo;
 import ru.splat.messages.proxyup.bet.NewRequest;
+import ru.splat.messages.proxyup.bet.NewResponse;
 import ru.splat.messages.proxyup.check.CheckRequest;
 import scala.concurrent.Future;
 
@@ -79,7 +80,6 @@ public class Receiver extends AbstractActor {
 
         if(alreadyActive) {
             LoggerGlobal.log("Already active: " + userId);
-
             answer("ALREADY ACTIVE");
         } else {
             LoggerGlobal.log("User now active: " + userId);
@@ -104,9 +104,12 @@ public class Receiver extends AbstractActor {
     private void processTransactionReady(Transaction transaction) {
         LoggerGlobal.log("Process TransactionReady: " + transaction.toString());
 
+        Integer userId = transaction.getBetInfo().getUserId();
+        Long trId = transaction.getLowerBound();
+
         startTransaction(transaction);
-        current.get(transaction.getBetInfo()
-                .getUserId()).tell(transaction, self());
+        current.get(userId)
+                .tell(new NewResponse(trId, userId), self());
     }
 
     private void startTransaction(Transaction transaction) {
