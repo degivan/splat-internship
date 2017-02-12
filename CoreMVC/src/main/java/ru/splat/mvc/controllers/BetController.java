@@ -7,7 +7,6 @@ import ru.splat.Proxy;
 import ru.splat.UP;
 import ru.splat.messages.proxyup.bet.BetInfo;
 import ru.splat.messages.proxyup.bet.NewResponse;
-import ru.splat.messages.proxyup.check.CheckResult;
 import ru.splat.mvc.features.ReposResult;
 import ru.splat.mvc.service.ShowEvents;
 
@@ -27,13 +26,6 @@ public class BetController
         return "index";
     }
 
-    @RequestMapping(value = "/test", method = RequestMethod.GET)
-    public @ResponseBody CheckResult chekBet()
-    {
-        CheckResult checkResult = CheckResult.ACCEPTED;
-        return checkResult;
-    }
-
     @RequestMapping(value = "/init", method = RequestMethod.GET)
     public @ResponseBody ReposResult initMain()
     {
@@ -47,6 +39,7 @@ public class BetController
     {
         System.out.println(betInfo.toString());
         return proxy.sendNewRequest(betInfo);
+//        return new NewResponse(1l,betInfo.getUserId());
     }
 
     @RequestMapping(value = "/checkbet", method = RequestMethod.GET)

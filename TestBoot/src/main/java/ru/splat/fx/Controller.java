@@ -8,10 +8,12 @@ import javafx.scene.control.TextField;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import ru.splat.Constant;
+import ru.splat.messages.proxyup.bet.NewResponse;
 import ru.splat.service.EventDefaultDataService;
 import ru.splat.task.RequestTask;
 import ru.splat.task.StateRequestTask;
 
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.ExecutorService;
@@ -36,7 +38,7 @@ public class Controller
     private int punterCount;
     private long requestTimeout;
     private int requestCount;
-    private ConcurrentSkipListSet<Long> trIdSet;
+    private ConcurrentSkipListSet<NewResponse> trIdSet;
 
     private Alert alert;
 
@@ -97,7 +99,7 @@ public class Controller
             for (int i = 0; i < 8; i++) {
                 executorService.submit(new RequestTask(requestCount, requestTimeout, punterCount, this.trIdSet));
             }
-            executorService.submit(new StateRequestTask(this.trIdSet)); //проверка стейтов по trId
+         //   executorService.submit(new StateRequestTask(this.trIdSet)); //проверка стейтов по trId
 
         }
     }
@@ -115,7 +117,14 @@ public class Controller
 
     @FXML
     public void initialize(){
-        trIdSet = new ConcurrentSkipListSet<Long>();
+        trIdSet = new ConcurrentSkipListSet<NewResponse>(new Comparator<NewResponse>()
+        {
+            public int compare(NewResponse o1, NewResponse o2)
+            {
+
+                return o1.getTransactionId() == o2.getTransactionId()?1:0;
+            }
+        });
         tfRequestTimeout.setText(String.valueOf(Constant.REQUEST_TIMEOUT));
         tfPunterCount.setText(String.valueOf(Constant.PUNTER_COUNT));
         tfRequestCount.setText(String.valueOf(Constant.REQUEST_COUNT));
@@ -153,7 +162,7 @@ public class Controller
         alert.showAndWait();
     }
 
-    public ConcurrentSkipListSet<Long> getTrIdSet() {
+    public ConcurrentSkipListSet<NewResponse> getTrIdSet() {
         return trIdSet;
     }
 }

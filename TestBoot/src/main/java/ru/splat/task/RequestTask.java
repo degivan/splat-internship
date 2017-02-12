@@ -2,6 +2,7 @@ package ru.splat.task;
 
 import org.springframework.stereotype.Component;
 import ru.splat.fx.Controller;
+import ru.splat.messages.proxyup.bet.NewResponse;
 import ru.splat.service.BootService;
 
 import java.util.concurrent.ConcurrentSkipListSet;
@@ -12,10 +13,10 @@ public class RequestTask implements Runnable {
     private int requestCount;
     private long requestTimeout;
     private int punterCount;
-    private ConcurrentSkipListSet<Long> trIdSet;
+    private ConcurrentSkipListSet<NewResponse> trIdSet;
 
 
-    public RequestTask(int requestCount, long requestTimeout, int punterCount, ConcurrentSkipListSet<Long> trIdSet) {
+    public RequestTask(int requestCount, long requestTimeout, int punterCount, ConcurrentSkipListSet<NewResponse> trIdSet) {
         this.requestCount = requestCount;
         this.requestTimeout = requestTimeout;
         this.punterCount = punterCount;
@@ -27,7 +28,7 @@ public class RequestTask implements Runnable {
 
         BootService bootService = new BootService();
 
-        while (!Thread.currentThread().interrupted() && !Thread.interrupted())
+        while (!Thread.currentThread().interrupted())
         {
             int i=0;
             long timeStart = System.currentTimeMillis();
