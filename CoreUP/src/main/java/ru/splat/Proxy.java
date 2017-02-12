@@ -12,9 +12,7 @@ import ru.splat.messages.proxyup.check.CheckResponse;
 import ru.splat.messages.proxyup.check.CheckResult;
 import ru.splat.messages.uptm.trmetadata.bet.BetOutcome;
 import scala.concurrent.Await;
-import scala.concurrent.Awaitable;
 import scala.concurrent.Future;
-import scala.concurrent.duration.Duration;
 
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -37,15 +35,6 @@ public class Proxy {
         Timeout timeout = Timeout.apply(10, TimeUnit.SECONDS);
         Future<Object> future = Patterns.ask(receiver, newRequest, timeout);
 
-        future.onSuccess(new OnSuccess<Object>() {
-            @Override
-            public void onSuccess(Object o) throws Throwable {
-                NewResponse newResponse = (NewResponse) o;
-                Long trId = newResponse.getTransactionId();
-                //do something with transactionId
-            }
-        },up.getSystem().dispatcher());
-
         return (NewResponse) Await.result(future, timeout.duration());
 
     }
@@ -55,15 +44,6 @@ public class Proxy {
         ActorRef receiver = up.getReceiver(userId);
         Timeout timeout = Timeout.apply(10, TimeUnit.SECONDS);
         Future<Object> future = Patterns.ask(receiver, checkRequest, timeout);
-
-        future.onSuccess(new OnSuccess<Object>() {
-            @Override
-            public void onSuccess(Object o) throws Throwable {
-                CheckResponse checkResponse = (CheckResponse) o;
-                CheckResult checkResult = checkResponse.getCheckResult();
-                //do something with checkResult
-            }
-        },up.getSystem().dispatcher());
 
         return (CheckResult)Await.result(future, timeout.duration());
     }
