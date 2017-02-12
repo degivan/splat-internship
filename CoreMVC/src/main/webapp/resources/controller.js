@@ -14,6 +14,10 @@ app.controller('customersCtrl', function ($http,$interval,$timeout,$window) {
 
     ctrl.buttonDisabled = false;
 
+    ctrl.betStatus = [];
+    ctrl.betStatus[0] = "Sucessefull";
+    ctrl.betStatus[1] = "Fail";
+
     $http.get("/init").then(function (response) {
         ctrl.languageSettings = response.data;
         $window.console.log(ctrl.languageSettings);
@@ -25,7 +29,7 @@ app.controller('customersCtrl', function ($http,$interval,$timeout,$window) {
     ctrl.buttonClick = function(){
         var timeout = $timeout(function () {
                 $interval.cancel(stop);
-                alert("FAIL");
+                alert(ctrl.betStatus[1]);
             }, 10000);
 
         ctrl.buttonDisabled = !ctrl.buttonDisabled;
@@ -50,10 +54,11 @@ app.controller('customersCtrl', function ($http,$interval,$timeout,$window) {
             var stop = $interval(function () {
                 $http.get("/checkbet",{params: {transactionId: response.data.transactionId, userId:response.data.userId}})
                     .then(function (response2){
-                   if (response2.data["status"] != "wait") {
+                        console.log(response2.data);
+                   if (response2.data != 2) {
                        $interval.cancel(stop);
                        $timeout.cancel(timeout);
-                       alert(response2.data["status"]);
+                       alert(ctrl.betStatus[response2.data]);
                    }
                 });
             }, 1000);
