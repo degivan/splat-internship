@@ -35,6 +35,13 @@ public class Proxy {
         Timeout timeout = Timeout.apply(10, TimeUnit.SECONDS);
         Future<Object> future = Patterns.ask(receiver, newRequest, timeout);
 
+        future.onSuccess(new OnSuccess<Object>() {
+            @Override
+            public void onSuccess(Object o) throws Throwable {
+                LoggerGlobal.log("Response for NewRequest received: " + o.toString());
+            }
+        },up.getSystem().dispatcher());
+
         return (NewResponse) Await.result(future, timeout.duration());
 
     }
@@ -45,7 +52,15 @@ public class Proxy {
         Timeout timeout = Timeout.apply(10, TimeUnit.SECONDS);
         Future<Object> future = Patterns.ask(receiver, checkRequest, timeout);
 
-        return (CheckResult)Await.result(future, timeout.duration());
+        future.onSuccess(new OnSuccess<Object>() {
+            @Override
+            public void onSuccess(Object o) throws Throwable {
+                LoggerGlobal.log("Response for CheckRequest received: " + o.toString());
+            }
+        },up.getSystem().dispatcher());
+
+        return ((CheckResponse)Await.result(future, timeout.duration()))
+                .getCheckResult();
     }
 
     public static Proxy createWith(UP up) {
