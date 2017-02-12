@@ -34,8 +34,8 @@ public class Proxy {
         betInfo.setSelectionsId(betInfo.getBetOutcomes().stream().map(BetOutcome::getOutcomeId)
         .collect(Collectors.toSet()));
         NewRequest newRequest = new NewRequest(betInfo);
-
-        Future<Object> future = Patterns.ask(receiver, newRequest, Timeout.apply(10, TimeUnit.SECONDS));
+        Timeout timeout = Timeout.apply(10, TimeUnit.SECONDS);
+        Future<Object> future = Patterns.ask(receiver, newRequest, timeout);
 
         future.onSuccess(new OnSuccess<Object>() {
             @Override
@@ -46,15 +46,15 @@ public class Proxy {
             }
         },up.getSystem().dispatcher());
 
-        return (NewResponse) Await.result((Awaitable)future, Duration.fromNanos(10000));
+        return (NewResponse) Await.result((Awaitable)future, timeout.duration());
 
     }
 
     public CheckResult sendCheckRequest(Long transactionId, Integer userId) throws Exception {
         CheckRequest checkRequest = new CheckRequest(transactionId, userId);
         ActorRef receiver = up.getReceiver(userId);
-
-        Future<Object> future = Patterns.ask(receiver, checkRequest, Timeout.apply(10, TimeUnit.SECONDS));
+        Timeout timeout = Timeout.apply(10, TimeUnit.SECONDS);
+        Future<Object> future = Patterns.ask(receiver, checkRequest, timeout);
 
         future.onSuccess(new OnSuccess<Object>() {
             @Override
@@ -65,7 +65,7 @@ public class Proxy {
             }
         },up.getSystem().dispatcher());
 
-        return (CheckResult)Await.result((Awaitable)future, Duration.fromNanos(10000));
+        return (CheckResult)Await.result((Awaitable)future, timeout.duration());
     }
 
     public static Proxy createWith(UP up) {
