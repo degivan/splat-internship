@@ -8,6 +8,7 @@ import ru.splat.LoggerGlobal;
 import ru.splat.db.DBConnection;
 import ru.splat.message.PhaserRequest;
 import ru.splat.messages.Transaction;
+import ru.splat.messages.conventions.ServicesEnum;
 import ru.splat.messages.uptm.TMResponse;
 import ru.splat.messages.uptm.trmetadata.MetadataPatterns;
 import ru.splat.messages.uptm.trmetadata.TransactionMetadata;
@@ -78,11 +79,13 @@ public class PhaserActor extends AbstractActor {
     private void processReceiveTimeout() {
         LoggerGlobal.log("Timeout received in phaser for transaction: " + transaction.toString());
 
-        saveDBWithStateCancel(Transaction.State.CANCEL);
+        becomeAndLog(timeout());
     }
 
     private void processTransactionState(TransactionState o) {
         LoggerGlobal.log("Processing TransactionState: " + o.toString());
+
+        updateBetId(o, transaction);
 
         if(isResponsePositive(o)) {
             saveDBWithState(Transaction.State.PHASE2_SEND,
@@ -93,6 +96,11 @@ public class PhaserActor extends AbstractActor {
         } else {
             saveDBWithStateCancel(Transaction.State.DENIED);
         }
+    }
+
+    private static void updateBetId(TransactionState o, Transaction transaction) {
+        Long betId = (Long) o.getLocalStates().get(ServicesEnum.BetService).getAttachment();
+        transaction.getBetInfo().setBetId(betId);
     }
 
     private void saveDBWithState(Transaction.State state, ru.splat.db.Procedure after) {
@@ -158,6 +166,15 @@ public class PhaserActor extends AbstractActor {
                 .allMatch(ServiceResponse::isPositive);
     }
 
+
+    private PartialFunction<Object, BoxedUnit> timeout() {
+        return state().match(TransactionState.class,
+                trState -> {
+                    logTransactionState(trState);
+                    updateBetId(trState, transaction);
+                    saveDBWithStateCancel(Transaction.State.CANCEL);
+                }).build();
+    }
 
     private PartialFunction<Object, BoxedUnit> phase2(){
         return transactionStateReceiver(Transaction.State.COMPLETED);
