@@ -57,19 +57,24 @@ public class PunterBusinessService implements BusinessService<PunterInfo>, Limit
         return new HashSet<Integer>(punterInfoList.stream().map(punterInfo -> punterInfo.getId()).collect(Collectors.toSet()));
     }
 
+    @Override
+    public String getClassName() {
+        return getClass().getName();
+    }
+
     private List<TransactionResult> addPunterLimits(List<PunterInfo> punterInfoList)
     {
         long currentTime = System.currentTimeMillis();
 
         List<TransactionResult> result = new ArrayList<>(punterInfoList.size());
-        LOGGER.info("Start Add Punter limits: ");
-        LOGGER.info(Arrays.toString(punterInfoList.toArray()));
+        LOGGER.info(getClassName() + " Start Add Punter limits: ");
+        LOGGER.info(getClassName() + " " + Arrays.toString(punterInfoList.toArray()));
 
         addInDeque(punterInfoList, punterRepository);
 
         for (PunterInfo punterInfo: punterInfoList) {
 
-            LOGGER.info("Punter id = " + punterInfo.getId());
+            LOGGER.info(getClassName() + " Punter id = " + punterInfo.getId());
 
             Proxy proxy = dequeMap.get(punterInfo.getId());
 
@@ -90,17 +95,17 @@ public class PunterBusinessService implements BusinessService<PunterInfo>, Limit
             }
             if (answer)
             {
-                LOGGER.info("Reserve limit");
+                LOGGER.info(getClassName() + " Reserve limit");
             }
             else
             {
-                LOGGER.info("Don't reserve limit");
+                LOGGER.info(getClassName() + " Don't reserve limit");
             }
             result.add(new TransactionResult(punterInfo.getTransactionId(),
                     Response.ServiceResponse.newBuilder().addAllServices(punterInfo.getServices())
                     .setResult(answer?ServiceResult.CONFIRMED.ordinal():ServiceResult.DENIED.ordinal()).build()));
         }
-        LOGGER.info("Stop Add Punter limits: ");
+        LOGGER.info(getClassName() + " Stop Add Punter limits: ");
         return result;
     }
 
@@ -127,17 +132,17 @@ public class PunterBusinessService implements BusinessService<PunterInfo>, Limit
                 if (!deque.isEmpty())
                 {
                    commitCancelDequeList.add(p.getId());
-                    LOGGER.info("Cancel Reserve limit");
+                    LOGGER.info(getClassName() + " Cancel Reserve limit");
                     // deque.pollFirst();
                 }
                 else
                 {
-                    LOGGER.info("Don't Cancel Reserve limit");
+                    LOGGER.info(getClassName() + " Don't Cancel Reserve limit");
                 }
             }
             else
             {
-                LOGGER.info("Map hasnt same id");
+                LOGGER.info(getClassName() + " Map hasnt same id");
             }
 
             result.add(new TransactionResult(
@@ -169,7 +174,7 @@ public class PunterBusinessService implements BusinessService<PunterInfo>, Limit
 
                     @Override
                     public int compare(PunterInfo o1, PunterInfo o2) {
-                        return (o1.getTime()) == o2.getTime() ? 0 : (o1.getTime() > o2.getTime() ? -1 : 1);
+                        return (o1.getTime() >= o2.getTime() ? -1 : 1);
                     }
                 }));
             }
@@ -184,20 +189,20 @@ public class PunterBusinessService implements BusinessService<PunterInfo>, Limit
         {
            if (entry.getKey() == TaskTypesEnum.ADD_PUNTER_LIMITS.ordinal())
            {
-               LOGGER.info("Reserve limit array: ");
+               LOGGER.info(getClassName() +  " Reserve limit array: ");
                LOGGER.info(Arrays.toString(entry.getValue().toArray()));
                results.addAll(addPunterLimits(entry.getValue().stream().
                        collect(Collectors.toList())));
            }
             else if (entry.getKey() == TaskTypesEnum.CANCEL_PUNTER_LIMITS.ordinal())
             {
-                LOGGER.info("Cancel limit array: ");
+                LOGGER.info(getClassName() + " Cancel limit array: ");
                LOGGER.info(Arrays.toString(entry.getValue().toArray()));
                results.addAll(cancelPunterLimits(new ArrayList<PunterInfo>(entry.getValue())).stream().
                        collect(Collectors.toList()));
            }
         }
-        LOGGER.info("Stop processTransaction");
+        LOGGER.info(getClassName() + " Stop processTransaction");
         return results;
     }
 
@@ -215,7 +220,7 @@ public class PunterBusinessService implements BusinessService<PunterInfo>, Limit
                         if (deque != null)
                         {
                             deque.pollFirst();
-                            LOGGER.info("Delete from Deque for punter id = " + p);
+                            LOGGER.info(getClassName() + " Delete from Deque for punter id = " + p);
                         }
                     }
                 }
@@ -235,7 +240,7 @@ public class PunterBusinessService implements BusinessService<PunterInfo>, Limit
                     Deque<Long> deque = proxy.getDeque();
                     if (deque != null) {
                         deque.addLast(entry.getValue());
-                        LOGGER.info("Add in Deque for punter id = " + entry.getKey());
+                        LOGGER.info(getClassName() + " Add in Deque for punter id = " + entry.getKey());
                     }
                 }
             }
@@ -246,7 +251,7 @@ public class PunterBusinessService implements BusinessService<PunterInfo>, Limit
     @Override
     public void rollbackBusinessSerivce()
     {
-        LOGGER.info("Rollback");
+        LOGGER.info(getClassName() + " Rollback");
         commitAddDequeMap = null;
         commitCancelDequeList = null;
     }

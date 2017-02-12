@@ -27,16 +27,16 @@ public class ServiceFacade<KafkaRecord extends Message, InternalTrType extends T
 
         if (transactionRequests == null || transactionRequests.isEmpty()) return null;
 
-        LOGGER.info("Batch after set-filter");
-        LOGGER.info(Arrays.toString(transactionRequests.toArray()));
+        LOGGER.info(businessService.getClass().getName() + " Batch after set-filter");
+        LOGGER.info(businessService.getClass().getName() + " " + Arrays.toString(transactionRequests.toArray()));
 
-        LOGGER.info("Batch from Idemp");
+        LOGGER.info(businessService.getClass().getName() + " Batch from Idemp");
         List<TransactionResult> readyTransactions = exactlyOnceRepository
                 .filterByTable(transactionRequests.stream()
                         .map(TransactionRequest::getTransactionId)
                         .collect(Collectors.toList())
                 );
-        LOGGER.info(Arrays.toString(readyTransactions.toArray()));
+        LOGGER.info(businessService.getClass().getName() + " " + Arrays.toString(readyTransactions.toArray()));
 
         Set<Long> readyTransactionIds = readyTransactions.stream()
                 .map(TransactionResult::getTransactionId)
@@ -46,8 +46,8 @@ public class ServiceFacade<KafkaRecord extends Message, InternalTrType extends T
                 .filter(tr -> !readyTransactionIds.contains(tr.getTransactionId()))
                 .collect(Collectors.toList());
 
-        LOGGER.info("Batch for Business Service");
-        LOGGER.info(Arrays.toString(transactionsToStart.toArray()));
+        LOGGER.info(businessService.getClass().getName() + " Batch for Business Service");
+        LOGGER.info(businessService.getClass().getName() + " " + Arrays.toString(transactionsToStart.toArray()));
         // Бизнес-логика плагина
         List<TransactionResult> transactionResults = businessService.processTransactions(transactionsToStart);
 
@@ -57,8 +57,8 @@ public class ServiceFacade<KafkaRecord extends Message, InternalTrType extends T
         readyTransactions.addAll(transactionResults);
 //        if (readyTransactions.size() == 1) throw new RuntimeException();
 
-        LOGGER.info("Completed transaction");
-        LOGGER.info(Arrays.toString(readyTransactions.toArray()));
+        LOGGER.info(businessService.getClass().getName() + " Completed transaction");
+        LOGGER.info(businessService.getClass().getName() + " " + Arrays.toString(readyTransactions.toArray()));
         return readyTransactions;
     }
 

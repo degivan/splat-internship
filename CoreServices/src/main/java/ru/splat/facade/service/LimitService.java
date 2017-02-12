@@ -19,7 +19,8 @@ public interface LimitService<Request extends  TransactionRequest> {
 
     long DEQUE_SCAN_PERIOD_TIME = 20*60*1000;
 
-    Logger LOGGER = getLogger(PunterBusinessService.class);
+    Logger LOGGER = getLogger(LimitService.class);
+
 
     ConcurrentMap<Integer,Proxy> dequeMap = new ConcurrentHashMap<>();
 
@@ -45,7 +46,7 @@ public interface LimitService<Request extends  TransactionRequest> {
 
                 if (proxy == null)
                 {
-                    LOGGER.info("In map have added id = " + punterLimit.getId());
+                    LOGGER.info(getClassName() + " In map have added id = " + punterLimit.getId());
                 }
             }
     }
@@ -57,29 +58,31 @@ public interface LimitService<Request extends  TransactionRequest> {
 
         if (currentTime - lastDeleteTime > DEQUE_SCAN_PERIOD_TIME)
         {
-            LOGGER.info("Scan and delete unused limit");
+            LOGGER.info(getClassName() + "Scan and delete unused limit");
             Iterator<Map.Entry<Integer, Proxy>> entries = dequeMap.entrySet().iterator();
             while (entries.hasNext())
             {
                 Map.Entry<Integer, Proxy> entry = entries.next();
                 Proxy proxy = entry.getValue();
                 Deque<Long> deque = proxy.getDeque();
-                LOGGER.info(" Actions for id = " + entry.getKey());
+                LOGGER.info(getClassName() + " Actions for id = " + entry.getKey());
                 while (!deque.isEmpty() && currentTime - deque.getFirst() > proxy.getLimitTime())
                 {
-                    LOGGER.info("Delete timestamp = " + deque.pollFirst());
+                    LOGGER.info(getClassName() + " Delete timestamp = " + deque.pollFirst());
                 }
-                LOGGER.info("Punter Deque size = " + deque.size());
+                LOGGER.info(getClassName() + " Punter Deque size = " + deque.size());
                 if (deque.isEmpty())
                 {
-                    LOGGER.info("Remove from Map");
+                    LOGGER.info(getClassName() + " Remove from Map");
                     entries.remove();
                 }
             }
 
             lastDeleteTime = currentTime;
-            LOGGER.info("Stop scan limit");
+            LOGGER.info(getClassName() + " Stop scan limit");
         }
         return lastDeleteTime;
     }
+
+    String getClassName();
 }
