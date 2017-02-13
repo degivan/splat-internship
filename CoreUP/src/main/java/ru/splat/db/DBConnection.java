@@ -84,7 +84,7 @@ public class DBConnection {
      */
     public static void overwriteTransaction(Transaction transaction, Procedure after) {
         try {
-            transactions.findOneAndReplace(Filters.eq("lower", transaction.getLowerBound()),
+            transactions.findOneAndReplace(Filters.eq("lowerBound", transaction.getLowerBound()),
                     Document.parse(mapper.writeValueAsString(transaction)),
                     (o, throwable) -> after.process());
 
