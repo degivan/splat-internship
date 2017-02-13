@@ -28,8 +28,7 @@ public class Main {
     public static void main(String[] args) {
         /*ApplicationContext appContext =
                 new ClassPathXmlApplicationContext("beans.xml");*/
-        ServiceMock serviceMock = new ServiceMock();
-        serviceMock.sendRoutine();
+
         ActorSystem system = ActorSystem.create("testactors");
         final ActorRef registry = system.actorOf(Props.create(MockRegistry.class), "MockRegistry");
         final ActorRef tmActor = system.actorOf(Props.create(TMActor.class, registry), "TMActor");
@@ -42,7 +41,8 @@ public class Main {
         TransactionMetadata transactionMetadata = new TransactionMetadata(111L, tasks);
 
         tmActor.tell(new TransactionMetadata(111L, tasks), ActorRef.noSender());
-
+        ServiceMock serviceMock = new ServiceMock();
+        serviceMock.sendRoutine();
         Cancellable cancellable = system.scheduler().schedule(Duration.Zero(),
                 Duration.create(4000, TimeUnit.MILLISECONDS), consumerActor, new PollMsg(),
                 system.dispatcher(), null);
