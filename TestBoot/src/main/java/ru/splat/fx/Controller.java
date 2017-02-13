@@ -121,8 +121,7 @@ public class Controller
         {
             public int compare(NewResponse o1, NewResponse o2)
             {
-
-                return o1.getTransactionId() == o2.getTransactionId()?1:0;
+                return o1.getTransactionId() >= o2.getTransactionId()?1:-1;
             }
         });
         tfRequestTimeout.setText(String.valueOf(Constant.REQUEST_TIMEOUT));
