@@ -67,7 +67,7 @@ public class Receiver extends AbstractActor {
 
         State state = results.get(message.getTransactionId());
         if(state == null) {
-            answer(NOT_ACTIVE_TR);
+            answer(new CheckResponse(message.getUserId(), CheckResult.NOT_ACTIVE_TR));
         } else {
             answer(stateToCheckResponse(message.getUserId(), state));
         }

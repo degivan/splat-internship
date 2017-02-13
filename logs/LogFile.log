@@ -1,0 +1,36 @@
+2017-02-13 14:30:27,090  INFO   [Boot] Starting Boot on WIN-LGEUDKTQC7A with PID 6708 (C:\Users\tmitri\IdeaProjects\betplacing\CoreServices\target\classes started by Дмитрий in C:\Users\tmitri\IdeaProjects\betplacing) 
+2017-02-13 14:30:27,092  INFO   [Boot] No active profile set, falling back to default profiles: default 
+2017-02-13 14:30:27,151  INFO   [AnnotationConfigApplicationContext] Refreshing org.springframework.context.annotation.AnnotationConfigApplicationContext@68c9d179: startup date [Mon Feb 13 14:30:27 MSK 2017]; root of context hierarchy 
+2017-02-13 14:30:27,241  INFO   [XmlBeanDefinitionReader] Loading XML bean definitions from class path resource [spring-core.xml] 
+2017-02-13 14:30:27,422  INFO   [XmlBeanDefinitionReader] Loading XML bean definitions from class path resource [spring-jdbc.xml] 
+2017-02-13 14:30:27,497  INFO   [XmlBeanDefinitionReader] Loading XML bean definitions from class path resource [spring-beans.xml] 
+2017-02-13 14:30:27,536  INFO   [XmlBeanDefinitionReader] Loading XML bean definitions from class path resource [spring-scheduler.xml] 
+2017-02-13 14:30:27,585  INFO   [XmlBeanDefinitionReader] Loading XML bean definitions from class path resource [spring-jmx.xml] 
+2017-02-13 14:30:27,612  INFO   [DefaultListableBeanFactory] Overriding bean definition for bean 'boot' with a different definition: replacing [Generic bean: class [ru.splat.facade.Boot]; scope=singleton; abstract=false; lazyInit=false; autowireMode=0; dependencyCheck=0; autowireCandidate=true; primary=false; factoryBeanName=null; factoryMethodName=null; initMethodName=null; destroyMethodName=null] with [Generic bean: class [ru.splat.facade.Boot]; scope=; abstract=false; lazyInit=false; autowireMode=0; dependencyCheck=0; autowireCandidate=true; primary=false; factoryBeanName=null; factoryMethodName=null; initMethodName=null; destroyMethodName=null; defined in class path resource [spring-core.xml]] 
+2017-02-13 14:30:27,793  INFO   [PropertyPlaceholderConfigurer] Loading properties file from class path resource [config/jdbc-example.properties] 
+2017-02-13 14:30:27,794  INFO   [PropertyPlaceholderConfigurer] Loading properties file from class path resource [config/application.properties] 
+2017-02-13 14:30:32,145  INFO   [ThreadPoolTaskScheduler] Initializing ExecutorService  'cleanerSheduler' 
+2017-02-13 14:30:32,315  INFO   [MBeanExporter] Registering beans for JMX exposure on startup 
+2017-02-13 14:30:32,368  INFO   [MBeanExporter] Bean with name 'businessService' has been autodetected for JMX exposure 
+2017-02-13 14:30:32,371  INFO   [MBeanExporter] Bean with name 'eventBusinessService' has been autodetected for JMX exposure 
+2017-02-13 14:30:32,375  INFO   [MBeanExporter] Located managed bean 'businessService': registering with JMX server as MBean [Punter Limit Winodw:name=Resource] 
+2017-02-13 14:30:32,404  INFO   [MBeanExporter] Located managed bean 'eventBusinessService': registering with JMX server as MBean [Event Limit Winodw:name=Resource] 
+2017-02-13 14:30:32,427  INFO   [Boot] Started Boot in 6.741 seconds (JVM running for 7.791) 
+2017-02-13 14:37:15,014  INFO   [Boot] Starting Boot on WIN-LGEUDKTQC7A with PID 8388 (C:\Users\tmitri\IdeaProjects\betplacing\CoreServices\target\classes started by Дмитрий in C:\Users\tmitri\IdeaProjects\betplacing) 
+2017-02-13 14:37:15,016  INFO   [Boot] No active profile set, falling back to default profiles: default 
+2017-02-13 14:37:15,075  INFO   [AnnotationConfigApplicationContext] Refreshing org.springframework.context.annotation.AnnotationConfigApplicationContext@68c9d179: startup date [Mon Feb 13 14:37:15 MSK 2017]; root of context hierarchy 
+2017-02-13 14:37:15,151  INFO   [XmlBeanDefinitionReader] Loading XML bean definitions from class path resource [spring-core.xml] 
+2017-02-13 14:37:15,321  INFO   [XmlBeanDefinitionReader] Loading XML bean definitions from class path resource [spring-jdbc.xml] 
+2017-02-13 14:37:15,392  INFO   [XmlBeanDefinitionReader] Loading XML bean definitions from class path resource [spring-beans.xml] 
+2017-02-13 14:37:15,429  INFO   [XmlBeanDefinitionReader] Loading XML bean definitions from class path resource [spring-scheduler.xml] 
+2017-02-13 14:37:15,480  INFO   [XmlBeanDefinitionReader] Loading XML bean definitions from class path resource [spring-jmx.xml] 
+2017-02-13 14:37:15,505  INFO   [DefaultListableBeanFactory] Overriding bean definition for bean 'boot' with a different definition: replacing [Generic bean: class [ru.splat.facade.Boot]; scope=singleton; abstract=false; lazyInit=false; autowireMode=0; dependencyCheck=0; autowireCandidate=true; primary=false; factoryBeanName=null; factoryMethodName=null; initMethodName=null; destroyMethodName=null] with [Generic bean: class [ru.splat.facade.Boot]; scope=; abstract=false; lazyInit=false; autowireMode=0; dependencyCheck=0; autowireCandidate=true; primary=false; factoryBeanName=null; factoryMethodName=null; initMethodName=null; destroyMethodName=null; defined in class path resource [spring-core.xml]] 
+2017-02-13 14:37:15,697  INFO   [PropertyPlaceholderConfigurer] Loading properties file from class path resource [config/jdbc-example.properties] 
+2017-02-13 14:37:15,698  INFO   [PropertyPlaceholderConfigurer] Loading properties file from class path resource [config/application.properties] 
+2017-02-13 14:37:20,120  INFO   [ThreadPoolTaskScheduler] Initializing ExecutorService  'cleanerSheduler' 
+2017-02-13 14:37:20,303  INFO   [MBeanExporter] Registering beans for JMX exposure on startup 
+2017-02-13 14:37:20,331  INFO   [MBeanExporter] Bean with name 'businessService' has been autodetected for JMX exposure 
+2017-02-13 14:37:20,333  INFO   [MBeanExporter] Bean with name 'eventBusinessService' has been autodetected for JMX exposure 
+2017-02-13 14:37:20,336  INFO   [MBeanExporter] Located managed bean 'businessService': registering with JMX server as MBean [Punter Limit Winodw:name=Resource] 
+2017-02-13 14:37:20,388  INFO   [MBeanExporter] Located managed bean 'eventBusinessService': registering with JMX server as MBean [Event Limit Winodw:name=Resource] 
+2017-02-13 14:37:20,427  INFO   [Boot] Started Boot in 6.801 seconds (JVM running for 7.561) 
