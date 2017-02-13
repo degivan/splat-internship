@@ -51,6 +51,7 @@ public class BetController
 
     @PostConstruct
     public void init() {
+        System.out.println("psssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss");
         UP up = UP.create();
         proxy = up.start();
     }

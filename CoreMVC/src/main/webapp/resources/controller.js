@@ -29,10 +29,11 @@ app.controller('customersCtrl', function ($http,$interval,$timeout,$window) {
     ctrl.buttonClick = function(){
         var timeout = $timeout(function () {
                 $interval.cancel(stop);
+                ctrl.buttonDisabled = false;
                 alert(ctrl.betStatus[1]);
             }, 10000);
 
-        ctrl.buttonDisabled = !ctrl.buttonDisabled;
+        ctrl.buttonDisabled = true;
         var betRequest = new BetRequest();
         betRequest.userId = ctrl.userId;
         betRequest.bet = ctrl.sum;
@@ -47,8 +48,6 @@ app.controller('customersCtrl', function ($http,$interval,$timeout,$window) {
             i++;
         }
 
-        ctrl.buttonDisabled = !ctrl.buttonDisabled;
-
 
         $http.post("/dobet", betRequest).then(function (response){
             var stop = $interval(function () {
@@ -58,6 +57,7 @@ app.controller('customersCtrl', function ($http,$interval,$timeout,$window) {
                    if (response2.data != 2) {
                        $interval.cancel(stop);
                        $timeout.cancel(timeout);
+                       ctrl.buttonDisabled = false;
                        alert(ctrl.betStatus[response2.data]);
                    }
                 });

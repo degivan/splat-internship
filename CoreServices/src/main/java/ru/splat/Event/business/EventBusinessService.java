@@ -143,6 +143,7 @@ public class EventBusinessService implements BusinessService<EventInfo>,LimitSer
     @Override
     public List<TransactionResult> processTransactions(List<EventInfo> transactionRequests)
     {
+
         LOGGER.info(getClassName() + " Start processTransaction");
 
         lastDeleteTime = scanDeque(lastDeleteTime);
