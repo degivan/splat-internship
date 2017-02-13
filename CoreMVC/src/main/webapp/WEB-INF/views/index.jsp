@@ -14,7 +14,7 @@
 <div class="main-app" ng-app="myApp" ng-controller="customersCtrl as $ctrl">
 
     <div class="main-info">
-    <button ng-click="$ctrl.buttonClick();" ng-disabled = "$ctrl.buttonDisabled" ng-model="$ctrl.buttonDisabled" >{{$ctrl.buttonDisabled}}Do bet</button>
+    <button ng-click="$ctrl.buttonClick();" ng-disabled = "$ctrl.buttonDisabled" ng-model="$ctrl.buttonDisabled" >Do bet</button>
     <br>
     <br>
     Сумма ставки: <input type="number" ng-model="$ctrl.sum" maxlength="6" required>
