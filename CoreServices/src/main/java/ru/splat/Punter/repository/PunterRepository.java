@@ -27,6 +27,9 @@ public class PunterRepository implements LimitRepository
     {
         if (punterIdList == null || punterIdList.isEmpty())
             return null;
+
+        insertPunter(punterIdList);
+
         RowMapper<Limit> rm = (rs, rowNum) ->
         {
             Limit punterLimit = new Limit();
@@ -42,7 +45,7 @@ public class PunterRepository implements LimitRepository
                 punterIdList.toArray());
     }
 
-    public void insertPunter(List<PunterInfo> punterIdList)
+    public void insertPunter(List<Integer> punterIdList)
     {
         if (punterIdList == null || punterIdList.isEmpty())
             return;
@@ -52,11 +55,11 @@ public class PunterRepository implements LimitRepository
         {
             public void setValues(PreparedStatement ps, int i) throws SQLException
             {
-                ps.setInt(1, punterIdList.get(i).getId());
+                ps.setInt(1, punterIdList.get(i));
                 ps.setLong(2, DEFAULT_LIMIT);
                 ps.setNull(3, 1);
                 ps.setLong(4, DEFAULT_LIMIT_TIME);
-                ps.setInt(5, punterIdList.get(i).getId());
+                ps.setInt(5, punterIdList.get(i));
             }
 
             public int getBatchSize() {

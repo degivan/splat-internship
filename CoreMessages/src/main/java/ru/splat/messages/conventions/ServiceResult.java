@@ -5,5 +5,5 @@ package ru.splat.messages.conventions;
  */
 //Статусы ответов от сервисов
 public enum ServiceResult {
-    CONFIRMED, DENIED
+    DENIED,  CONFIRMED
 }
