@@ -13,6 +13,8 @@ import ru.splat.messages.proxyup.bet.BetInfo;
 import ru.splat.messages.proxyup.bet.NewRequest;
 import ru.splat.messages.proxyup.bet.NewResponse;
 import ru.splat.messages.proxyup.check.CheckRequest;
+import ru.splat.messages.proxyup.check.CheckResponse;
+import ru.splat.messages.proxyup.check.CheckResult;
 import scala.concurrent.Future;
 
 import java.util.HashMap;
@@ -67,8 +69,26 @@ public class Receiver extends AbstractActor {
         if(state == null) {
             answer(NOT_ACTIVE_TR);
         } else {
-            answer(state);
+            answer(stateToCheckResponse(message.getUserId(), state));
         }
+    }
+
+    private static CheckResponse stateToCheckResponse(Integer userId, State state) {
+        CheckResult checkResult;
+        switch(state) {
+            case CREATED:
+                checkResult = CheckResult.PENDING;
+                break;
+            case CANCEL:
+                checkResult = CheckResult.CANCELLED;
+                break;
+            case DENIED:
+                checkResult = CheckResult.REJECTED;
+                break;
+            default:
+                checkResult = CheckResult.ACCEPTED;
+        }
+        return new CheckResponse(userId, checkResult);
     }
 
     private void processNewRequest(NewRequest message) {
