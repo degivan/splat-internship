@@ -30,8 +30,6 @@ import static ru.splat.messages.Transaction.State;
  * Actor which receives messages from users and from id_generator.
  */
 public class Receiver extends AbstractActor {
-    private static final String NOT_ACTIVE_TR = "TRANSACTION IS NOT IN PROCESS";
-
     private final ActorRef registry;
     private final ActorRef idGenerator;
     private final ActorRef tmActor;
@@ -77,6 +75,9 @@ public class Receiver extends AbstractActor {
     private static CheckResponse stateToCheckResponse(Integer userId, State state) {
         CheckResult checkResult;
         switch(state) {
+            case PHASE2_SEND:
+                checkResult = CheckResult.ACCEPTED;
+                break;
             case CREATED:
                 checkResult = CheckResult.PENDING;
                 break;
