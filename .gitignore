@@ -64,3 +64,4 @@ hs_err_pid*
 src/main/java/ru/splat/Event/
 target/
 
+/logs/*.log
