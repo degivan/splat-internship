@@ -49,9 +49,13 @@ public class BetController
         return proxy.sendCheckRequest(transactionId, userId).ordinal();
     }
 
-    @PostConstruct
-    public void init() {
+    public BetController() {
         UP up = UP.create();
         proxy = up.start();
+    }
+
+    @PostConstruct
+    public void init() {
+
     }
 }

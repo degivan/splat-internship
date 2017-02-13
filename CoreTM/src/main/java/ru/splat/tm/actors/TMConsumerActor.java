@@ -48,19 +48,19 @@ public class TMConsumerActor extends AbstractActor{
                 new ProtoBufMessageDeserializer(Response.ServiceResponse.getDefaultInstance()));
         consumer.subscribe(Arrays.asList(topicsList));
         //responseParser = new ResponseParserImpl();
-        LoggerGlobal.log("consumer actor is here");
+        LoggerGlobal.log("TMConsumerActor: is initialized");
     }
 
 
 
     private void poll(PollMsg p) {
         ConsumerRecords<Long, Response.ServiceResponse> records = consumer.poll(100);
-        LoggerGlobal.log("TMConsumer: messages consumed");
+        LoggerGlobal.log("TMConsumerActor: messages consumed");
         for (ConsumerRecord<Long, Response.ServiceResponse> record : records) {
             //LoggerGlobal.log("message received: " + record.key());
             ServiceResponse sr = ResponseParser.unpackMessage(record.value());
             ServiceResponseMsg srm = new ServiceResponseMsg(record.key(), sr, TOPICS_MAP.get(record.topic()));
-            LoggerGlobal.log("message received: " + record.key() + " " + sr.getAttachment());
+            LoggerGlobal.log("TMConsumerActor: message received: " + record.key() + " " + sr.getAttachment());
             tmActor.tell(srm, getSelf());
         }
     }

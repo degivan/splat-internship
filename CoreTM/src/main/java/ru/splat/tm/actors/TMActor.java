@@ -41,7 +41,10 @@ public  class TMActor extends AbstractActor {
                     processTransaction(m);
                 })
                 .match(TaskSentMsg.class, this::setIsSent)
-                .match(RetrySendMsg.class, m -> send(m.getTopic(), m.getTransactionId(), m.getMessage()))
+                .match(RetrySendMsg.class, m ->
+                {
+                    LoggerGlobal.log("TMActor: processing RetrySendMsg for " + m.getTransactionId() + " to topic " + m.getTopic());
+                    send(m.getTopic(), m.getTransactionId(), m.getMessage());})
                 .match(ServiceResponseMsg.class, this::processResponse)
                 .matchAny(this::unhandled)
                 .build();
@@ -52,7 +55,7 @@ public  class TMActor extends AbstractActor {
 
     }
     //создание стейта транзакции из метадаты
-    public void createTransactionState(TransactionMetadata transactionMetadata) {
+    private void createTransactionState(TransactionMetadata transactionMetadata) {
         Long trId = transactionMetadata.getTransactionId();
         Map<ServicesEnum, ServiceResponse> responseMap = new HashMap<>();
         transactionMetadata.getLocalTasks().forEach(localTask -> {
@@ -64,11 +67,11 @@ public  class TMActor extends AbstractActor {
         states.put(trId, transactionState);
     }
 
-    public void processTransaction(TransactionMetadata trMetadata) {
+    private void processTransaction(TransactionMetadata trMetadata) {
         List<LocalTask> taskList = trMetadata.getLocalTasks();
         Long transactionId = trMetadata.getTransactionId();
-        LoggerGlobal.log("TMActor: transactionId " + transactionId);
-        Set<ServicesEnum> services = taskList.stream().map(task -> task.getService())
+        LoggerGlobal.log("TMActor: processing transaction " + transactionId + " with " + taskList.size() + " tasks");
+        Set<ServicesEnum> services = taskList.stream().map(LocalTask::getService)
                 .collect(Collectors.toSet());
         taskList.forEach(task->{
             Message message = ProtobufFactory.buildProtobuf(task, services);
@@ -79,7 +82,7 @@ public  class TMActor extends AbstractActor {
 
     private void send(String topic, Long transactionId, Message message) {
         LoggerGlobal.log("TMActor: sending " + transactionId + " to " + topic);
-        Future isSend = producer.send(new ProducerRecord<>(topic, transactionId, message),
+        /*Future isSend = */producer.send(new ProducerRecord<>(topic, transactionId, message),
                 (metadata, e) -> {
                     if (e != null) getSelf().tell(new RetrySendMsg(topic, transactionId, message), getSelf());
                     else getSelf().tell(new TaskSentMsg(transactionId, TOPIC_TO_SERVICE_MAP.get(topic)), getSelf());
@@ -92,7 +95,7 @@ public  class TMActor extends AbstractActor {
             return;
         }
         ServiceResponse response = serviceResponseMsg.getMessage();
-        LoggerGlobal.log("TMActor: response for " + trId + " :" + response.getResult());
+        LoggerGlobal.log("TMActor: response for " + trId + " from " + serviceResponseMsg.getService() + " :" + response.getResult());
         states.get(trId).getLocalStates()   //may there be null pointer?
                 .put(serviceResponseMsg.getService(), response);
         TransactionState transactionState = states.get(trId);
@@ -100,13 +103,14 @@ public  class TMActor extends AbstractActor {
                 .entrySet().stream().map(state -> state.getValue().isResponseReceived())
                 .allMatch(e -> e);
         if (allReceived) {
+            LoggerGlobal.log("TMActor: all responses for transaction " + trId + " are received");
             registry.tell(transactionState, getSelf());
             states.remove(trId);
         }
 
     }
 
-    public void setIsSent(TaskSentMsg m) {
+    private void setIsSent(TaskSentMsg m) {
         LoggerGlobal.log("task " + m.getService().toString() + " of " + m.getTransactionId() + " is sent");
         Long trId = m.getTransactionId();
         states.get(trId).getLocalStates()   //may there be null pointer?
@@ -115,6 +119,7 @@ public  class TMActor extends AbstractActor {
                 .entrySet().stream().map(state -> state.getValue().isRequestSent())
                 .allMatch(e -> e);
         if (allSent) {
+            LoggerGlobal.log("TMActor: all requests for transaction " + trId + " are sent to services");
             registry.tell(new TMResponse(trId), getSelf());
         }
         //for testing
@@ -133,6 +138,7 @@ public  class TMActor extends AbstractActor {
         propsProducer.put("buffer.memory", 33554432);
         producer = new KafkaProducer(propsProducer, new LongSerializer(), new ProtoBufMessageSerializer());
         this.registry = registry;
+        LoggerGlobal.log("TMActor: initialized");
     }
     private static Map<ServicesEnum, String> SERVICE_TO_TOPIC_MAP;
     private static Map<String, ServicesEnum> TOPIC_TO_SERVICE_MAP;
