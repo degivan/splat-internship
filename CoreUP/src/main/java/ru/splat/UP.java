@@ -61,11 +61,15 @@ public class UP {
 
         Proxy proxy = Proxy.createWith(this);
 
-        doRecover(() -> newActor(system, TMConsumerActor.class, TM_CONSUMER_NAME, tmActor));
+        doRecover(() -> {
+            ActorRef consumerActor = newActor(system, TMConsumerActor.class, TM_CONSUMER_NAME, tmActor);
+            system.scheduler().schedule(Duration.Zero(),
+                    Duration.create(2000, TimeUnit.MILLISECONDS), consumerActor, new PollMsg(),
+                    system.dispatcher(), null);
+
+        });
         LoggerGlobal.log("ACTOR SYSTEM INITALIZED");
-        /*Cancellable cancellable = system.scheduler().schedule(Duration.Zero(),
-                Duration.create(4000, TimeUnit.MILLISECONDS), consumerActor, new PollMsg(),
-                system.dispatcher(), null);*/
+
 
         return proxy;
     }
