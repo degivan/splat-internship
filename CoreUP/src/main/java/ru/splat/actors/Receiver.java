@@ -13,6 +13,8 @@ import ru.splat.messages.proxyup.bet.BetInfo;
 import ru.splat.messages.proxyup.bet.NewRequest;
 import ru.splat.messages.proxyup.bet.NewResponse;
 import ru.splat.messages.proxyup.check.CheckRequest;
+import ru.splat.messages.proxyup.check.CheckResponse;
+import ru.splat.messages.proxyup.check.CheckResult;
 import scala.concurrent.Future;
 
 import java.util.HashMap;
@@ -61,28 +63,46 @@ public class Receiver extends AbstractActor {
     }
 
     private void processCheckRequest(CheckRequest message) {
-        LoggerGlobal.log("Processing CheckRequest: " + message.toString());
+        LoggerGlobal.log("Processing CheckRequest: " + message.toString(), this);
 
         State state = results.get(message.getTransactionId());
         if(state == null) {
-            answer(NOT_ACTIVE_TR);
+            answer(new CheckResponse(message.getUserId(), CheckResult.NOT_ACTIVE_TR));
         } else {
-            answer(state);
+            answer(stateToCheckResponse(message.getUserId(), state));
         }
     }
 
+    private static CheckResponse stateToCheckResponse(Integer userId, State state) {
+        CheckResult checkResult;
+        switch(state) {
+            case CREATED:
+                checkResult = CheckResult.PENDING;
+                break;
+            case CANCEL:
+                checkResult = CheckResult.CANCELLED;
+                break;
+            case DENIED:
+                checkResult = CheckResult.REJECTED;
+                break;
+            default:
+                checkResult = CheckResult.ACCEPTED;
+        }
+        return new CheckResponse(userId, checkResult);
+    }
+
     private void processNewRequest(NewRequest message) {
-        LoggerGlobal.log("Processing NewRequest: " + message.toString());
+        LoggerGlobal.log("Processing NewRequest: " + message.toString(), this);
 
         BetInfo betInfo = message.getBetInfo();
         Integer userId = betInfo.getUserId();
         boolean alreadyActive = userIds.contains(userId);
 
         if(alreadyActive) {
-            LoggerGlobal.log("Already active: " + userId);
+            LoggerGlobal.log("Already active: " + userId, this);
             answer("ALREADY ACTIVE");
         } else {
-            LoggerGlobal.log("User now active: " + userId);
+            LoggerGlobal.log("User now active: " + userId, this);
 
             userIds.add(userId);
             current.put(userId, sender());
@@ -91,18 +111,18 @@ public class Receiver extends AbstractActor {
     }
 
     private void processDoRecover(Transaction transaction) {
-        LoggerGlobal.log("Process DoRecover: " + transaction.toString());
+        LoggerGlobal.log("Process DoRecover: " + transaction.toString(), this);
 
         if(!userIds.contains(transaction.getBetInfo().getUserId())) {
             startTransaction(transaction);
         } else {
             //TODO: answer back to user
-            LoggerGlobal.log("Transaction aborted: " + transaction.toString());
+            LoggerGlobal.log("Transaction aborted: " + transaction.toString(), this);
         }
     }
 
     private void processTransactionReady(Transaction transaction) {
-        LoggerGlobal.log("Process TransactionReady: " + transaction.toString());
+        LoggerGlobal.log("Process TransactionReady: " + transaction.toString(), this);
 
         Integer userId = transaction.getBetInfo().getUserId();
         Long trId = transaction.getLowerBound();
@@ -118,7 +138,7 @@ public class Receiver extends AbstractActor {
     }
 
     private void createPhaser(Transaction transaction) {
-        LoggerGlobal.log("Creating phaser for transaction: " + transaction.toString());
+        LoggerGlobal.log("Creating phaser for transaction: " + transaction.toString(), this);
 
         ActorRef phaser = newActor(PhaserActor.class, "phaser" + transaction.getLowerBound(), tmActor, self());
         ActorRef receiver = self();
@@ -136,7 +156,7 @@ public class Receiver extends AbstractActor {
     }
 
     private void processRequestResult(Transaction transaction) {
-        LoggerGlobal.log("Process RequestResult: " + transaction.toString());
+        LoggerGlobal.log("Process RequestResult: " + transaction.toString(), this);
 
         saveState(transaction);
     }

@@ -32,11 +32,11 @@ public class RegistryActor extends AbstractActor {
     }
 
     private void processTransactionState(TransactionState o) {
-        LoggerGlobal.log("Processing TransactionState: " + o.toString());
+        LoggerGlobal.log("Processing TransactionState: " + o.toString(), this);
 
         ActorRef phaser = actors.get(o.getTransactionId());
         if(phaser == null) {
-            LoggerGlobal.log("Phaser for transactionId: " + o.getTransactionId() + " wasn't created yet.");
+            LoggerGlobal.log("Phaser for transactionId: " + o.getTransactionId() + " wasn't created yet.", this);
 
             resendOverDelay(o);
         } else {
@@ -53,7 +53,7 @@ public class RegistryActor extends AbstractActor {
     }
 
     private void processRegisterRequest(RegisterRequest request) {
-        LoggerGlobal.log("Processing RegisterRequest: " + request.toString());
+        LoggerGlobal.log("Processing RegisterRequest: " + request.toString(), this);
 
         actors.put(request.getTransactionId(), request.getActor());
         sender().tell(new RegisterResponse(), self());
