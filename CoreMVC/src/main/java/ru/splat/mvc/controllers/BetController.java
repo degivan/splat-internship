@@ -38,8 +38,8 @@ public class BetController
     NewResponse getTransactionId(@RequestBody BetInfo betInfo) throws Exception
     {
         System.out.println(betInfo.toString());
-        return proxy.sendNewRequest(betInfo);
-//        return new NewResponse(1l,betInfo.getUserId());
+        //return proxy.sendNewRequest(betInfo);
+        return new NewResponse(1l,betInfo.getUserId());
     }
 
     @RequestMapping(value = "/checkbet", method = RequestMethod.GET)
