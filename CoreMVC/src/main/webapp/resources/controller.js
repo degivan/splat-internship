@@ -27,6 +27,7 @@ app.controller('customersCtrl', function ($http,$interval,$timeout,$window) {
 
 
     ctrl.buttonClick = function(){
+        var stop;
         var timeout = $timeout(function () {
                 $interval.cancel(stop);
                 ctrl.buttonDisabled = false;
@@ -50,10 +51,12 @@ app.controller('customersCtrl', function ($http,$interval,$timeout,$window) {
 
 
         $http.post("/dobet", betRequest).then(function (response){
-            console.log(response.data);
-            var stop = $interval(function () {
+            //alert("adaddaawdawawdaawadawwa");
+            $window.console.log(response.data);
+            stop = $interval(function () {
                 $http.get("/checkbet",{params: {transactionId: response.data.transactionId, userId:response.data.userId}})
                     .then(function (response2){
+                        console.log(response2.data);
                    if (response2.data != 2) {
                        $interval.cancel(stop);
                        $timeout.cancel(timeout);

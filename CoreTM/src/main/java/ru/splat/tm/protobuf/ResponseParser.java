@@ -4,6 +4,7 @@ import com.google.protobuf.Message;
 import ru.splat.messages.Response;
 import ru.splat.messages.conventions.ServiceResult;
 import ru.splat.messages.uptm.trstate.ServiceResponse;
+import ru.splat.tm.LoggerGlobal;
 
 import static ru.splat.messages.Response.ServiceResponse.AttachmentOneofCase.*;
 
@@ -39,7 +40,13 @@ public class ResponseParser {
                 ServiceResponse<Double> sr = new ServiceResponse<>(attachment, ServiceResult.values()[result]);
                 return sr;
             }
+            else if (attachmentCase.equals(ATTACHMENTONEOF_NOT_SET)) {  //для ответов от сервиса, не содержащих аттачмент
+                int result = ((Response.ServiceResponse) message).getResult();
+                ServiceResponse<Integer> sr = new ServiceResponse<>(-1, ServiceResult.values()[result]);
+                return sr;
+            }
             else {
+                LoggerGlobal.log(attachmentCase.toString());
                 throw new IllegalArgumentException("Invalid attachment type!");
             }
 

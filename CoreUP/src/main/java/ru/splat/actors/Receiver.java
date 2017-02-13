@@ -7,6 +7,7 @@ import akka.dispatch.OnSuccess;
 import akka.pattern.Patterns;
 import akka.util.Timeout;
 import ru.splat.LoggerGlobal;
+import ru.splat.db.Bounds;
 import ru.splat.message.*;
 import ru.splat.messages.Transaction;
 import ru.splat.messages.proxyup.bet.BetInfo;
@@ -29,8 +30,6 @@ import static ru.splat.messages.Transaction.State;
  * Actor which receives messages from users and from id_generator.
  */
 public class Receiver extends AbstractActor {
-    private static final String NOT_ACTIVE_TR = "TRANSACTION IS NOT IN PROCESS";
-
     private final ActorRef registry;
     private final ActorRef idGenerator;
     private final ActorRef tmActor;
@@ -76,6 +75,9 @@ public class Receiver extends AbstractActor {
     private static CheckResponse stateToCheckResponse(Integer userId, State state) {
         CheckResult checkResult;
         switch(state) {
+            case PHASE2_SEND:
+                checkResult = CheckResult.ACCEPTED;
+                break;
             case CREATED:
                 checkResult = CheckResult.PENDING;
                 break;
@@ -144,7 +146,7 @@ public class Receiver extends AbstractActor {
         ActorRef receiver = self();
 
         Future<Object> future = Patterns.ask(registry,
-                new RegisterRequest(transaction.getLowerBound(), phaser),
+                new RegisterRequest(new Bounds(transaction.getLowerBound(), transaction.getUpperBound()), phaser),
                 Timeout.apply(10L, TimeUnit.MINUTES));
 
         future.onSuccess(new OnSuccess<Object>() {

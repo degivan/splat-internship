@@ -20,7 +20,7 @@ import static ru.splat.messages.Transaction.Builder.builder;
  * Puts transaction in DB and generates unique identifier for it.
  */
 public class IdGenerator extends AbstractActor {
-    private static final Long RANGE = 50L;
+    public static final Long RANGE = 50L;
 
     private Map<CreateIdRequest, ActorRef> adjournedRequests = new HashMap<>();
     private Bounds bounds = new Bounds(0L, 0L);

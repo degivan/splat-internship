@@ -12,8 +12,6 @@ public class ServiceResponse<T> {
     private final boolean isResponseReceived;
     private boolean requestSent;
 
-
-
     //конструктор для пустого (еще не полученного ответа)
     public ServiceResponse() {
 
@@ -41,6 +39,8 @@ public class ServiceResponse<T> {
         this.isResponseReceived = true;
         requestSent = true;
     }
+
+
 
     public T getAttachment() {
         return attachment;

@@ -7,6 +7,7 @@ import akka.japi.pf.UnitPFBuilder;
 import ru.splat.LoggerGlobal;
 import ru.splat.db.DBConnection;
 import ru.splat.message.PhaserRequest;
+import ru.splat.message.PhaserResponse;
 import ru.splat.messages.Transaction;
 import ru.splat.messages.conventions.ServicesEnum;
 import ru.splat.messages.uptm.TMResponse;
@@ -119,7 +120,7 @@ public class PhaserActor extends AbstractActor {
     private void sendResult(Transaction transaction) {
         LoggerGlobal.log("Result send to receiver for transaction: " + transaction.toString(), this);
 
-        receiver.tell(transaction, self());
+        receiver.tell(new PhaserResponse(transaction), self());
     }
 
     private void sendPhase2(Transaction transaction) {

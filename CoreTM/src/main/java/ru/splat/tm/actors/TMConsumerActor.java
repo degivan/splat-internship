@@ -60,7 +60,7 @@ public class TMConsumerActor extends AbstractActor{
             //LoggerGlobal.log("message received: " + record.key());
             ServiceResponse sr = ResponseParser.unpackMessage(record.value());
             ServiceResponseMsg srm = new ServiceResponseMsg(record.key(), sr, TOPICS_MAP.get(record.topic()));
-            LoggerGlobal.log("TMConsumerActor: message received: " + record.key() + " " + sr.getAttachment());
+            LoggerGlobal.log("TMConsumerActor: message received from : " + record.topic() + ": " + record.key() + " " + sr.getAttachment() );
             tmActor.tell(srm, getSelf());
         }
     }
