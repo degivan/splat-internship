@@ -63,7 +63,7 @@ public class Receiver extends AbstractActor {
     }
 
     private void processCheckRequest(CheckRequest message) {
-        LoggerGlobal.log("Processing CheckRequest: " + message.toString());
+        LoggerGlobal.log("Processing CheckRequest: " + message.toString(), this);
 
         State state = results.get(message.getTransactionId());
         if(state == null) {
@@ -92,17 +92,17 @@ public class Receiver extends AbstractActor {
     }
 
     private void processNewRequest(NewRequest message) {
-        LoggerGlobal.log("Processing NewRequest: " + message.toString());
+        LoggerGlobal.log("Processing NewRequest: " + message.toString(), this);
 
         BetInfo betInfo = message.getBetInfo();
         Integer userId = betInfo.getUserId();
         boolean alreadyActive = userIds.contains(userId);
 
         if(alreadyActive) {
-            LoggerGlobal.log("Already active: " + userId);
+            LoggerGlobal.log("Already active: " + userId, this);
             answer("ALREADY ACTIVE");
         } else {
-            LoggerGlobal.log("User now active: " + userId);
+            LoggerGlobal.log("User now active: " + userId, this);
 
             userIds.add(userId);
             current.put(userId, sender());
@@ -111,18 +111,18 @@ public class Receiver extends AbstractActor {
     }
 
     private void processDoRecover(Transaction transaction) {
-        LoggerGlobal.log("Process DoRecover: " + transaction.toString());
+        LoggerGlobal.log("Process DoRecover: " + transaction.toString(), this);
 
         if(!userIds.contains(transaction.getBetInfo().getUserId())) {
             startTransaction(transaction);
         } else {
             //TODO: answer back to user
-            LoggerGlobal.log("Transaction aborted: " + transaction.toString());
+            LoggerGlobal.log("Transaction aborted: " + transaction.toString(), this);
         }
     }
 
     private void processTransactionReady(Transaction transaction) {
-        LoggerGlobal.log("Process TransactionReady: " + transaction.toString());
+        LoggerGlobal.log("Process TransactionReady: " + transaction.toString(), this);
 
         Integer userId = transaction.getBetInfo().getUserId();
         Long trId = transaction.getLowerBound();
@@ -138,7 +138,7 @@ public class Receiver extends AbstractActor {
     }
 
     private void createPhaser(Transaction transaction) {
-        LoggerGlobal.log("Creating phaser for transaction: " + transaction.toString());
+        LoggerGlobal.log("Creating phaser for transaction: " + transaction.toString(), this);
 
         ActorRef phaser = newActor(PhaserActor.class, "phaser" + transaction.getLowerBound(), tmActor, self());
         ActorRef receiver = self();
@@ -156,7 +156,7 @@ public class Receiver extends AbstractActor {
     }
 
     private void processRequestResult(Transaction transaction) {
-        LoggerGlobal.log("Process RequestResult: " + transaction.toString());
+        LoggerGlobal.log("Process RequestResult: " + transaction.toString(), this);
 
         saveState(transaction);
     }

@@ -34,7 +34,7 @@ public class IdGenerator extends AbstractActor {
     }
 
     private void processNewIdsMessage(NewIdsMessage message) {
-        LoggerGlobal.log("Process NewIdsMessage: " + message.toString());
+        LoggerGlobal.log("Process NewIdsMessage: " + message.toString(), this);
 
         bounds = message.getBounds();
         messagesRequested = false;
@@ -50,10 +50,10 @@ public class IdGenerator extends AbstractActor {
     }
 
     private boolean processCreateIdRequest(CreateIdRequest message, ActorRef receiver) {
-        LoggerGlobal.log("Process CreateIdRequest: " + message.toString());
+        LoggerGlobal.log("Process CreateIdRequest: " + message.toString(), this);
 
         if(outOfIndexes()) {
-            LoggerGlobal.log("Out of indexes!");
+            LoggerGlobal.log("Out of indexes!", this);
 
             adjournedRequests.put(message, receiver);
             if(!messagesRequested) {
@@ -70,7 +70,7 @@ public class IdGenerator extends AbstractActor {
                     .upper(bounds.getUpperBound())
                     .build();
 
-            LoggerGlobal.log("Saving new transaction: " + transaction);
+            LoggerGlobal.log("Saving new transaction: " + transaction, this);
 
             DBConnection.newTransaction(transaction,
                 tr -> receiver.tell(new CreateIdResponse(transaction), self()));
@@ -84,7 +84,7 @@ public class IdGenerator extends AbstractActor {
                 bounds -> self().tell(new NewIdsMessage(bounds), self()));
         messagesRequested = true;
 
-        LoggerGlobal.log("Bounds requested");
+        LoggerGlobal.log("Bounds requested", this);
     }
 
     private Bounds getIndexes() {

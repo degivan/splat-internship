@@ -67,7 +67,7 @@ public class UP {
                     system.dispatcher(), ActorRef.noSender());
 
         });
-        LoggerGlobal.log("ACTOR SYSTEM INITALIZED");
+        LoggerGlobal.log("ACTOR SYSTEM INITALIZED", this);
 
 
         return proxy;

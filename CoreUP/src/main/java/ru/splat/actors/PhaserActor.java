@@ -59,7 +59,7 @@ public class PhaserActor extends AbstractActor {
 
 
     private void processPhaserRequest(PhaserRequest o) {
-        LoggerGlobal.log("Process PhaserRequest: " + o.toString());
+        LoggerGlobal.log("Process PhaserRequest: " + o.toString(), this);
 
         transaction = o.getTransaction();
 
@@ -77,13 +77,13 @@ public class PhaserActor extends AbstractActor {
     }
 
     private void processReceiveTimeout() {
-        LoggerGlobal.log("Timeout received in phaser for transaction: " + transaction.toString());
+        LoggerGlobal.log("Timeout received in phaser for transaction: " + transaction.toString(), this);
 
         becomeAndLog(timeout());
     }
 
     private void processTransactionState(TransactionState o) {
-        LoggerGlobal.log("Processing TransactionState: " + o.toString());
+        LoggerGlobal.log("Processing TransactionState: " + o.toString(), this);
 
         updateBetId(o, transaction);
 
@@ -117,13 +117,13 @@ public class PhaserActor extends AbstractActor {
     }
 
     private void sendResult(Transaction transaction) {
-        LoggerGlobal.log("Result send to receiver for transaction: " + transaction.toString());
+        LoggerGlobal.log("Result send to receiver for transaction: " + transaction.toString(), this);
 
         receiver.tell(transaction, self());
     }
 
     private void sendPhase2(Transaction transaction) {
-        LoggerGlobal.log("Sending phase2 for transaction: " + transaction.toString());
+        LoggerGlobal.log("Sending phase2 for transaction: " + transaction.toString(), this);
 
         sendMetadataAndAfter(MetadataPatterns::createPhase2,
                 transaction,
@@ -131,7 +131,7 @@ public class PhaserActor extends AbstractActor {
     }
 
     private void cancelTransaction(Transaction transaction) {
-        LoggerGlobal.log("Sending cancel for transaction: " + transaction.toString());
+        LoggerGlobal.log("Sending cancel for transaction: " + transaction.toString(), this);
 
         sendMetadataAndAfter(MetadataPatterns::createCancel,
                 transaction,
@@ -139,7 +139,7 @@ public class PhaserActor extends AbstractActor {
     }
 
     private void becomeAndLog(PartialFunction<Object, BoxedUnit> state) {
-        LoggerGlobal.log("Phaser: " + this.toString() + " changes to state: " + state);
+        LoggerGlobal.log("Phaser: " + this.toString() + " changes to state: " + state, this);
 
         context().become(state);
     }
@@ -204,7 +204,7 @@ public class PhaserActor extends AbstractActor {
     }
 
     private void logTransactionState(TransactionState trState) {
-        LoggerGlobal.log("Processing " + trState.toString() + " in context: " + getContext().toString());
+        LoggerGlobal.log("Processing " + trState.toString() + " in context: " + getContext().toString(), this);
     }
 
     private static UnitPFBuilder<Object> state() {

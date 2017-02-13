@@ -66,7 +66,7 @@ public class Proxy {
         future.onSuccess(new OnSuccess<Object>() {
             @Override
             public void onSuccess(Object o) throws Throwable {
-                LoggerGlobal.log(logBuilder.apply(o));
+                LoggerGlobal.log(logBuilder.apply(o), this);
             }
         },up.getSystem().dispatcher());
     }
