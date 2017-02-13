@@ -22,6 +22,8 @@ import java.util.stream.Collectors;
  * Placeholder for Proxy.
  */
 public class Proxy {
+    private final static Timeout TIMEOUT = Timeout.apply(10, TimeUnit.SECONDS);
+
     private final UP up;
 
     private Proxy(UP up) {
@@ -29,29 +31,35 @@ public class Proxy {
     }
 
     public NewResponse sendNewRequest(BetInfo betInfo) throws Exception {
-        ActorRef receiver = up.getReceiver(betInfo.getUserId());
         betInfo.setSelectionsId(betInfo.getBetOutcomes().stream().map(BetOutcome::getOutcomeId)
-        .collect(Collectors.toSet()));
+                .collect(Collectors.toSet()));
         NewRequest newRequest = new NewRequest(betInfo);
-        Timeout timeout = Timeout.apply(10, TimeUnit.SECONDS);
-        Future<Object> future = Patterns.ask(receiver, newRequest, timeout);
 
-        logOnSuccess(future, m -> "Response for NewRequest received: " + m.toString());
-
-        return (NewResponse) Await.result(future, timeout.duration());
-
+        return (NewResponse) getRequestResult(betInfo.getUserId(), newRequest,
+                m -> "Response for NewRequest received: " + m.toString());
     }
 
     public CheckResult sendCheckRequest(Long transactionId, Integer userId) throws Exception {
         CheckRequest checkRequest = new CheckRequest(transactionId, userId);
+
+        CheckResponse response =  (CheckResponse) getRequestResult(userId, checkRequest,
+                m -> "Response for CheckRequest received: " + m.toString());
+
+        return response.getCheckResult();
+    }
+
+    private Object getRequestResult(Integer userId, Object request,
+                                    Function<Object, String> logBuilder) throws Exception {
+        Future<Object> future = makeRequest(userId, request);
+
+        logOnSuccess(future, logBuilder);
+
+        return Await.result(future, TIMEOUT.duration());
+    }
+
+    private Future<Object> makeRequest(Integer userId, Object request) {
         ActorRef receiver = up.getReceiver(userId);
-        Timeout timeout = Timeout.apply(10, TimeUnit.SECONDS);
-        Future<Object> future = Patterns.ask(receiver, checkRequest, timeout);
-
-        logOnSuccess(future, m -> ("Response for CheckRequest received: " + m.toString()));
-
-        return ((CheckResponse)Await.result(future, timeout.duration()))
-                .getCheckResult();
+        return Patterns.ask(receiver, request, TIMEOUT);
     }
 
     private void logOnSuccess(Future<Object> future, Function<Object, String> logBuilder) {
@@ -63,7 +71,7 @@ public class Proxy {
         },up.getSystem().dispatcher());
     }
 
-    public static Proxy createWith(UP up) {
+    static Proxy createWith(UP up) {
         return new Proxy(up);
     }
 }
