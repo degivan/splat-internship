@@ -7,6 +7,7 @@ import akka.dispatch.OnSuccess;
 import akka.pattern.Patterns;
 import akka.util.Timeout;
 import ru.splat.LoggerGlobal;
+import ru.splat.db.Bounds;
 import ru.splat.message.*;
 import ru.splat.messages.Transaction;
 import ru.splat.messages.proxyup.bet.BetInfo;
@@ -144,7 +145,7 @@ public class Receiver extends AbstractActor {
         ActorRef receiver = self();
 
         Future<Object> future = Patterns.ask(registry,
-                new RegisterRequest(transaction.getLowerBound(), phaser),
+                new RegisterRequest(new Bounds(transaction.getLowerBound(), transaction.getUpperBound()), phaser),
                 Timeout.apply(10L, TimeUnit.MINUTES));
 
         future.onSuccess(new OnSuccess<Object>() {
