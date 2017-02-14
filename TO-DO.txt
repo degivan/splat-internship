@@ -6,7 +6,7 @@ TM (05.02.17-06.02.17):
 Code-Review by NKalugin
 ==========CoreUP===========
 ==========CoreTM===========
--объединить модули CoreTM, CoreUP и CoreMVC
--добавить Scheduler для TMConsumerActor в UP
+-решить проблему с ALREADY_ACTIVE
+-добавить обработку клиентом (controller.js) отказа приема ставки
 
 TestBoot:
