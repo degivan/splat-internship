@@ -63,7 +63,7 @@ public class UP {
         doRecover(() -> {
             ActorRef consumerActor = newActor(system, TMConsumerActor.class, TM_CONSUMER_NAME, tmActor);
             system.scheduler().schedule(Duration.Zero(),
-                    Duration.create(2000, TimeUnit.MILLISECONDS), consumerActor, new PollMsg(),
+                    Duration.create(300, TimeUnit.MILLISECONDS), consumerActor, new PollMsg(),
                     system.dispatcher(), ActorRef.noSender());
 
         });

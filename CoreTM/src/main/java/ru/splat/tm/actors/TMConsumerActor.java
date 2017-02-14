@@ -51,20 +51,16 @@ public class TMConsumerActor extends AbstractActor{
         LoggerGlobal.log("TMConsumerActor: is initialized");
     }
 
-
-
     private void poll(PollMsg p) {
-        ConsumerRecords<Long, Response.ServiceResponse> records = consumer.poll(100);
-        LoggerGlobal.log("TMConsumerActor: messages consumed");
+        ConsumerRecords<Long, Response.ServiceResponse> records = consumer.poll(0);
         for (ConsumerRecord<Long, Response.ServiceResponse> record : records) {
             //LoggerGlobal.log("message received: " + record.key());
             ServiceResponse sr = ResponseParser.unpackMessage(record.value());
             ServiceResponseMsg srm = new ServiceResponseMsg(record.key(), sr, TOPICS_MAP.get(record.topic()));
-            LoggerGlobal.log("TMConsumerActor: message received from : " + record.topic() + ": " + record.key() + " " + sr.getAttachment() );
+            //LoggerGlobal.log("TMConsumerActor: message received from : " + record.topic() + ": " + record.key() + " " + sr.getAttachment() );
             tmActor.tell(srm, getSelf());
         }
     }
-
 
     private static Map<String, ServicesEnum> TOPICS_MAP;
 
@@ -75,8 +71,4 @@ public class TMConsumerActor extends AbstractActor{
         TOPICS_MAP.put("BillingRes", ServicesEnum.BillingService);
         TOPICS_MAP.put("PunterRes", ServicesEnum.PunterService);
     }
-
-
-
-
 }

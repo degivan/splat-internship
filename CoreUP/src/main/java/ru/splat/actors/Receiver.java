@@ -102,7 +102,7 @@ public class Receiver extends AbstractActor {
 
         if(alreadyActive) {
             LoggerGlobal.log("Already active: " + userId, this);
-            answer("ALREADY ACTIVE");
+            answer(new NewResponse(userId));    //отказ от приема новой транзакции
         } else {
             LoggerGlobal.log("User now active: " + userId, this);
 
