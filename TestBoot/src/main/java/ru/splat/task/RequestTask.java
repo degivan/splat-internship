@@ -3,6 +3,7 @@ package ru.splat.task;
 
 import org.apache.log4j.Logger;
 import ru.splat.messages.proxyup.bet.NewResponse;
+import ru.splat.messages.proxyup.bet.NewResponseClone;
 import ru.splat.service.BootService;
 import java.util.concurrent.ConcurrentSkipListSet;
 
@@ -13,10 +14,10 @@ public class RequestTask implements Runnable {
     private int requestCount;
     private long requestTimeout;
     private int punterCount;
-    private ConcurrentSkipListSet<NewResponse> trIdSet;
+    private ConcurrentSkipListSet<NewResponseClone> trIdSet;
     private static Logger LOGGER = Logger.getLogger(RequestTask.class);
 
-    public RequestTask(int requestCount, long requestTimeout, int punterCount, ConcurrentSkipListSet<NewResponse> trIdSet) {
+    public RequestTask(int requestCount, long requestTimeout, int punterCount, ConcurrentSkipListSet<NewResponseClone> trIdSet) {
         this.requestCount = requestCount;
         this.requestTimeout = requestTimeout;
         this.punterCount = punterCount;
@@ -35,11 +36,12 @@ public class RequestTask implements Runnable {
             long residual = 0;
             while (i < requestCount && residual < requestTimeout)
             {
-                LOGGER.info(i + "");
                 try {
-                    NewResponse newResponse = bootService.makeRequest(punterCount);
+                    NewResponseClone newResponse = bootService.makeRequest(punterCount);
                     LOGGER.info("Response from server: " + newResponse.toString());
-                    trIdSet.add(newResponse);  //добавление нового id в сет
+                    System.out.println(newResponse.getActive());
+                    if (!newResponse.getActive()) trIdSet.add(newResponse);  //добавление нового id в сет
+                    else LOGGER.info("Another transaction is active for userId = " + newResponse.getUserId());
                 }catch (InterruptedException ie)
                 {
                     Thread.currentThread().interrupt();
@@ -50,7 +52,7 @@ public class RequestTask implements Runnable {
                 finally
                 {
                     i = requestCount;
-                    residual = requestTimeout;
+                  //  residual = requestTimeout;
                 }
                 residual = System.currentTimeMillis() - timeStart;
                 i++;
@@ -59,8 +61,10 @@ public class RequestTask implements Runnable {
 
             if (residual < requestTimeout)
             {
+                long freeTime = requestTimeout - residual;
+                LOGGER.info("Sleep time: " + freeTime);
                 try {
-                    Thread.currentThread().sleep(requestTimeout - residual);
+                    Thread.currentThread().sleep(freeTime);
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }

@@ -6,7 +6,7 @@ function BetRequest(){
 
 
 var app = angular.module('myApp', []);
-app.controller('customersCtrl', function ($http,$interval,$timeout,$window) {
+app.controller('customersCtrl', function ($http,$interval,$timeout) {
     var ctrl = this;
     ctrl.sum = 0;
     ctrl.userId = 0;
@@ -20,7 +20,6 @@ app.controller('customersCtrl', function ($http,$interval,$timeout,$window) {
 
     $http.get("/init").then(function (response) {
         ctrl.languageSettings = response.data;
-        $window.console.log(ctrl.languageSettings);
     });
 
 
@@ -51,8 +50,8 @@ app.controller('customersCtrl', function ($http,$interval,$timeout,$window) {
 
 
         $http.post("/dobet", betRequest).then(function (response){
-            $window.console.log(response);
             if (response.data["active"] == true) {
+                $timeout.cancel(timeout);
                 alert("Your previous bet hasn't been processed yet! Try again soon.");
                 ctrl.buttonDisabled = false;
             }
@@ -60,7 +59,6 @@ app.controller('customersCtrl', function ($http,$interval,$timeout,$window) {
                 stop = $interval(function () {
                     $http.get("/checkbet",{params: {transactionId: response.data.transactionId, userId:response.data.userId}})
                         .then(function (response2){
-                            console.log(response2.data);
                             if (response2.data != 2) {
                                 $interval.cancel(stop);
                                 $timeout.cancel(timeout);

@@ -2,6 +2,7 @@ package ru.splat.task;
 
 import org.apache.log4j.Logger;
 import ru.splat.messages.proxyup.bet.NewResponse;
+import ru.splat.messages.proxyup.bet.NewResponseClone;
 import ru.splat.messages.proxyup.check.CheckResult;
 import ru.splat.service.StateCheckService;
 import java.util.Iterator;
@@ -11,10 +12,10 @@ import java.util.concurrent.ConcurrentSkipListSet;
  * Created by Дмитрий on 10.02.2017.
  */
 public class StateRequestTask implements Runnable{
-    private ConcurrentSkipListSet<NewResponse> trIdSet;
+    private ConcurrentSkipListSet<NewResponseClone> trIdSet;
     private static Logger LOGGER = Logger.getLogger(StateRequestTask.class);
 
-    public StateRequestTask(ConcurrentSkipListSet<NewResponse> trIdSet) {
+    public StateRequestTask(ConcurrentSkipListSet<NewResponseClone> trIdSet) {
         this.trIdSet = trIdSet;
     }
 
@@ -25,10 +26,10 @@ public class StateRequestTask implements Runnable{
 
         StateCheckService stateCheckService = new StateCheckService();
         while (!Thread.currentThread().interrupted()) {    //настроить частоту обращений
-            Iterator<NewResponse> iterator = trIdSet.iterator();
+            Iterator<NewResponseClone> iterator = trIdSet.iterator();
             while (iterator.hasNext()) {
                 try {
-                    NewResponse response = iterator.next();
+                    NewResponseClone response = iterator.next();
 
                     LOGGER.info(response.toString());
 

@@ -6,6 +6,7 @@ import org.apache.log4j.Logger;
 import ru.splat.Constant;
 import ru.splat.messages.proxyup.bet.BetInfo;
 import ru.splat.messages.proxyup.bet.NewResponse;
+import ru.splat.messages.proxyup.bet.NewResponseClone;
 import ru.splat.messages.uptm.trmetadata.bet.BetOutcome;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -19,7 +20,7 @@ public class BootService
     private static final String URL_ADRESS = "http://localhost:8080/dobet";
     private Logger LOGGER = Logger.getLogger(BootService.class);
 
-    public NewResponse makeRequest(int punterCount) throws Exception
+    public NewResponseClone makeRequest(int punterCount) throws Exception
     {
         Gson g = new Gson();
 
@@ -50,7 +51,7 @@ public class BootService
         }
         in.close();
 
-        NewResponse newResponse = g.fromJson(response.toString(), NewResponse.class);
+        NewResponseClone newResponse = g.fromJson(response.toString(), NewResponseClone.class);
 //        System.out.println(transactionId);
 
         return newResponse;

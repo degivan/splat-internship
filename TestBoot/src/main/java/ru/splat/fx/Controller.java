@@ -10,6 +10,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import ru.splat.Constant;
 import ru.splat.messages.proxyup.bet.NewResponse;
+import ru.splat.messages.proxyup.bet.NewResponseClone;
 import ru.splat.service.EventDefaultDataService;
 import ru.splat.task.RequestTask;
 import ru.splat.task.StateRequestTask;
@@ -39,7 +40,7 @@ public class Controller
     private int punterCount;
     private long requestTimeout;
     private int requestCount;
-    private ConcurrentSkipListSet<NewResponse> trIdSet;
+    private ConcurrentSkipListSet<NewResponseClone> trIdSet;
 
     private Alert alert;
 
@@ -124,9 +125,9 @@ public class Controller
 
     @FXML
     public void initialize(){
-        trIdSet = new ConcurrentSkipListSet<NewResponse>(new Comparator<NewResponse>()
+        trIdSet = new ConcurrentSkipListSet<NewResponseClone>(new Comparator<NewResponseClone>()
         {
-            public int compare(NewResponse o1, NewResponse o2)
+            public int compare(NewResponseClone o1, NewResponseClone o2)
             {
                 return o1.getTransactionId() == o2.getTransactionId()?0:o1.getTransactionId() > o2.getTransactionId()?1:-1;
             }
@@ -168,7 +169,4 @@ public class Controller
         alert.showAndWait();
     }
 
-    public ConcurrentSkipListSet<NewResponse> getTrIdSet() {
-        return trIdSet;
-    }
 }

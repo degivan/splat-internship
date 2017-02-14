@@ -2,6 +2,8 @@ package ru.splat.service;
 
 import com.google.gson.Gson;
 import ru.splat.messages.proxyup.bet.NewResponse;
+import ru.splat.messages.proxyup.bet.NewResponseClone;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -13,7 +15,7 @@ import java.net.URL;
 public class StateCheckService {
     private static final String URL_ADRESS = "http://localhost:8080/checkbet?transactionId=";   //заглушка, узнать и Ивана форму запроса стейта
 
-    public int makeRequest(NewResponse trdata) throws Exception
+    public int makeRequest(NewResponseClone trdata) throws Exception
     {
         Gson g = new Gson();
         URL url = new URL(URL_ADRESS + trdata.getTransactionId() + "&userId=" + trdata.getUserId());

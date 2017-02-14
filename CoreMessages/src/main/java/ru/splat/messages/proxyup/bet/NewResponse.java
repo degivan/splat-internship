@@ -22,4 +22,6 @@ public class NewResponse extends IdMessage {
     public boolean isActive() {
         return isActive;
     }
+
+
 }

@@ -39,7 +39,7 @@ public class BetController
     {
         System.out.println(betInfo.toString());
 //        return proxy.sendNewRequest(betInfo);
-        return new NewResponse(1l,betInfo.getUserId());
+        return new NewResponse(betInfo.getUserId());
     }
 
     @RequestMapping(value = "/checkbet", method = RequestMethod.GET)
