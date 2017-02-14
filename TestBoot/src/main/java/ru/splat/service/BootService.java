@@ -2,13 +2,11 @@ package ru.splat.service;
 
 
 import com.google.gson.Gson;
+import org.apache.log4j.Logger;
 import ru.splat.Constant;
-import ru.splat.messages.bet.BetRequest;
-import ru.splat.messages.bet.BetRequestFull;
 import ru.splat.messages.proxyup.bet.BetInfo;
 import ru.splat.messages.proxyup.bet.NewResponse;
 import ru.splat.messages.uptm.trmetadata.bet.BetOutcome;
-
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.InputStreamReader;
@@ -19,6 +17,7 @@ import java.util.*;
 public class BootService
 {
     private static final String URL_ADRESS = "http://localhost:8080/dobet";
+    private Logger LOGGER = Logger.getLogger(BootService.class);
 
     public NewResponse makeRequest(int punterCount) throws Exception
     {
@@ -31,6 +30,7 @@ public class BootService
 
         BetInfo betInfo = generateBet(punterCount);
         String json = g.toJson(betInfo);
+        LOGGER.info("JSON for Server: " + json);
 
 //        System.out.println(json);
 

@@ -19,6 +19,11 @@ public class MainApp extends Application {
         Parent root = (Parent) loader.load(getClass().getResourceAsStream(fxmlFile));
         stage.setTitle("Test Boot");
         stage.setScene(new Scene(root));
+        Controller controller = loader.getController();
+        controller.stage = stage;
+        controller.stage.setOnCloseRequest(event -> {
+            controller.interruptThreads();
+        });
         stage.show();
     }
 }

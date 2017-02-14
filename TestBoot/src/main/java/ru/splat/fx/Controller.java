@@ -5,6 +5,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
+import javafx.stage.Stage;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import ru.splat.Constant;
@@ -12,15 +13,15 @@ import ru.splat.messages.proxyup.bet.NewResponse;
 import ru.splat.service.EventDefaultDataService;
 import ru.splat.task.RequestTask;
 import ru.splat.task.StateRequestTask;
-
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class Controller
 {
+    public static Stage stage;
+
     @FXML
     private Button button;
 
@@ -44,6 +45,11 @@ public class Controller
 
     private ExecutorService executorService;
 
+    public void interruptThreads()
+    {
+        if (executorService != null){ executorService.shutdownNow();}
+        executorService = null;
+    }
 
     private void init()
     {
@@ -83,6 +89,8 @@ public class Controller
         {
             requestCount = Constant.REQUEST_COUNT;
         }
+
+
     }
 
     @FXML
@@ -99,7 +107,7 @@ public class Controller
             for (int i = 0; i < 8; i++) {
                 executorService.submit(new RequestTask(requestCount, requestTimeout, punterCount, this.trIdSet));
             }
-         //   executorService.submit(new StateRequestTask(this.trIdSet)); //проверка стейтов по trId
+            executorService.submit(new StateRequestTask(this.trIdSet)); //проверка стейтов по trId
 
         }
     }
@@ -107,8 +115,7 @@ public class Controller
     @FXML
     public void onClickStop()
     {
-        if (executorService != null){ executorService.shutdownNow();}
-        executorService = null;
+        interruptThreads();
 
         alert.setContentText("Конец работы тестового бота");
 
@@ -121,7 +128,7 @@ public class Controller
         {
             public int compare(NewResponse o1, NewResponse o2)
             {
-                return o1.getTransactionId() >= o2.getTransactionId()?1:-1;
+                return o1.getTransactionId() == o2.getTransactionId()?0:o1.getTransactionId() > o2.getTransactionId()?1:-1;
             }
         });
         tfRequestTimeout.setText(String.valueOf(Constant.REQUEST_TIMEOUT));

@@ -38,15 +38,16 @@ public class BetController
     NewResponse getTransactionId(@RequestBody BetInfo betInfo) throws Exception
     {
         System.out.println(betInfo.toString());
-        return proxy.sendNewRequest(betInfo);
-        //return new NewResponse(1l,betInfo.getUserId());
+//        return proxy.sendNewRequest(betInfo);
+        return new NewResponse(1l,betInfo.getUserId());
     }
 
     @RequestMapping(value = "/checkbet", method = RequestMethod.GET)
     public @ResponseBody
-    int chekBet(@RequestParam(value="transactionId", defaultValue="false") long transactionId, int userId) throws Exception {
+    int chekBet(@RequestParam(value="transactionId", defaultValue="false") long transactionId,@RequestParam(value="userId", defaultValue="false") int userId) throws Exception {
 
-        return proxy.sendCheckRequest(transactionId, userId).ordinal();
+//        return proxy.sendCheckRequest(transactionId, userId).ordinal();
+        return 1;
     }
 
     @PostConstruct

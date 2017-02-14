@@ -1,9 +1,9 @@
 package ru.splat.task;
 
-import ru.splat.messages.bet.BetState;
+import org.apache.log4j.Logger;
 import ru.splat.messages.proxyup.bet.NewResponse;
+import ru.splat.messages.proxyup.check.CheckResult;
 import ru.splat.service.StateCheckService;
-
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentSkipListSet;
 
@@ -12,25 +12,31 @@ import java.util.concurrent.ConcurrentSkipListSet;
  */
 public class StateRequestTask implements Runnable{
     private ConcurrentSkipListSet<NewResponse> trIdSet;
+    private static Logger LOGGER = Logger.getLogger(StateRequestTask.class);
 
     public StateRequestTask(ConcurrentSkipListSet<NewResponse> trIdSet) {
         this.trIdSet = trIdSet;
     }
 
+    //TODO добавить логирование
+
     @Override
     public void run() {
 
         StateCheckService stateCheckService = new StateCheckService();
-        while (!Thread.currentThread().interrupted() && !Thread.interrupted()) {    //настроить частоту обращений
+        while (!Thread.currentThread().interrupted()) {    //настроить частоту обращений
             Iterator<NewResponse> iterator = trIdSet.iterator();
             while (iterator.hasNext()) {
                 try {
                     NewResponse response = iterator.next();
 
+                    LOGGER.info(response.toString());
+
                     int state = stateCheckService.makeRequest(response);
-                    if (state == 1) { System.out.println("TrState for " + response.getTransactionId() + ": ACCEPTED"); iterator.remove();}
-                    else if (state == 2) { System.out.println("TrState for " + response.getTransactionId() + ": DENIED"); iterator.remove();}
-                    else if (state == 3) System.out.println("TrState for " + response.getTransactionId() + ": PENDING");
+                    LOGGER.info(state + "");
+                    if (state == CheckResult.ACCEPTED.ordinal()) { System.out.println("TrState for " + response.getTransactionId() + ": ACCEPTED"); iterator.remove();}
+                    else if (state == CheckResult.REJECTED.ordinal()) { System.out.println("TrState for " + response.getTransactionId() + ": REJECTED"); iterator.remove();}
+                    else if (state == CheckResult.PENDING.ordinal()) System.out.println("TrState for " + response.getTransactionId() + ": PENDING");
 
                 } catch (InterruptedException ie)
                 {
@@ -38,6 +44,12 @@ public class StateRequestTask implements Runnable{
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+            }
+
+            try {
+                Thread.currentThread().sleep(100l);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
             }
 
             /*controller.getTrIdSet().forEach(trId -> {
