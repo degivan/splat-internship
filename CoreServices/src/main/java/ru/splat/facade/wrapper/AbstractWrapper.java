@@ -69,7 +69,7 @@ public abstract class AbstractWrapper<KafkaRecord extends Message, InternalTrTyp
             }
 
             try {
-                Thread.sleep(100L);
+                Thread.currentThread().sleep(100L);
             } catch (InterruptedException e) {
                 LOGGER.error("ThreadSleep level",e);
             }
