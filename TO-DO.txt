@@ -2,7 +2,7 @@
 
 ==========CoreUP===========
 ==========CoreTM===========
--разные dispatcher-ы для акторов разных типов
+-настроить dispatcher-ы (application.conf) и добавить withDispatcher в конструктор аторов
 -искать боттлнеки
 -async logging
 

@@ -1,6 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
-<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.9/angular.min.js"></script>
+<script src="/resources/angular.min.js"></script>
 <script src="/resources/controller.js"></script>
 <link href="/resources/eventCategory.css" rel="stylesheet"/>
 

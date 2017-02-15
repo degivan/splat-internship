@@ -26,11 +26,7 @@ public class StateRequestTask implements Runnable{
 
         StateCheckService stateCheckService = new StateCheckService();
         while (!Thread.currentThread().interrupted()) {    //настроить частоту обращений
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+
             Iterator<NewResponseClone> iterator = trIdSet.iterator();
             while (iterator.hasNext()) {
                 try {

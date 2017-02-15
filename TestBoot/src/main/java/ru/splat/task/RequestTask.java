@@ -45,15 +45,13 @@ public class RequestTask implements Runnable {
                 }catch (InterruptedException ie)
                 {
                     Thread.currentThread().interrupt();
+                    i = requestCount;
                 }
                 catch (Exception e) {
                     LOGGER.error("High level",e);
-                }
-                finally
-                {
                     i = requestCount;
-                  //  residual = requestTimeout;
                 }
+
                 residual = System.currentTimeMillis() - timeStart;
                 i++;
             }
@@ -64,7 +62,7 @@ public class RequestTask implements Runnable {
                 long freeTime = requestTimeout - residual;
                 LOGGER.info("Sleep time: " + freeTime);
                 try {
-                    Thread.currentThread().sleep(freeTime);
+                    Thread.currentThread().sleep(10);
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }
