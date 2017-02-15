@@ -1,7 +1,6 @@
 import org.junit.Test;
 import ru.splat.messages.Transaction;
 import ru.splat.messages.conventions.ServiceResult;
-import ru.splat.messages.conventions.ServicesEnum;
 import ru.splat.messages.proxyup.bet.BetInfo;
 import ru.splat.messages.uptm.trmetadata.LocalTask;
 import ru.splat.messages.uptm.trmetadata.MetadataPatterns;
@@ -47,7 +46,7 @@ public class MetadataPatternsTest {
         compareMetadata(expected, real);
     }
 
-    public void compareMetadata(TransactionMetadata e, TransactionMetadata r) {
+    private void compareMetadata(TransactionMetadata e, TransactionMetadata r) {
         System.err.println(e.toString());
         System.err.println(r.toString());
 
