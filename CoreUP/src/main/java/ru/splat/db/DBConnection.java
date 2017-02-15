@@ -15,6 +15,7 @@ import com.mongodb.client.model.Projections;
 import org.bson.Document;
 import ru.splat.LoggerGlobal;
 import ru.splat.messages.Transaction;
+import ru.splat.messages.uptm.trstate.TransactionState;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -28,21 +29,45 @@ import static com.mongodb.client.model.Filters.ne;
  * Wrapper class for database.
  */
 public class DBConnection {
-    private static MongoDatabase db;
+    private static final MongoCollection<Document> states;
     private static MongoCollection<Document> transactions;
     private static final MongoCollection<Document> counter;
     private static final Document searchIdBoundsQuery;
     private static final Document rangeQuery;
     private static ObjectMapper mapper;
 
+
     static {
-        db = MongoClients.create()
+        MongoDatabase db = MongoClients.create()
                 .getDatabase("test");
         transactions = db.getCollection("transactions");
+        states = db.getCollection("states");
         counter = db.getCollection("bounds");
         searchIdBoundsQuery = Document.parse("{ _id : \"tr_id\" } ");
         rangeQuery = Document.parse("{ $inc: { lower : 10000 , upper : 10000 } }");
         mapper = new ObjectMapper();
+    }
+
+    /**
+     * Saves transactionState in the database.
+     * @param trState
+     * @param after
+     */
+    public static void addTransactionState(TransactionState trState, Consumer<TransactionState> after) {
+        try {
+            states.insertOne(Document.parse(mapper.writeValueAsString(trState)),
+                    (aVoid, throwable) -> {
+                        after.accept(trState);
+
+                        LoggerGlobal.log(trState.toString() + " added to UP database.");
+                    });
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void findTransactionState(Long trId, Consumer<TransactionState> after) {
+        //TODO:
     }
 
     /**
