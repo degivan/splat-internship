@@ -54,14 +54,14 @@ public class UP {
 
     //system bet
     public Proxy start() {
-        ActorRef tmActor = newActor(system, TMActor.class, TM_ACTOR_NAME, registry);
+        ActorRef tmActor = system.actorOf(Props.create(TMActor.class, registry).withDispatcher("tm-actor-dispatcher"), TM_ACTOR_NAME);
         ActorRef idGenerator = newActor(system, IdGenerator.class, ID_GEN_NAME);
         createReceivers(1, idGenerator, tmActor);
 
         Proxy proxy = Proxy.createWith(this);
 
         doRecover(() -> {
-            ActorRef consumerActor = newActor(system, TMConsumerActor.class, TM_CONSUMER_NAME, tmActor);
+            ActorRef consumerActor = system.actorOf(Props.create(TMConsumerActor.class, tmActor).withDispatcher("tm-consumer-dispatcher"), TM_CONSUMER_NAME);
             system.scheduler().schedule(Duration.Zero(),
                     Duration.create(300, TimeUnit.MILLISECONDS), consumerActor, new PollMsg(),
                     system.dispatcher(), ActorRef.noSender());

@@ -64,7 +64,7 @@ public class RequestTask implements Runnable {
                 long freeTime = requestTimeout - residual;
                 LOGGER.info("Sleep time: " + freeTime);
                 try {
-                    Thread.currentThread().sleep(freeTime);
+                    Thread.currentThread().sleep(10);
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }
