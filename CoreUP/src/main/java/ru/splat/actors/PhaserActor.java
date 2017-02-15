@@ -67,13 +67,12 @@ public class PhaserActor extends AbstractActor {
             case CREATED:
                 processNewTransaction(transaction);
                 break;
-            case CANCEL:
-                //TODO: getTransactionState from database
-                //cancelTransaction(transaction);
-                break;
             case PHASE2_SEND:
                 sendPhase2(transaction);
                 break;
+            default: //CANCEL OR DENIED
+                DBConnection.findTransactionState(transaction.getLowerBound(),
+                        tState -> cancelTransaction(transaction, tState));
         }
     }
 
@@ -110,11 +109,12 @@ public class PhaserActor extends AbstractActor {
     }
 
     private void saveDBWithStateCancel(Transaction.State state, TransactionState trState) {
-        saveDBWithState(state,
-                () -> {
-                    cancelTransaction(transaction, trState);
-                    sendResult(transaction);
-                });
+        DBConnection.addTransactionState(trState,
+                tState -> saveDBWithState(state,
+                        () -> {
+                            cancelTransaction(transaction, trState);
+                            sendResult(transaction);
+                        }));
     }
 
     private void sendResult(Transaction transaction) {
@@ -161,7 +161,6 @@ public class PhaserActor extends AbstractActor {
                 .stream()
                 .allMatch(ServiceResponse::isPositive);
     }
-
 
     private PartialFunction<Object, BoxedUnit> timeout() {
         return state().match(TransactionState.class,
@@ -211,6 +210,4 @@ public class PhaserActor extends AbstractActor {
 
         return builder;
     }
-
-
 }

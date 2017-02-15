@@ -12,7 +12,10 @@ import com.mongodb.async.client.MongoCollection;
 import com.mongodb.async.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Projections;
+import com.mongodb.client.model.UpdateOptions;
 import org.bson.Document;
+import org.bson.conversions.Bson;
+import org.jetbrains.annotations.NotNull;
 import ru.splat.LoggerGlobal;
 import ru.splat.messages.Transaction;
 import ru.splat.messages.uptm.trstate.TransactionState;
@@ -34,7 +37,6 @@ public class DBConnection {
     private static final MongoCollection<Document> counter;
     private static final Document searchIdBoundsQuery;
     private static final Document rangeQuery;
-    private static final Document emptyUpdateQuery;
     private static final ObjectMapper MAPPER;
 
 
@@ -46,7 +48,6 @@ public class DBConnection {
         counter = db.getCollection("bounds");
         searchIdBoundsQuery = Document.parse("{ _id : \"tr_id\" } ");
         rangeQuery = Document.parse("{ $inc: { lower : 10000 , upper : 10000 } }");
-        emptyUpdateQuery = Document.parse("{ }");
         MAPPER = new ObjectMapper();
     }
 
@@ -57,7 +58,9 @@ public class DBConnection {
      */
     public static void addTransactionState(TransactionState trState, Consumer<TransactionState> after) {
         try {
-            states.insertOne(Document.parse(MAPPER.writeValueAsString(trState)),
+            states.updateOne(byTransactionId(trState.getTransactionId()),
+                    Document.parse(MAPPER.writeValueAsString(trState)),
+                    new UpdateOptions().upsert(true),
                     (aVoid, throwable) -> {
                         after.accept(trState);
 
@@ -69,7 +72,7 @@ public class DBConnection {
     }
 
     public static void findTransactionState(Long trId, Consumer<TransactionState> after) {
-        states.find(Filters.eq("transactionId", trId))
+        states.find(byTransactionId(trId))
                 .limit(1)
                 .projection(Projections.excludeId())
                 .forEach(document -> {
@@ -143,6 +146,11 @@ public class DBConnection {
             LoggerGlobal.log("Indexes created from " + lower + " to " + upper);
         }));
 
+    }
+
+    @NotNull
+    private static Bson byTransactionId(Long trId) {
+        return Filters.eq("transactionId", trId);
     }
 
     private static FindIterable<Document> findUnfinishedTransactions() {

@@ -38,12 +38,6 @@ public class Transaction {
         this.current = current;
     }
 
-    public static Transaction statelessTransaction(BetInfo requestInfo) {
-        Transaction transaction = new Transaction();
-        transaction.setBetInfo(requestInfo);
-        return transaction;
-    }
-
     public BetInfo getBetInfo() {
         return betInfo;
     }
