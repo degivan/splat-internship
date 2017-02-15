@@ -1,7 +1,6 @@
 package ru.splat.messages.uptm.trstate;
 
 import ru.splat.messages.conventions.ServiceResult;
-import ru.splat.messages.conventions.TaskTypesEnum;
 
 /**
  * Created by Дмитрий on 02.02.2017.
@@ -54,5 +53,15 @@ public class ServiceResponse<T> {
 
     public ServiceResult getResult() {
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "ServiceResponse{" +
+                "attachment=" + attachment +
+                ", result=" + result +
+                ", isResponseReceived=" + isResponseReceived +
+                ", requestSent=" + requestSent +
+                '}';
     }
 }

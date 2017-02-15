@@ -14,17 +14,20 @@ import ru.splat.messages.uptm.trmetadata.punter.AddPunterLimitsTask;
 import ru.splat.messages.uptm.trmetadata.punter.CancelPunterLimitsTask;
 import ru.splat.messages.uptm.trstate.TransactionState;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
-import static java.util.Arrays.*;
-import static java.util.Collections.*;
+import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
+import static java.util.stream.Collectors.toList;
 import static ru.splat.messages.conventions.ServicesEnum.*;
 
 /**
- * TODO:
- */
+ * Factory class for phase metadata.
+ * */
 public class MetadataPatterns {
     private static final Map<ServicesEnum, Function<BetInfo, LocalTask>> cancelServices = new HashMap<>();
 
@@ -50,7 +53,7 @@ public class MetadataPatterns {
                 .stream()
                 .filter(e -> trState.getLocalStates().get(e.getKey()).isPositive())
                 .map(Map.Entry::getValue)
-                .collect(Collectors.toList());
+                .collect(toList());
         tasks.add(CancelBetTask::create);
 
         return createMetadataWithTasks(transaction, tasks);
@@ -74,5 +77,4 @@ public class MetadataPatterns {
         builders.forEach(b -> tasks.add(b.apply(betInfo)));
         return tasks;
     }
-
 }
