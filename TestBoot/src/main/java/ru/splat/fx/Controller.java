@@ -143,6 +143,7 @@ public class Controller
         alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Information");
         alert.setHeaderText(null);
+
     }
 
     //TODO подумать про зависимости лимитов в бд и во входных данных.
@@ -151,6 +152,8 @@ public class Controller
     {
         if (eventDefaultDataService.isEmptyEvent())
         {
+            init();
+
             eventDefaultDataService.insertDefaultData();
 
             alert.setContentText("Данные в БД успешно созданы");
