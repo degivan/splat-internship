@@ -160,7 +160,13 @@ public class Receiver extends AbstractActor {
     private void processRequestResult(Transaction transaction) {
         LoggerGlobal.log("Process RequestResult: " + transaction.toString(), this);
 
+        freeUser(transaction.getBetInfo().getUserId());
         saveState(transaction);
+    }
+
+    private void freeUser(Integer userId) {
+        userIds.remove(userId);
+        current.remove(userId);
     }
 
     private void saveState(Transaction transaction) {
