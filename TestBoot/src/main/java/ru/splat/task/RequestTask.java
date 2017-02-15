@@ -45,15 +45,13 @@ public class RequestTask implements Runnable {
                 }catch (InterruptedException ie)
                 {
                     Thread.currentThread().interrupt();
+                    i = requestCount;
                 }
                 catch (Exception e) {
                     LOGGER.error("High level",e);
-                }
-                finally
-                {
                     i = requestCount;
-                  //  residual = requestTimeout;
                 }
+
                 residual = System.currentTimeMillis() - timeStart;
                 i++;
             }
