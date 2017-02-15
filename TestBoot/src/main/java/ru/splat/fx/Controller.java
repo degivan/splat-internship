@@ -151,7 +151,6 @@ public class Controller
     {
         if (eventDefaultDataService.isEmptyEvent())
         {
-
             eventDefaultDataService.insertDefaultData();
 
             alert.setContentText("Данные в БД успешно созданы");
