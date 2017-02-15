@@ -42,4 +42,13 @@ public class BillingWithdrawTask extends LocalTask {
                 betInfo.getBet(),
                 System.currentTimeMillis());
     }
+
+    @Override
+    public String toString() {
+        return "BillingWithdrawTask{" +
+                "punterId=" + punterId +
+                ", sum=" + sum +
+                ", service=" + service +
+                "} ";
+    }
 }

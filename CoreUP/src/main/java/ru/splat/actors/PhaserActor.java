@@ -21,7 +21,6 @@ import scala.runtime.BoxedUnit;
 
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 /**
  * Created by Иван on 15.12.2016.
@@ -69,7 +68,8 @@ public class PhaserActor extends AbstractActor {
                 processNewTransaction(transaction);
                 break;
             case CANCEL:
-                cancelTransaction(transaction);
+                //TODO: getTransactionState from database
+                //cancelTransaction(transaction);
                 break;
             case PHASE2_SEND:
                 sendPhase2(transaction);
@@ -83,19 +83,19 @@ public class PhaserActor extends AbstractActor {
         becomeAndLog(timeout());
     }
 
-    private void processTransactionState(TransactionState o) {
-        LoggerGlobal.log("Processing TransactionState: " + o.toString(), this);
+    private void processTransactionState(TransactionState trState) {
+        LoggerGlobal.log("Processing TransactionState: " + trState.toString(), this);
 
-        updateBetId(o, transaction);
+        updateBetId(trState, transaction);
 
-        if(isResponsePositive(o)) {
+        if(isResponsePositive(trState)) {
             saveDBWithState(Transaction.State.PHASE2_SEND,
                     () -> {
                         sendPhase2(transaction);
                         sendResult(transaction);
                     });
         } else {
-            saveDBWithStateCancel(Transaction.State.DENIED);
+            saveDBWithStateCancel(Transaction.State.DENIED, trState);
         }
     }
 
@@ -109,10 +109,10 @@ public class PhaserActor extends AbstractActor {
         DBConnection.overwriteTransaction(transaction, after);
     }
 
-    private void saveDBWithStateCancel(Transaction.State state) {
+    private void saveDBWithStateCancel(Transaction.State state, TransactionState trState) {
         saveDBWithState(state,
                 () -> {
-                    cancelTransaction(transaction);
+                    cancelTransaction(transaction, trState);
                     sendResult(transaction);
                 });
     }
@@ -126,16 +126,14 @@ public class PhaserActor extends AbstractActor {
     private void sendPhase2(Transaction transaction) {
         LoggerGlobal.log("Sending phase2 for transaction: " + transaction.toString(), this);
 
-        sendMetadataAndAfter(MetadataPatterns::createPhase2,
-                transaction,
+        sendMetadataAndAfter(MetadataPatterns.createPhase2(transaction),
                 v -> becomeAndLog(phase2()));
     }
 
-    private void cancelTransaction(Transaction transaction) {
+    private void cancelTransaction(Transaction transaction, TransactionState trState) {
         LoggerGlobal.log("Sending cancel for transaction: " + transaction.toString(), this);
 
-        sendMetadataAndAfter(MetadataPatterns::createCancel,
-                transaction,
+        sendMetadataAndAfter(MetadataPatterns.createCancel(transaction, trState),
                 v -> becomeAndLog(cancel()));
     }
 
@@ -146,14 +144,11 @@ public class PhaserActor extends AbstractActor {
     }
 
     private void processNewTransaction(Transaction transaction) {
-        sendMetadataAndAfter(MetadataPatterns::createPhase1,
-                transaction,
+        sendMetadataAndAfter(MetadataPatterns.createPhase1(transaction),
                 v -> context().setReceiveTimeout(Duration.apply(10L, TimeUnit.SECONDS)));
     }
 
-    private void sendMetadataAndAfter(Function<Transaction, TransactionMetadata> metadataBuilder,
-                                      Transaction transaction, Consumer<Void> after) {
-        TransactionMetadata trMetadata = metadataBuilder.apply(transaction);
+    private void sendMetadataAndAfter(TransactionMetadata trMetadata, Consumer<Void> after) {
         tmActor.tell(trMetadata, self());
 
         after.accept(null);
@@ -173,7 +168,7 @@ public class PhaserActor extends AbstractActor {
                 trState -> {
                     logTransactionState(trState);
                     updateBetId(trState, transaction);
-                    saveDBWithStateCancel(Transaction.State.CANCEL);
+                    saveDBWithStateCancel(Transaction.State.CANCEL, trState);
                 }).build();
     }
 

@@ -11,17 +11,25 @@ public class TransactionMetadata {
     private final Long transactionId;
     private final List<LocalTask> localTasks;
 
-
-
     public TransactionMetadata(Long transactionId, List<LocalTask> localTasks) {
         this.transactionId = transactionId;
         this.localTasks = localTasks;
     }
+
     public Long getTransactionId() {
         return transactionId;
     }
+
     public List<LocalTask> getLocalTasks() {
         return localTasks;
+    }
+
+    @Override
+    public String toString() {
+        return "TransactionMetadata{" +
+                "transactionId=" + transactionId +
+                ", localTasks=" + localTasks.toString() +
+                '}';
     }
 }
 

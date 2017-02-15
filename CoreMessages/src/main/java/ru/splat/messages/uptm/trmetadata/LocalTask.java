@@ -21,4 +21,11 @@ public abstract class LocalTask {
     public Long getTime() {
         return time;
     }
+
+    @Override
+    public String toString() {
+        return "LocalTask{" +
+                "time=" + time +
+                '}';
+    }
 }

@@ -40,4 +40,12 @@ public class AddSelectionLimitsTask extends LocalTask {
         return new AddSelectionLimitsTask(new HashSet<>(betInfo.getSelectionsId()),
                 System.currentTimeMillis());
     }
+
+    @Override
+    public String toString() {
+        return "AddSelectionLimitsTask{" +
+                "selections=" + selections +
+                ", service=" + service +
+                "} ";
+    }
 }
