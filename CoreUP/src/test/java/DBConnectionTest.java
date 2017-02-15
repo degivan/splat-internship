@@ -31,6 +31,15 @@ public class DBConnectionTest {
         lock.await(2000, TimeUnit.MILLISECONDS);
     }
 
+    @Test
+    public void testFindTransactionState() throws InterruptedException {
+        testAddTransactionState();
+
+        DBConnection.findTransactionState(testState().getTransactionId(),
+                transactionState -> System.err.println(transactionState.toString()));
+        lock.await(2000, TimeUnit.MILLISECONDS);
+    }
+
     private static TransactionState testState() {
         TransactionState trState = new TransactionState(0L, new HashMap<>());
         trState.setLocalState(BetService, positive());

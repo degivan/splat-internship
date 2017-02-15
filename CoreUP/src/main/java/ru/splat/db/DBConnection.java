@@ -30,11 +30,12 @@ import static com.mongodb.client.model.Filters.ne;
  */
 public class DBConnection {
     private static final MongoCollection<Document> states;
-    private static MongoCollection<Document> transactions;
+    private static final MongoCollection<Document> transactions;
     private static final MongoCollection<Document> counter;
     private static final Document searchIdBoundsQuery;
     private static final Document rangeQuery;
-    private static ObjectMapper mapper;
+    private static final Document emptyUpdateQuery;
+    private static final ObjectMapper MAPPER;
 
 
     static {
@@ -45,7 +46,8 @@ public class DBConnection {
         counter = db.getCollection("bounds");
         searchIdBoundsQuery = Document.parse("{ _id : \"tr_id\" } ");
         rangeQuery = Document.parse("{ $inc: { lower : 10000 , upper : 10000 } }");
-        mapper = new ObjectMapper();
+        emptyUpdateQuery = Document.parse("{ }");
+        MAPPER = new ObjectMapper();
     }
 
     /**
@@ -55,7 +57,7 @@ public class DBConnection {
      */
     public static void addTransactionState(TransactionState trState, Consumer<TransactionState> after) {
         try {
-            states.insertOne(Document.parse(mapper.writeValueAsString(trState)),
+            states.insertOne(Document.parse(MAPPER.writeValueAsString(trState)),
                     (aVoid, throwable) -> {
                         after.accept(trState);
 
@@ -67,7 +69,16 @@ public class DBConnection {
     }
 
     public static void findTransactionState(Long trId, Consumer<TransactionState> after) {
-        //TODO:
+        states.find(Filters.eq("transactionId", trId))
+                .limit(1)
+                .projection(Projections.excludeId())
+                .forEach(document -> {
+                    try {
+                        after.accept(MAPPER.readValue(document.toJson(), TransactionState.class));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }, (result, t) -> {});
     }
 
     /**
@@ -90,7 +101,7 @@ public class DBConnection {
      */
     public static void newTransaction(Transaction transaction, Consumer<Transaction> after) {
         try {
-            transactions.insertOne(Document.parse(mapper.writeValueAsString(transaction)),
+            transactions.insertOne(Document.parse(MAPPER.writeValueAsString(transaction)),
                     (aVoid, throwable) -> {
                         after.accept(transaction);
 
@@ -110,7 +121,7 @@ public class DBConnection {
     public static void overwriteTransaction(Transaction transaction, Procedure after) {
         try {
             transactions.findOneAndReplace(Filters.eq("lowerBound", transaction.getLowerBound()),
-                    Document.parse(mapper.writeValueAsString(transaction)),
+                    Document.parse(MAPPER.writeValueAsString(transaction)),
                     (o, throwable) -> after.process());
 
         } catch (JsonProcessingException e) {
@@ -155,7 +166,7 @@ public class DBConnection {
 
     private static Transaction getTransactionFromDocument(Document document) {
         try {
-            return mapper.readValue(document.toJson(), Transaction.class);
+            return MAPPER.readValue(document.toJson(), Transaction.class);
         } catch(IOException e) {
             e.printStackTrace();
             throw new RuntimeJsonMappingException("Document is in inappropriate state: " + document.toString());

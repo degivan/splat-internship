@@ -1,5 +1,6 @@
 package ru.splat.messages.uptm.trstate;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import ru.splat.messages.conventions.ServiceResult;
 
 /**
@@ -8,7 +9,7 @@ import ru.splat.messages.conventions.ServiceResult;
 public class ServiceResponse<T> {
     private final T attachment;
     private final ServiceResult result;
-    private final boolean isResponseReceived;
+    private final boolean responseReceived;
     private boolean requestSent;
 
     //конструктор для пустого (еще не полученного ответа)
@@ -17,11 +18,11 @@ public class ServiceResponse<T> {
         attachment = null;
         result = null;
         requestSent = false;
-        isResponseReceived = false;
+        responseReceived = false;
     }
 
     public boolean isResponseReceived() {
-        return isResponseReceived;
+        return responseReceived;
     }
 
     public boolean isRequestSent() {
@@ -35,7 +36,7 @@ public class ServiceResponse<T> {
     public ServiceResponse(T attachment, ServiceResult result) {
         this.attachment = attachment;
         this.result = result;
-        this.isResponseReceived = true;
+        this.responseReceived = true;
         requestSent = true;
     }
 
@@ -46,6 +47,7 @@ public class ServiceResponse<T> {
     }
 
     //успешность таски
+    @JsonIgnore
     public boolean isPositive() {
         return result != null && result.equals(ServiceResult.CONFIRMED);
     }
@@ -60,7 +62,7 @@ public class ServiceResponse<T> {
         return "ServiceResponse{" +
                 "attachment=" + attachment +
                 ", result=" + result +
-                ", isResponseReceived=" + isResponseReceived +
+                ", responseReceived=" + responseReceived +
                 ", requestSent=" + requestSent +
                 '}';
     }
