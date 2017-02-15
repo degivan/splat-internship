@@ -26,6 +26,11 @@ public class StateRequestTask implements Runnable{
 
         StateCheckService stateCheckService = new StateCheckService();
         while (!Thread.currentThread().interrupted()) {    //настроить частоту обращений
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             Iterator<NewResponseClone> iterator = trIdSet.iterator();
             while (iterator.hasNext()) {
                 try {
@@ -35,9 +40,9 @@ public class StateRequestTask implements Runnable{
 
                     int state = stateCheckService.makeRequest(response);
                     LOGGER.info(state + "");
-                    if (state == CheckResult.ACCEPTED.ordinal()) { System.out.println("TrState for " + response.getTransactionId() + ": ACCEPTED"); iterator.remove();}
-                    else if (state == CheckResult.REJECTED.ordinal()) { System.out.println("TrState for " + response.getTransactionId() + ": REJECTED"); iterator.remove();}
-                    else if (state == CheckResult.PENDING.ordinal()) System.out.println("TrState for " + response.getTransactionId() + ": PENDING");
+                    if (state == CheckResult.ACCEPTED.ordinal()) { LOGGER.info("TrState for " + response.getTransactionId() + ": ACCEPTED"); iterator.remove();}
+                    else if (state == CheckResult.REJECTED.ordinal()) { LOGGER.info("TrState for " + response.getTransactionId() + ": REJECTED"); iterator.remove();}
+                    else if (state == CheckResult.PENDING.ordinal()) LOGGER.info("TrState for " + response.getTransactionId() + ": PENDING");
 
                 } catch (InterruptedException ie)
                 {

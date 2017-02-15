@@ -50,6 +50,7 @@ app.controller('customersCtrl', function ($http,$interval,$timeout) {
 
 
         $http.post("/dobet", betRequest).then(function (response){
+            
             if (response.data["active"] == true) {
                 $timeout.cancel(timeout);
                 alert("Your previous bet hasn't been processed yet! Try again soon.");

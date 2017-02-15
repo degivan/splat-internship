@@ -39,7 +39,7 @@ public class RequestTask implements Runnable {
                 try {
                     NewResponseClone newResponse = bootService.makeRequest(punterCount);
                     LOGGER.info("Response from server: " + newResponse.toString());
-                    System.out.println(newResponse.getActive());
+                    //System.out.println(newResponse.getActive());
                     if (!newResponse.getActive()) trIdSet.add(newResponse);  //добавление нового id в сет
                     else LOGGER.info("Another transaction is active for userId = " + newResponse.getUserId());
                 }catch (InterruptedException ie)

@@ -111,7 +111,7 @@ public  class TMActor extends AbstractActor {
     }
 
     private void setIsSent(TaskSentMsg m) {
-        LoggerGlobal.log("task " + m.getService().toString() + " of " + m.getTransactionId() + " is sent");
+        //LoggerGlobal.log("task " + m.getService().toString() + " of " + m.getTransactionId() + " is sent");
         Long trId = m.getTransactionId();
         states.get(trId).getLocalStates()   //may there be null pointer?
                 .get(m.getService()).setRequestSent(true);
