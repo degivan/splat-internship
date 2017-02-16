@@ -16,6 +16,5 @@ public class DispatcherTest {
         "mock-registry");
         ActorRef tmActor = system.actorOf(Props.create(ru.splat.tm.actors.TMActor.class, mockRegistry).withDispatcher("tm-actor-dispatcher"),
                 "tmactor");
-
     }
 }
