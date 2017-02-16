@@ -23,6 +23,9 @@ import ru.splat.tm.protobuf.ProtobufFactory;
 import java.util.*;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
+//import static org.slf4j.LoggerFactory.getLogger;
+//import org.slf4j.Logger;
+//import org.apache.log4j.Logger;
 
 
 /**
@@ -32,6 +35,7 @@ public  class TMActor extends AbstractActor {
     private KafkaProducer<Long, Message> producer;
     private Map<Long, TransactionState> states = new HashMap<>();
     private final ActorRef registry;
+    //LoggingAdapter log = Logging.getLogger(getContext().system(), this);
 
     @Override
     public Receive createReceive() {

@@ -1,14 +1,17 @@
 package ru.splat.tm.messages;
 
 import akka.actor.AbstractActor;
+//import org.slf4j.Logger;
 import ru.splat.messages.uptm.TMResponse;
 import ru.splat.messages.uptm.trstate.TransactionState;
+import org.apache.log4j.Logger;
 import ru.splat.tm.LoggerGlobal;
 
 /**
  * Created by Дмитрий on 18.01.2017.
  */
 public class MockRegistry extends AbstractActor {
+    private final Logger LOGGER = Logger.getLogger(MockRegistry.class);
 
     public MockRegistry() {
         LoggerGlobal.log("Registry ready");

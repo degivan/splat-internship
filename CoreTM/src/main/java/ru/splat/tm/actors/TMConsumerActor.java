@@ -6,6 +6,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.serialization.LongDeserializer;
+
 import ru.splat.kafka.deserializer.ProtoBufMessageDeserializer;
 import ru.splat.messages.Response;
 import ru.splat.messages.conventions.ServicesEnum;
@@ -20,6 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.log4j.Logger;
 /**
  * Created by Дмитрий on 11.01.2017.
  */
@@ -28,6 +30,7 @@ public class TMConsumerActor extends AbstractActor{
     private final String[] topicsList =  {"BetRes", "BillingRes", "EventRes", "PunterRes"};
     private KafkaConsumer<Long, Response.ServiceResponse> consumer;
     private final ActorRef tmActor;
+    private Logger LOGGER = Logger.getLogger(TMConsumerActor.class);
 
     @Override
     public Receive createReceive() {
@@ -47,7 +50,6 @@ public class TMConsumerActor extends AbstractActor{
         consumer = new KafkaConsumer(propsConsumer, new LongDeserializer(),
                 new ProtoBufMessageDeserializer(Response.ServiceResponse.getDefaultInstance()));
         consumer.subscribe(Arrays.asList(topicsList));
-        //responseParser = new ResponseParserImpl();
         LoggerGlobal.log("TMConsumerActor: is initialized");
     }
 

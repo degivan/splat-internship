@@ -55,7 +55,6 @@ public  class ProtobufFactory{
             message = builder.build();
             return message;
         }
-
         if (localTask instanceof FixBetTask) {
             FixBetTask task = (FixBetTask)localTask;
             //BetRequest.Bet message;
@@ -67,20 +66,7 @@ public  class ProtobufFactory{
             message = builder.build();
             return message;
         }
-
-        if (localTask instanceof CancelBetTask) {
-            CancelBetTask task = (CancelBetTask)localTask;
-            //BetRequest.Bet message;
-            BetRequest.Bet.Builder builder = BetRequest.Bet.newBuilder()
-                    .setLocalTask(task.getType().ordinal())
-                    .setId(task.getBetId())
-                    .setTime(localTask.getTime())
-                    .addAllServices(services);
-            message = builder.build();
-            return message;
-        }
         //BillingService tasks
-
         if (localTask instanceof BillingWithdrawTask) {
             BillingWithdrawTask task = (BillingWithdrawTask)localTask;
             Message.Builder builder = BillingRequest.Billing.
@@ -94,19 +80,6 @@ public  class ProtobufFactory{
             message = builder.build();
             return message;
         }
-
-        if (localTask instanceof CancelWithdrawTask) {
-            CancelWithdrawTask task = (CancelWithdrawTask)localTask;
-            Message.Builder builder = BillingRequest.Billing.
-                    newBuilder()
-                    .setLocalTask(localTask.getType().ordinal())
-                    .setPunterId(task.getPunterId())
-                    .setTime(localTask.getTime())
-                    .setSum(task.getSum())
-                    .addAllServices(services);
-            message = builder.build();
-            return message;
-        }
         //EventService tasks
         if (localTask instanceof AddSelectionLimitsTask) {
             AddSelectionLimitsTask task = (AddSelectionLimitsTask)localTask;
@@ -114,17 +87,6 @@ public  class ProtobufFactory{
                     .setLocalTask(task.getType().ordinal())
                     .setTime(localTask.getTime())
                     .addAllSelections(task.getSelections())
-                    .addAllServices(services);
-            message = builder.build();
-            return message;
-        }
-
-        if (localTask instanceof CancelSelectionLimitsTask) {
-            CancelSelectionLimitsTask task = (CancelSelectionLimitsTask)localTask;
-            Message.Builder builder = EventRequest.Event.newBuilder()
-                    .setLocalTask(task.getType().ordinal())
-                    .addAllSelections(task.getSelections())
-                    .setTime(localTask.getTime())
                     .addAllServices(services);
             message = builder.build();
             return message;
@@ -140,7 +102,39 @@ public  class ProtobufFactory{
             message = builder.build();
             return message;
         }
-
+        if (localTask instanceof CancelWithdrawTask) {
+            CancelWithdrawTask task = (CancelWithdrawTask)localTask;
+            Message.Builder builder = BillingRequest.Billing.
+                    newBuilder()
+                    .setLocalTask(localTask.getType().ordinal())
+                    .setPunterId(task.getPunterId())
+                    .setTime(localTask.getTime())
+                    .setSum(task.getSum())
+                    .addAllServices(services);
+            message = builder.build();
+            return message;
+        }
+        if (localTask instanceof CancelBetTask) {
+            CancelBetTask task = (CancelBetTask)localTask;
+            //BetRequest.Bet message;
+            BetRequest.Bet.Builder builder = BetRequest.Bet.newBuilder()
+                    .setLocalTask(task.getType().ordinal())
+                    .setId(task.getBetId())
+                    .setTime(localTask.getTime())
+                    .addAllServices(services);
+            message = builder.build();
+            return message;
+        }
+        if (localTask instanceof CancelSelectionLimitsTask) {
+            CancelSelectionLimitsTask task = (CancelSelectionLimitsTask)localTask;
+            Message.Builder builder = EventRequest.Event.newBuilder()
+                    .setLocalTask(task.getType().ordinal())
+                    .addAllSelections(task.getSelections())
+                    .setTime(localTask.getTime())
+                    .addAllServices(services);
+            message = builder.build();
+            return message;
+        }
         if (localTask instanceof CancelPunterLimitsTask) {
             CancelPunterLimitsTask task = (CancelPunterLimitsTask) localTask;
             Message.Builder builder =  PunterRequest.Punter.newBuilder()

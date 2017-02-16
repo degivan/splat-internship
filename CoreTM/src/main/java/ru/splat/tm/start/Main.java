@@ -20,16 +20,19 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.log4j.Logger;
+
 /**
  * Created by Дмитрий on 07.01.2017.
  */
 //заглушка мэйна (согласовать с Иваном)
 public class Main {
+    private final static Logger LOGGER = Logger.getLogger(TMActor.class);
     public static void main(String[] args) {
         /*ApplicationContext appContext =
                 new ClassPathXmlApplicationContext("beans.xml");*/
-
-        ActorSystem system = ActorSystem.create("testactors");
+        LoggerGlobal.log("hello");
+        /*ActorSystem system = ActorSystem.create("testactors");
         final ActorRef registry = system.actorOf(Props.create(MockRegistry.class), "MockRegistry");
         final ActorRef tmActor = system.actorOf(Props.create(TMActor.class, registry), "TMActor");
         final ActorRef consumerActor = system.actorOf(Props.create(TMConsumerActor.class, tmActor), "TMConsumerActor");
@@ -45,13 +48,13 @@ public class Main {
         serviceMock.sendRoutine();
         Cancellable cancellable = system.scheduler().schedule(Duration.Zero(),
                 Duration.create(4000, TimeUnit.MILLISECONDS), consumerActor, new PollMsg(),
-                system.dispatcher(), null);
+                system.dispatcher(), null);*/
 
         /*Cancellable taskLoop = system.scheduler().schedule(Duration.Zero(),
                 Duration.create(6000, TimeUnit.MILLISECONDS), tmActor, new TaskSentMsg(111L, ServicesEnum.BetService),
                 system.dispatcher(), null);*/
 
-        LoggerGlobal.log("Hello");
+        //LoggerGlobal.log("Hello");
 
 
 

@@ -7,6 +7,7 @@ import akka.actor.Cancellable;
 import akka.actor.Props;
 import com.google.protobuf.Message;
 import junit.framework.TestCase;
+import org.slf4j.Logger;
 import ru.splat.messages.BetRequest;
 import ru.splat.messages.Response;
 import ru.splat.messages.conventions.ServicesEnum;
@@ -29,6 +30,8 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 /**
  * Created by Дмитрий on 01.01.2017.
  */
@@ -38,6 +41,7 @@ public class TMTest extends TestCase {
     private Set<Integer> servicesOrd;
     private ResponseParser responseParser;
     //private TMStarter tmStarter;
+    private final Logger LOGGER = getLogger(TMActor.class);
 
     public void testActors() {
         //in Main
@@ -114,7 +118,7 @@ public class TMTest extends TestCase {
     }
     //проверить после получения от кафки
     public void testResponseParser() {
-        Message message = Response.ServiceResponse.newBuilder().addAllServices(servicesOrd)
+        Response.ServiceResponse message = Response.ServiceResponse.newBuilder().addAllServices(servicesOrd)
                .setBooleanAttachment(true).setResult(1).build();
         ServiceResponse serviceResponse = ResponseParser.unpackMessage(message);
         assertTrue(message instanceof Response.ServiceResponse);
