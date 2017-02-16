@@ -58,7 +58,7 @@ public class DBConnection {
      */
     public static void addTransactionState(TransactionState trState, Consumer<TransactionState> after) {
         try {
-            states.updateOne(byTransactionId(trState.getTransactionId()),
+            states.replaceOne(byTransactionId(trState.getTransactionId()),
                     Document.parse(MAPPER.writeValueAsString(trState)),
                     new UpdateOptions().upsert(true),
                     (aVoid, throwable) -> {
@@ -76,12 +76,12 @@ public class DBConnection {
                 .limit(1)
                 .projection(Projections.excludeId())
                 .forEach(document -> {
-                    try {
-                        after.accept(MAPPER.readValue(document.toJson(), TransactionState.class));
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }, (result, t) -> {});
+                            TransactionState tState = getObjectFromDocument(document,TransactionState.class);
+                            LoggerGlobal.log(tState.toString() + " finded in the database.");
+
+                            after.accept(tState);
+                        },
+                        (result, t) -> {});
     }
 
     /**
@@ -156,12 +156,12 @@ public class DBConnection {
     private static FindIterable<Document> findUnfinishedTransactions() {
         return transactions.find(
                 and(ne("state", "COMPLETED"),
-                    ne("state", "DENIED")))
+                    ne("state", "CANCEL_COMPLETED")))
                 .projection(Projections.excludeId());
     }
 
     private static Block<? super Document> processResult(List<Transaction> list) {
-        return (Block<Document>) document -> list.add(getTransactionFromDocument(document));
+        return (Block<Document>) document -> list.add(getObjectFromDocument(document, Transaction.class));
     }
 
     private static SingleResultCallback<Void> createCallback(Consumer<List<Transaction>> processData, Procedure after,
@@ -172,12 +172,13 @@ public class DBConnection {
         };
     }
 
-    private static Transaction getTransactionFromDocument(Document document) {
-        try {
-            return MAPPER.readValue(document.toJson(), Transaction.class);
-        } catch(IOException e) {
-            e.printStackTrace();
-            throw new RuntimeJsonMappingException("Document is in inappropriate state: " + document.toString());
-        }
+    private static <T>  T getObjectFromDocument(Document document, Class<T> clazz ) {
+         try {
+             return MAPPER.readValue(document.toJson(), clazz);
+         } catch(IOException e) {
+             e.printStackTrace();
+             throw new RuntimeJsonMappingException("Document is in inappropriate state: " + document.toString());
+         }
     }
+
 }
