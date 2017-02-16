@@ -27,6 +27,7 @@ public class ServiceMock {
     KafkaProducer<Long, Message> producer;
     KafkaConsumer<Long, Message> consumer;
     private final org.slf4j.Logger LOGGER = getLogger(TMActor.class);
+    
 
     public ServiceMock() {
         Properties propsConsumer = new Properties();

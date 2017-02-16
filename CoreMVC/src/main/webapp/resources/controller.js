@@ -48,7 +48,7 @@ app.controller('customersCtrl', function ($http, $interval, $timeout) {
             betOutcomes.push(betOutcome);
         }
 
-        var betRequest = new BetRequest(ctrl.userId, ctrl.sum, betOutcomes);
+        var betRequest = new BetRequest( ctrl.userId, ctrl.sum, betOutcomes);
 
         console.log(betRequest);
         $http.post("/dobet", betRequest).then(function (response) {

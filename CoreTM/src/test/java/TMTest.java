@@ -71,7 +71,7 @@ public class TMTest extends TestCase {
         ServiceMock betServiceMock = new ServiceMock();
 
         betServiceMock.sendRoutine();
-        int pollCount = tmConsumer.pollRecords().count(); LoggerGlobal.log("PollCount: " + pollCount);
+        int pollCount = tmConsumer.pollRecords().count(); log.info("PollCount: " + pollCount);
         assertEquals(pollCount, 0);
     }*/
 
@@ -121,7 +121,7 @@ public class TMTest extends TestCase {
         Response.ServiceResponse message = Response.ServiceResponse.newBuilder().addAllServices(servicesOrd)
                .setBooleanAttachment(true).setResult(1).build();
         ServiceResponse serviceResponse = ResponseParser.unpackMessage(message);
-        assertTrue(message instanceof Response.ServiceResponse);
+        assertTrue(message != null);
         LoggerGlobal.log(serviceResponse.getAttachment().toString());
         assertEquals(serviceResponse.getAttachment(), true);
     }

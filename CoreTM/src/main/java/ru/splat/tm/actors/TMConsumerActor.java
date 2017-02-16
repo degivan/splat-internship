@@ -2,9 +2,12 @@ package ru.splat.tm.actors;
 
 import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
+import akka.event.Logging;
+import akka.event.LoggingAdapter;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.serialization.LongDeserializer;
 
 import ru.splat.kafka.deserializer.ProtoBufMessageDeserializer;
@@ -21,7 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
+
 /**
  * Created by Дмитрий on 11.01.2017.
  */
@@ -30,7 +33,7 @@ public class TMConsumerActor extends AbstractActor{
     private final String[] topicsList =  {"BetRes", "BillingRes", "EventRes", "PunterRes"};
     private KafkaConsumer<Long, Response.ServiceResponse> consumer;
     private final ActorRef tmActor;
-    private Logger LOGGER = Logger.getLogger(TMConsumerActor.class);
+    private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
 
     @Override
     public Receive createReceive() {
@@ -50,16 +53,21 @@ public class TMConsumerActor extends AbstractActor{
         consumer = new KafkaConsumer(propsConsumer, new LongDeserializer(),
                 new ProtoBufMessageDeserializer(Response.ServiceResponse.getDefaultInstance()));
         consumer.subscribe(Arrays.asList(topicsList));
-        LoggerGlobal.log("TMConsumerActor: is initialized");
+        if (consumer!=null)
+        /*{
+            TopicPartition partition = new TopicPartition(TOPIC_REQUEST, 0);
+            consumer.seek(partition, consumer.committed(partition).offset());
+        }*/
+        log.info("TMConsumerActor: is initialized");
     }
 
     private void poll(PollMsg p) {
         ConsumerRecords<Long, Response.ServiceResponse> records = consumer.poll(0);
         for (ConsumerRecord<Long, Response.ServiceResponse> record : records) {
-            //LoggerGlobal.log("message received: " + record.key());
+            //log.info("message received: " + record.key());
             ServiceResponse sr = ResponseParser.unpackMessage(record.value());
             ServiceResponseMsg srm = new ServiceResponseMsg(record.key(), sr, TOPICS_MAP.get(record.topic()));
-            //LoggerGlobal.log("TMConsumerActor: message received from : " + record.topic() + ": " + record.key() + " " + sr.getAttachment() );
+            //log.info("TMConsumerActor: message received from : " + record.topic() + ": " + record.key() + " " + sr.getAttachment() );
             tmActor.tell(srm, getSelf());
         }
     }

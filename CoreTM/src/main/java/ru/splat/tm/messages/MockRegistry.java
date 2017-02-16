@@ -4,28 +4,36 @@ import akka.actor.AbstractActor;
 //import org.slf4j.Logger;
 import ru.splat.messages.uptm.TMResponse;
 import ru.splat.messages.uptm.trstate.TransactionState;
-import org.apache.log4j.Logger;
+
 import ru.splat.tm.LoggerGlobal;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import akka.event.Logging;
+import akka.event.LoggingAdapter;
+
+
+
 
 /**
  * Created by Дмитрий on 18.01.2017.
  */
 public class MockRegistry extends AbstractActor {
-    private final Logger LOGGER = Logger.getLogger(MockRegistry.class);
+    private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
 
     public MockRegistry() {
-        LoggerGlobal.log("Registry ready");
+        log.info("Registry ready");
     }
 
     private void processState(TransactionState m) {
-        LoggerGlobal.log("Registry: state received" + m.getTransactionId() +
+        log.info("Registry: state received" + m.getTransactionId() +
                 " with " + m.getLocalStates().size());
     }
 
     @Override
     public Receive createReceive() {
         return receiveBuilder()
-                .match(TMResponse.class, m -> LoggerGlobal.log("Registry: all requests for " + m.getTransactionId()+ " are sent"))
+                .match(TMResponse.class, m -> log.info("Registry: all requests for " + m.getTransactionId()+ " are sent"))
                 .match(TransactionState.class, this::processState)
                 .build();
     }

@@ -31,8 +31,7 @@ public class Main {
     public static void main(String[] args) {
         /*ApplicationContext appContext =
                 new ClassPathXmlApplicationContext("beans.xml");*/
-        LoggerGlobal.log("hello");
-        /*ActorSystem system = ActorSystem.create("testactors");
+        ActorSystem system = ActorSystem.create("testactors");
         final ActorRef registry = system.actorOf(Props.create(MockRegistry.class), "MockRegistry");
         final ActorRef tmActor = system.actorOf(Props.create(TMActor.class, registry), "TMActor");
         final ActorRef consumerActor = system.actorOf(Props.create(TMConsumerActor.class, tmActor), "TMConsumerActor");
@@ -48,13 +47,12 @@ public class Main {
         serviceMock.sendRoutine();
         Cancellable cancellable = system.scheduler().schedule(Duration.Zero(),
                 Duration.create(4000, TimeUnit.MILLISECONDS), consumerActor, new PollMsg(),
-                system.dispatcher(), null);*/
+                system.dispatcher(), null);
 
         /*Cancellable taskLoop = system.scheduler().schedule(Duration.Zero(),
                 Duration.create(6000, TimeUnit.MILLISECONDS), tmActor, new TaskSentMsg(111L, ServicesEnum.BetService),
                 system.dispatcher(), null);*/
 
-        //LoggerGlobal.log("Hello");
 
 
 
