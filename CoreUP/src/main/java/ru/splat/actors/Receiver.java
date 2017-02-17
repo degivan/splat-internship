@@ -1,12 +1,10 @@
 package ru.splat.actors;
 
-import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
 import akka.actor.Props;
 import akka.dispatch.OnSuccess;
 import akka.pattern.Patterns;
 import akka.util.Timeout;
-import ru.splat.LoggerGlobal;
 import ru.splat.db.Bounds;
 import ru.splat.message.*;
 import ru.splat.messages.Transaction;
@@ -29,7 +27,7 @@ import static ru.splat.messages.Transaction.State;
 /**
  * Actor which receives messages from users and from id_generator.
  */
-public class Receiver extends AbstractActor {
+public class Receiver extends LoggingActor {
     private final ActorRef registry;
     private final ActorRef idGenerator;
     private final ActorRef tmActor;
@@ -62,7 +60,7 @@ public class Receiver extends AbstractActor {
     }
 
     private void processCheckRequest(CheckRequest message) {
-        LoggerGlobal.log("Processing CheckRequest: " + message.toString(), this);
+        log.info("Processing CheckRequest: " + message.toString());
 
         State state = results.get(message.getTransactionId());
         if(state == null) {
@@ -94,17 +92,17 @@ public class Receiver extends AbstractActor {
     }
 
     private void processNewRequest(NewRequest message) {
-        LoggerGlobal.log("Processing NewRequest: " + message.toString(), this);
+        log.info("Processing NewRequest: " + message.toString());
 
         BetInfo betInfo = message.getBetInfo();
         Integer userId = betInfo.getUserId();
         boolean alreadyActive = userIds.contains(userId);
 
         if(alreadyActive) {
-            LoggerGlobal.log("Already active: " + userId, this);
+            log.info("Already active: " + userId);
             answer(new NewResponse(userId));    //отказ от приема новой транзакции
         } else {
-            LoggerGlobal.log("User now active: " + userId, this);
+            log.info("User now active: " + userId);
 
             userIds.add(userId);
             current.put(userId, sender());
@@ -113,18 +111,18 @@ public class Receiver extends AbstractActor {
     }
 
     private void processDoRecover(Transaction transaction) {
-        LoggerGlobal.log("Process DoRecover: " + transaction.toString(), this);
+        log.info("Process DoRecover: " + transaction.toString());
 
         if(!userIds.contains(transaction.getBetInfo().getUserId())) {
             startTransaction(transaction);
         } else {
             //TODO: answer back to user
-            LoggerGlobal.log("Transaction aborted: " + transaction.toString(), this);
+            log.info("Transaction aborted: " + transaction.toString());
         }
     }
 
     private void processTransactionReady(Transaction transaction) {
-        LoggerGlobal.log("Process TransactionReady: " + transaction.toString(), this);
+        log.info("Process TransactionReady: " + transaction.toString());
 
         Integer userId = transaction.getBetInfo().getUserId();
         Long trId = transaction.getLowerBound();
@@ -140,7 +138,7 @@ public class Receiver extends AbstractActor {
     }
 
     private void createPhaser(Transaction transaction) {
-        LoggerGlobal.log("Creating phaser for transaction: " + transaction.toString(), this);
+        log.info("Creating phaser for transaction: " + transaction.toString());
 
         ActorRef phaser = newPhaser(PhaserActor.class, "phaser" + transaction.getLowerBound(), tmActor, self());
         ActorRef receiver = self();
@@ -158,7 +156,7 @@ public class Receiver extends AbstractActor {
     }
 
     private void processRequestResult(Transaction transaction) {
-        LoggerGlobal.log("Process RequestResult: " + transaction.toString(), this);
+        log.info("Process RequestResult: " + transaction.toString());
 
         freeUser(transaction.getBetInfo().getUserId());
         saveState(transaction);

@@ -1,8 +1,6 @@
 package ru.splat.actors;
 
-import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
-import ru.splat.LoggerGlobal;
 import ru.splat.db.Bounds;
 import ru.splat.db.DBConnection;
 import ru.splat.message.CreateIdRequest;
@@ -19,7 +17,7 @@ import static ru.splat.messages.Transaction.Builder.builder;
 /**
  * Puts transaction in DB and generates unique identifier for it.
  */
-public class IdGenerator extends AbstractActor {
+public class IdGenerator extends LoggingActor {
     public static final Long RANGE = 50L;
 
     private Map<CreateIdRequest, ActorRef> adjournedRequests = new HashMap<>();
@@ -34,7 +32,7 @@ public class IdGenerator extends AbstractActor {
     }
 
     private void processNewIdsMessage(NewIdsMessage message) {
-        LoggerGlobal.log("Process NewIdsMessage: " + message.toString(), this);
+        log.info("Process NewIdsMessage: " + message.toString());
 
         bounds = message.getBounds();
         messagesRequested = false;
@@ -50,10 +48,10 @@ public class IdGenerator extends AbstractActor {
     }
 
     private boolean processCreateIdRequest(CreateIdRequest message, ActorRef receiver) {
-        LoggerGlobal.log("Process CreateIdRequest: " + message.toString(), this);
+        log.info("Process CreateIdRequest: " + message.toString());
 
         if(outOfIndexes()) {
-            LoggerGlobal.log("Out of indexes!", this);
+            log.info("Out of indexes!");
 
             adjournedRequests.put(message, receiver);
             if(!messagesRequested) {
@@ -70,7 +68,7 @@ public class IdGenerator extends AbstractActor {
                     .upper(bounds.getUpperBound())
                     .build();
 
-            LoggerGlobal.log("Saving new transaction: " + transaction, this);
+            log.info("Saving new transaction: " + transaction);
 
             DBConnection.newTransaction(transaction,
                 tr -> receiver.tell(new CreateIdResponse(transaction), self()));
@@ -84,7 +82,7 @@ public class IdGenerator extends AbstractActor {
                 bounds -> self().tell(new NewIdsMessage(bounds), self()));
         messagesRequested = true;
 
-        LoggerGlobal.log("Bounds requested", this);
+        log.info("Bounds requested");
     }
 
     private Bounds getIndexes() {
