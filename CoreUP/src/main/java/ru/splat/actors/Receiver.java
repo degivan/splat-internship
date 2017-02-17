@@ -142,7 +142,7 @@ public class Receiver extends AbstractActor {
     private void createPhaser(Transaction transaction) {
         LoggerGlobal.log("Creating phaser for transaction: " + transaction.toString(), this);
 
-        ActorRef phaser = newActor(PhaserActor.class, "phaser" + transaction.getLowerBound(), tmActor, self());
+        ActorRef phaser = newPhaser(PhaserActor.class, "phaser" + transaction.getLowerBound(), tmActor, self());
         ActorRef receiver = self();
 
         Future<Object> future = Patterns.ask(registry,
@@ -177,8 +177,8 @@ public class Receiver extends AbstractActor {
         sender().tell(msg, self());
     }
 
-    private ActorRef newActor(Class<?> clazz, String name, Object... args) {
-        return getContext().actorOf(Props.create(clazz, args), name);
+    private ActorRef newPhaser(Class<?> clazz, String name, Object... args) {
+        return getContext().actorOf(Props.create(clazz, args).withDispatcher("phaser-dispatcher"), name);
     }
 
 
