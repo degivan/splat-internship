@@ -63,7 +63,7 @@ public class PhaserActor extends LoggingActor {
 
         transaction = o.getTransaction();
         context().setReceiveTimeout(Duration.apply(10L, TimeUnit.SECONDS));
-        
+
         switch(transaction.getState()) {
             case CREATED:
                 processNewTransaction(transaction);

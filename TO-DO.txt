@@ -1,10 +1,19 @@
 ﻿==========CoreUP===========
 
 ==========CoreUP===========
+-кастомные mailbox
+-тесты для latency и throughput
+-убрать гонку TransactionState и PhaserRequest на recover'е
+-как устроен клиент монги для java
+-ограничение ресурсов
+-SendConfirmation
+-коллбэк в TMConsumer
 ==========CoreTM===========
--настроить dispatcher-ы (application.conf) и добавить withDispatcher в конструктор аторов
--искать боттлнеки
 -async logging
+-SendConfirmation
+-коллбэк в TMConsumer
+
+-"сложный коммит"
 
 ==========TESTBOOT===========
 -увеличить частоту отправки запросов

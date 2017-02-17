@@ -5,15 +5,17 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Required;
-import ru.splat.facade.service.ServiceFacade;
 import ru.splat.facade.feautures.TransactionRequest;
+import ru.splat.facade.service.ServiceFacade;
 import ru.splat.kafka.Kafka;
 import ru.splat.kafka.feautures.TransactionResult;
+
 import javax.annotation.PostConstruct;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
+
 import static org.slf4j.LoggerFactory.getLogger;
 
 public abstract class AbstractWrapper<KafkaRecord extends Message, InternalTrType extends TransactionRequest>
@@ -35,6 +37,7 @@ public abstract class AbstractWrapper<KafkaRecord extends Message, InternalTrTyp
 
     public void mainProcess()
     {
+        //this.kafka.resetConsumerToCommitedOffset();
 
         while (!Thread.interrupted())
         {
