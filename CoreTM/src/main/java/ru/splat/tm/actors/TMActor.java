@@ -19,9 +19,7 @@ import ru.splat.tm.messages.RetrySendMsg;
 import ru.splat.tm.messages.ServiceResponseMsg;
 import ru.splat.tm.messages.TaskSentMsg;
 import ru.splat.tm.protobuf.ProtobufFactory;
-
 import java.util.*;
-import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
@@ -36,7 +34,6 @@ public  class TMActor extends AbstractActor {
     private Map<Long, TransactionState> states = new HashMap<>();
     private final ActorRef registry;
     private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
-
     @Override
     public Receive createReceive() {
         return receiveBuilder()
@@ -53,7 +50,6 @@ public  class TMActor extends AbstractActor {
                 .matchAny(this::unhandled)
                 .build();
     }
-
     //создание стейта транзакции при получении ответа от сервисов (заглушка для сложной процедуры коммита кафки)
     public void createTransactionState(Long transactionId, Map<TaskTypesEnum, ServiceResponse> localStates) {
 
@@ -65,8 +61,6 @@ public  class TMActor extends AbstractActor {
         transactionMetadata.getLocalTasks().forEach(localTask -> {
             responseMap.put(localTask.getService(), new ServiceResponse());    //создание "пустых ответов от сервисов"
         });
-        /*Map<TaskTypesEnum, ServiceResponse> responseMap = transactionMetadata.getLocalTasks().stream().map(localTask -> localTask)
-                .collect(Collectors.toMap(LocalTask::getType, new ServiceResponse()));*/   ///выяснить почему не работает
         TransactionState transactionState = new TransactionState(transactionMetadata.getTransactionId(),responseMap);
         states.put(trId, transactionState);
     }
@@ -82,8 +76,6 @@ public  class TMActor extends AbstractActor {
             send(SERVICE_TO_TOPIC_MAP.get(task.getService()), transactionId, message);
         });
     }
-
-
     private void send(String topic, Long transactionId, Message message) {
         //log.info("TMActor: sending " + transactionId + " to " + topic);
         /*Future isSend = */producer.send(new ProducerRecord<>(topic, transactionId, message),
@@ -92,7 +84,6 @@ public  class TMActor extends AbstractActor {
                     else getSelf().tell(new TaskSentMsg(transactionId, TOPIC_TO_SERVICE_MAP.get(topic)), getSelf());
                 });
     }
-
     private void processResponse(ServiceResponseMsg serviceResponseMsg) {
         Long trId = serviceResponseMsg.getTransactionId();
         if (!states.containsKey(trId)) {
@@ -106,17 +97,13 @@ public  class TMActor extends AbstractActor {
         Boolean allReceived = transactionState.getLocalStates()
                 .entrySet().stream().map(state -> state.getValue().isResponseReceived())
                 .allMatch(e -> e);
-
-
         if (allReceived) {
             log.info("TMActor: all responses for transaction " + trId + " are received");
             registry.tell(transactionState, getSelf());
             states.remove(trId);
         }
-        log.info("TMActor: responses for " + serviceResponseMsg.getService() + " " + trId + " checked");
-
+        //log.info("TMActor: responses for " + serviceResponseMsg.getService() + " " + trId + " checked"); for testing
     }
-
     private void setIsSent(TaskSentMsg m) {
         //log.info("task " + m.getService().toString() + " of " + m.getTransactionId() + " is sent");
         Long trId = m.getTransactionId();
