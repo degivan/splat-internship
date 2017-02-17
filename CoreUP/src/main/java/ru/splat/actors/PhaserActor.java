@@ -22,7 +22,6 @@ import java.util.function.Consumer;
 
 /**
  * Created by Иван on 15.12.2016.
- * TODO: solve transactionState recover problem
  */
 public class PhaserActor extends LoggingActor {
     private final ActorRef tmActor;
@@ -89,18 +88,15 @@ public class PhaserActor extends LoggingActor {
 
         updateBetId(trState, transaction);
 
-        DBConnection.addTransactionState(trState,
-                tState -> {
-                    if(isResponsePositive(tState)) {
-                        saveDBWithState(Transaction.State.PHASE2_SEND,
-                                () -> {
-                                    sendPhase2(transaction);
-                                    sendResult(transaction);
-                                });
-                    } else {
-                        saveDBWithStateCancel(Transaction.State.DENIED, tState);
-                    }
-                });
+        if(isResponsePositive(trState)) {
+            saveDBWithState(Transaction.State.PHASE2_SEND,
+                    () -> {
+                        sendPhase2(transaction);
+                        sendResult(transaction);
+                    });
+        } else {
+            saveDBWithStateCancel(Transaction.State.DENIED, trState);
+        }
     }
 
     private static void updateBetId(TransactionState o, Transaction transaction) {
@@ -114,11 +110,12 @@ public class PhaserActor extends LoggingActor {
     }
 
     private void saveDBWithStateCancel(Transaction.State state, TransactionState trState) {
-        saveDBWithState(state,
-                () -> {
-                    cancelTransaction(transaction, trState);
-                    sendResult(transaction);
-                });
+        DBConnection.addTransactionState(trState,
+                tState -> saveDBWithState(state,
+                        () -> {
+                            cancelTransaction(transaction, trState);
+                            sendResult(transaction);
+                        }));
     }
 
     private void sendResult(Transaction transaction) {
