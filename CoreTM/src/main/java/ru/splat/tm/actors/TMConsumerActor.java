@@ -54,26 +54,31 @@ public class TMConsumerActor extends AbstractActor{
                 new ProtoBufMessageDeserializer(Response.ServiceResponse.getDefaultInstance()));
         consumer.subscribe(Arrays.asList(topicsList));
         if (consumer!=null)
-        /*{
-            TopicPartition partition = new TopicPartition(TOPIC_REQUEST, 0);
-            consumer.seek(partition, consumer.committed(partition).offset());
-        }*/
+        resetConsumerToCommitedOffset();
         log.info("TMConsumerActor: is initialized");
     }
 
+    private void resetConsumerToCommitedOffset() {
+        /*for (String topic : topicsList) {
+            TopicPartition partition = new TopicPartition(topic, 0);
+            consumer.seek(partition, consumer.committed(partition).offset());
+        }*/
+
+    }
+
     private void poll(PollMsg p) {
+        //log.info("poll");
         ConsumerRecords<Long, Response.ServiceResponse> records = consumer.poll(0);
         for (ConsumerRecord<Long, Response.ServiceResponse> record : records) {
             //log.info("message received: " + record.key());
-            ServiceResponse sr = ResponseParser.unpackMessage(record.value());
-            ServiceResponseMsg srm = new ServiceResponseMsg(record.key(), sr, TOPICS_MAP.get(record.topic()));
+            ServiceResponseMsg srm = new ServiceResponseMsg(record.key(), ResponseParser.unpackMessage(record.value()),
+                    TOPICS_MAP.get(record.topic()));
             //log.info("TMConsumerActor: message received from : " + record.topic() + ": " + record.key() + " " + sr.getAttachment() );
             tmActor.tell(srm, getSelf());
         }
     }
 
     private static Map<String, ServicesEnum> TOPICS_MAP;
-
     static {
         TOPICS_MAP = new HashMap<>();
         TOPICS_MAP.put("BetRes", ServicesEnum.BetService);

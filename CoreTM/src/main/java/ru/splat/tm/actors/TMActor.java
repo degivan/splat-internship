@@ -106,11 +106,14 @@ public  class TMActor extends AbstractActor {
         Boolean allReceived = transactionState.getLocalStates()
                 .entrySet().stream().map(state -> state.getValue().isResponseReceived())
                 .allMatch(e -> e);
+
+
         if (allReceived) {
             log.info("TMActor: all responses for transaction " + trId + " are received");
             registry.tell(transactionState, getSelf());
             states.remove(trId);
         }
+        log.info("TMActor: responses for " + serviceResponseMsg.getService() + " " + trId + " checked");
 
     }
 
