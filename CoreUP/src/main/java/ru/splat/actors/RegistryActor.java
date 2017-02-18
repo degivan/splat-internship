@@ -55,7 +55,7 @@ public class RegistryActor extends LoggingActor {
                 .scheduler()
                 .scheduleOnce(
                     Duration.create(500L, TimeUnit.MILLISECONDS),
-                    self(), o, context().dispatcher(), ActorRef.noSender());
+                    self(), o, context().dispatcher(), sender());
     }
 
     private void processRegisterRequest(RegisterRequest request) {
