@@ -1,10 +1,8 @@
 package ru.splat.actors;
 
-import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
 import akka.actor.ReceiveTimeout;
 import akka.japi.pf.UnitPFBuilder;
-import ru.splat.LoggerGlobal;
 import ru.splat.db.DBConnection;
 import ru.splat.message.PhaserRequest;
 import ru.splat.message.PhaserResponse;
@@ -25,7 +23,7 @@ import java.util.function.Consumer;
 /**
  * Created by Иван on 15.12.2016.
  */
-public class PhaserActor extends AbstractActor {
+public class PhaserActor extends ResendingActor {
     private final ActorRef tmActor;
     private final ActorRef receiver;
 
@@ -34,9 +32,8 @@ public class PhaserActor extends AbstractActor {
     @Override
     public Receive createReceive() {
         return receiveBuilder().match(PhaserRequest.class, this::processPhaserRequest)
-                .match(TransactionState.class, this::processTransactionState)
-                .match(ReceiveTimeout.class, m -> processReceiveTimeout())
-                .match(TMResponse.class, m -> {/*TODO: Change state to PHASE1_RESPONDED */})
+                .match(TransactionState.class, this::resendOverDelay)
+                .match(TMResponse.class, m -> {/*TODO: RESEND IT */})
                 .matchAny(this::unhandled).build();
     }
 
@@ -45,23 +42,21 @@ public class PhaserActor extends AbstractActor {
         this.receiver = receiver;
     }
 
-    @Override
-    public void preStart() throws Exception {
-        super.preStart();
-    }
-
     //TODO: stop correctly
     @Override
     public void postStop() throws Exception {
         super.postStop();
+
+        log.info("Phaser stopped.");
     }
 
 
 
     private void processPhaserRequest(PhaserRequest o) {
-        LoggerGlobal.log("Process PhaserRequest: " + o.toString(), this);
+        log.info("Process PhaserRequest: " + o.toString());
 
         transaction = o.getTransaction();
+        context().setReceiveTimeout(Duration.apply(10L, TimeUnit.SECONDS));
 
         switch(transaction.getState()) {
             case CREATED:
@@ -77,13 +72,13 @@ public class PhaserActor extends AbstractActor {
     }
 
     private void processReceiveTimeout() {
-        LoggerGlobal.log("Timeout received in phaser for transaction: " + transaction.toString(), this);
+        log.info("Timeout received in phaser for transaction: " + transaction.toString());
 
         becomeAndLog(timeout());
     }
 
     private void processTransactionState(TransactionState trState) {
-        LoggerGlobal.log("Processing TransactionState: " + trState.toString(), this);
+        log.info("Processing TransactionState: " + trState.toString());
 
         updateBetId(trState, transaction);
 
@@ -118,34 +113,34 @@ public class PhaserActor extends AbstractActor {
     }
 
     private void sendResult(Transaction transaction) {
-        LoggerGlobal.log("Result send to receiver for transaction: " + transaction.toString(), this);
+        log.info("Result send to receiver for transaction: " + transaction.toString());
 
         receiver.tell(new PhaserResponse(transaction), self());
     }
 
     private void sendPhase2(Transaction transaction) {
-        LoggerGlobal.log("Sending phase2 for transaction: " + transaction.toString(), this);
+        log.info("Sending phase2 for transaction: " + transaction.toString());
 
         sendMetadataAndAfter(MetadataPatterns.createPhase2(transaction),
                 v -> becomeAndLog(phase2()));
     }
 
     private void cancelTransaction(Transaction transaction, TransactionState trState) {
-        LoggerGlobal.log("Sending cancel for transaction: " + transaction.toString(), this);
+        log.info("Sending cancel for transaction: " + transaction.toString());
 
         sendMetadataAndAfter(MetadataPatterns.createCancel(transaction, trState),
                 v -> becomeAndLog(cancel()));
     }
 
     private void becomeAndLog(PartialFunction<Object, BoxedUnit> state) {
-        LoggerGlobal.log("Phaser: " + this.toString() + " changes to state: " + state, this);
+        log.info("Phaser: " + this.toString() + " changes to state: " + state);
 
         context().become(state);
     }
 
     private void processNewTransaction(Transaction transaction) {
         sendMetadataAndAfter(MetadataPatterns.createPhase1(transaction),
-                v -> context().setReceiveTimeout(Duration.apply(10L, TimeUnit.SECONDS)));
+                v -> becomeAndLog(phase1()));
     }
 
     private void sendMetadataAndAfter(TransactionMetadata trMetadata, Consumer<Void> after) {
@@ -169,6 +164,12 @@ public class PhaserActor extends AbstractActor {
                     updateBetId(trState, transaction);
                     saveDBWithStateCancel(Transaction.State.CANCEL, trState);
                 }).build();
+    }
+
+    private PartialFunction<Object, BoxedUnit> phase1() {
+        return state().match(TransactionState.class, this::processTransactionState)
+                .match(ReceiveTimeout.class, m -> processReceiveTimeout())
+                .build();
     }
 
     private PartialFunction<Object, BoxedUnit> phase2(){
@@ -199,7 +200,7 @@ public class PhaserActor extends AbstractActor {
     }
 
     private void logTransactionState(TransactionState trState) {
-        LoggerGlobal.log("Processing " + trState.toString() + " in context: " + getContext().toString(), this);
+        log.info("Processing " + trState.toString() + " in context: " + getContext().toString());
     }
 
     private static UnitPFBuilder<Object> state() {

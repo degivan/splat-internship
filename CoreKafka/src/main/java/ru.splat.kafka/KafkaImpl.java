@@ -20,16 +20,14 @@ import java.util.Properties;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
-public class KafkaImpl<ProtobufRequest extends Message> implements Kafka<ProtobufRequest>
-{
+public class KafkaImpl<ProtobufRequest extends Message> implements Kafka<ProtobufRequest> {
     private final KafkaProducer<Long, Message> producer;
     private final KafkaConsumer<Long, ProtobufRequest> consumer;
     private final String TOPIC_REQUEST;
     private final String TOPIC_RESPONSE;
 
 
-    public KafkaImpl(String producerTopic, String consumerTopic, Message defaultInstance)
-    {
+    public KafkaImpl(String producerTopic, String consumerTopic, Message defaultInstance) {
         this.TOPIC_REQUEST = consumerTopic;
         this.TOPIC_RESPONSE = producerTopic;
         Properties propsConsumer = new Properties();
@@ -55,13 +53,10 @@ public class KafkaImpl<ProtobufRequest extends Message> implements Kafka<Protobu
     }
 
 
-
     @Override
-    public ConsumerRecords<Long, ProtobufRequest> readFromKafka(long timeout)
-    {
-        if (consumer != null)
-        {
-            ConsumerRecords<Long,ProtobufRequest> consumerRecords = consumer.poll(timeout);
+    public ConsumerRecords<Long, ProtobufRequest> readFromKafka(long timeout) {
+        if (consumer != null) {
+            ConsumerRecords<Long, ProtobufRequest> consumerRecords = consumer.poll(timeout);
             return consumerRecords;
         }
 
@@ -70,50 +65,39 @@ public class KafkaImpl<ProtobufRequest extends Message> implements Kafka<Protobu
 
 
     @Override
-    public void resetConsumerToCommitedOffset()
-    {
-        if (consumer!=null)
-        {
-                    TopicPartition partition = new TopicPartition(TOPIC_REQUEST, 0);
-                    consumer.seek(partition, consumer.committed(partition).offset());
+    public void resetConsumerToCommitedOffset() {
+        if (consumer != null) {
+            TopicPartition partition = new TopicPartition(TOPIC_REQUEST, 0);
+            consumer.seek(partition, consumer.committed(partition).offset());
         }
     }
 
     @Override
-    public void writeToKafka(List<TransactionResult> transactionResults)
-    {
+    public void writeToKafka(List<TransactionResult> transactionResults) {
 
         if (transactionResults == null) return;
 
         List<Future> futureList = new ArrayList<>();
-        while (!transactionResults.isEmpty())
-        {
+        while (!transactionResults.isEmpty()) {
             futureList = transactionResults.stream().map(map ->
-                    producer.send(new ProducerRecord<Long, Message>(TOPIC_RESPONSE,map.getTransactionId(), map.getResult())))
+                    producer.send(new ProducerRecord<Long, Message>(TOPIC_RESPONSE, map.getTransactionId(), map.getResult())))
                     .collect(Collectors.toList());
             producer.flush();
 
-            for (int i = 0; i < futureList.size(); i++)
-            {
-                try
-                {
+            for (int i = 0; i < futureList.size(); i++) {
+                try {
                     futureList.get(i).get();
                     transactionResults.remove(i);
-                } catch (Exception e)
-                {
+                } catch (Exception e) {
                 }
             }
         }
     }
 
 
-
-
     @Override
-    public void commitKafka()
-    {
-        if (consumer!=null)
-        {
+    public void commitKafka() {
+        if (consumer != null) {
             consumer.commitSync();
         }
     }
