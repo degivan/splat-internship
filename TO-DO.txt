@@ -1,9 +1,8 @@
 ﻿==========CoreUP===========
 
 ==========CoreUP===========
--кастомные mailbox
 -тесты для latency и throughput
--убрать гонку TransactionState и PhaserRequest на recover'е
+-убрать гонку TransactionState и PhaserRequest на recover'е //залито, жду теста
 -как устроен клиент монги для java
 -ограничение ресурсов
 -SendConfirmation

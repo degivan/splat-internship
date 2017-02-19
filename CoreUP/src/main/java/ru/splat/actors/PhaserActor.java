@@ -23,7 +23,7 @@ import java.util.function.Consumer;
 /**
  * Created by Иван on 15.12.2016.
  */
-public class PhaserActor extends LoggingActor {
+public class PhaserActor extends ResendingActor {
     private final ActorRef tmActor;
     private final ActorRef receiver;
 
@@ -32,20 +32,14 @@ public class PhaserActor extends LoggingActor {
     @Override
     public Receive createReceive() {
         return receiveBuilder().match(PhaserRequest.class, this::processPhaserRequest)
-                .match(TransactionState.class, this::processTransactionState)
-                .match(ReceiveTimeout.class, m -> processReceiveTimeout())
-                .match(TMResponse.class, m -> {/*TODO: Change state to PHASE1_RESPONDED */})
+                .match(TransactionState.class, this::resendOverDelay)
+                .match(TMResponse.class, m -> {/*TODO: RESEND IT */})
                 .matchAny(this::unhandled).build();
     }
 
     public PhaserActor(ActorRef tmActor, ActorRef receiver) {
         this.tmActor = tmActor;
         this.receiver = receiver;
-    }
-
-    @Override
-    public void preStart() throws Exception {
-        super.preStart();
     }
 
     //TODO: stop correctly
@@ -145,7 +139,8 @@ public class PhaserActor extends LoggingActor {
     }
 
     private void processNewTransaction(Transaction transaction) {
-        sendMetadataAndAfter(MetadataPatterns.createPhase1(transaction), v -> {});
+        sendMetadataAndAfter(MetadataPatterns.createPhase1(transaction),
+                v -> becomeAndLog(phase1()));
     }
 
     private void sendMetadataAndAfter(TransactionMetadata trMetadata, Consumer<Void> after) {
@@ -169,6 +164,12 @@ public class PhaserActor extends LoggingActor {
                     updateBetId(trState, transaction);
                     saveDBWithStateCancel(Transaction.State.CANCEL, trState);
                 }).build();
+    }
+
+    private PartialFunction<Object, BoxedUnit> phase1() {
+        return state().match(TransactionState.class, this::processTransactionState)
+                .match(ReceiveTimeout.class, m -> processReceiveTimeout())
+                .build();
     }
 
     private PartialFunction<Object, BoxedUnit> phase2(){

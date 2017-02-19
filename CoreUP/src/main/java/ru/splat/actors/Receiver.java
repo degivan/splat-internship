@@ -140,7 +140,7 @@ public class Receiver extends LoggingActor {
     private void createPhaser(Transaction transaction) {
         log.info("Creating phaser for transaction: " + transaction.toString());
 
-        ActorRef phaser = newPhaser(PhaserActor.class, "phaser" + transaction.getLowerBound(), tmActor, self());
+        ActorRef phaser = newPhaser("phaser" + transaction.getLowerBound());
         ActorRef receiver = self();
 
         Future<Object> future = Patterns.ask(registry,
@@ -175,8 +175,9 @@ public class Receiver extends LoggingActor {
         sender().tell(msg, self());
     }
 
-    private ActorRef newPhaser(Class<?> clazz, String name, Object... args) {
-        return getContext().actorOf(Props.create(clazz, args).withDispatcher("phaser-dispatcher"), name);
+    private ActorRef newPhaser(String name) {
+        return context().actorOf(Props.create(PhaserActor.class, tmActor, self())
+                .withDispatcher("phaser-dispatcher"), name);
     }
 
 
