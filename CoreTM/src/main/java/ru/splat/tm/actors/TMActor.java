@@ -2,6 +2,7 @@ package ru.splat.tm.actors;
 
 import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
+import akka.actor.Props;
 import com.google.protobuf.Message;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -15,16 +16,14 @@ import ru.splat.messages.uptm.trmetadata.LocalTask;
 import ru.splat.messages.uptm.trmetadata.TransactionMetadata;
 import ru.splat.messages.uptm.trstate.ServiceResponse;
 import ru.splat.messages.uptm.trstate.TransactionState;
-import ru.splat.tm.messages.RetrySendMsg;
-import ru.splat.tm.messages.ServiceResponseMsg;
-import ru.splat.tm.messages.TaskSentMsg;
+import ru.splat.tm.messages.*;
 import ru.splat.tm.protobuf.ProtobufFactory;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
-
-
+import scala.concurrent.duration.Duration;
 
 
 /**
@@ -35,7 +34,12 @@ public  class TMActor extends AbstractActor {
     private Map<Long, TransactionState> states = new HashMap<>();
     private final ActorRef registry;
     private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
+    private final ActorRef consumerActor;
+    private static final String TM_CONSUMER_NAME = "tm_consumer";
 
+    /*public void setConsumerActor(ActorRef consumerActor) {
+        this.consumerActor = consumerActor;
+    }*/
 
     @Override
     public Receive createReceive() {
@@ -102,12 +106,19 @@ public  class TMActor extends AbstractActor {
                 .allMatch(e -> e);
         if (allReceived) {
             log.info("TMActor: all responses for transaction " + trId + " are received");
-            registry.tell(transactionState, getSelf());
-            //registry.tell(new TransactionStateMsg(transactionState, () -> ))
+            //registry.tell(transactionState, getSelf());
+            registry.tell(new TransactionStateMsg(transactionState, () -> commitTransaction(trId)), getSelf());
             states.remove(trId);
         }
         //log.info("TMActor: responses for " + serviceResponseMsg.getService() + " " + trId + " checked"); for testing
     }
+
+
+
+    private void commitTransaction(long trId) {
+        consumerActor.tell(new CommitTransactionMsg(trId), getSelf());
+    }
+
     private void processSent(TaskSentMsg m) {
         //log.info("task " + m.getService().toString() + " of " + m.getTransactionId() + " is sent");
         Long trId = m.getTransactionId();
@@ -127,6 +138,7 @@ public  class TMActor extends AbstractActor {
     }
 
     public TMActor(ActorRef registry) {
+
         Properties propsProducer = new Properties();
         propsProducer.put("bootstrap.servers", "localhost:9092");
         propsProducer.put("acks", "all");
@@ -137,6 +149,13 @@ public  class TMActor extends AbstractActor {
         producer = new KafkaProducer(propsProducer, new LongSerializer(), new ProtoBufMessageSerializer());
         this.registry = registry;
         log.info("TMActor: initialized");
+        consumerActor = getContext().system().actorOf(Props.create(TMConsumerActor.class, getSelf()).
+                withDispatcher("tm-consumer-dispatcher"), TM_CONSUMER_NAME);
+
+        /*getContext().system().scheduler().schedule(Duration.Zero(),
+                Duration.create(500, TimeUnit.MILLISECONDS), consumerActor, new PollMsg(),
+                getContext().system().dispatcher(), null);*/
+
     }
     private static Map<ServicesEnum, String> SERVICE_TO_TOPIC_MAP;
     private static Map<String, ServicesEnum> TOPIC_TO_SERVICE_MAP;

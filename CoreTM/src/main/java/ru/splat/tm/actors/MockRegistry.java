@@ -1,8 +1,9 @@
-package ru.splat.tm.messages;
+package ru.splat.tm.actors;
 
 import akka.actor.AbstractActor;
 //import org.slf4j.Logger;
 import ru.splat.messages.uptm.TMResponse;
+import ru.splat.messages.uptm.TransactionStateMsg;
 import ru.splat.messages.uptm.trstate.TransactionState;
 
 import ru.splat.tm.LoggerGlobal;
@@ -30,11 +31,17 @@ public class MockRegistry extends AbstractActor {
                 " with " + m.getLocalStates().size());
     }
 
+    private void processState(TransactionStateMsg m) {
+        log.info("Registry: state received" + m.getTransactionState().getTransactionId());
+        m.getCommitTransaction().run();
+    }
+
     @Override
     public Receive createReceive() {
         return receiveBuilder()
                 .match(TMResponse.class, m -> log.info("Registry: all requests for " + m.getTransactionId()+ " are sent"))
                 .match(TransactionState.class, this::processState)
+                .match(TransactionStateMsg.class, this::processState)
                 .build();
     }
 }

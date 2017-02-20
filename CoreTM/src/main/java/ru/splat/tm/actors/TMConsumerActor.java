@@ -14,13 +14,17 @@ import ru.splat.messages.Response;
 import ru.splat.messages.conventions.ServicesEnum;
 import ru.splat.messages.uptm.trstate.ServiceResponse;
 import ru.splat.tm.LoggerGlobal;
+import ru.splat.tm.messages.CommitTransactionMsg;
 import ru.splat.tm.messages.PollMsg;
 import ru.splat.tm.messages.ServiceResponseMsg;
 import ru.splat.tm.protobuf.ResponseParser;
+import scala.concurrent.duration.Duration;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -36,7 +40,8 @@ public class TMConsumerActor extends AbstractActor{
     @Override
     public Receive createReceive() {
         return receiveBuilder()
-                .match(PollMsg.class, this::poll)
+                .match(PollMsg.class, m -> poll())
+                .match(CommitTransactionMsg.class, this::commitTransaction)
                 .matchAny(this::unhandled)
                 .build();
     }
@@ -52,7 +57,8 @@ public class TMConsumerActor extends AbstractActor{
                 new ProtoBufMessageDeserializer(Response.ServiceResponse.getDefaultInstance()));
         consumer.subscribe(Arrays.asList(topicsList));
         resetToCommitedOffset();
-        log.info("TMConsumerActor: is initialized");
+        log.info("TMConsumerActor: initialized");
+        start();
     }
 
     private void resetToCommitedOffset() {
@@ -62,12 +68,16 @@ public class TMConsumerActor extends AbstractActor{
         }*/
     }
 
-    public void commitTransaction(long trId) {
-        log.info("Transaction " + trId + " is commited");
+    private void commitTransaction(CommitTransactionMsg m) {
+        log.info("Transaction " + m.getTransactionId() + " is commited");
     }
 
-    private void poll(PollMsg p) {
-        //log.info("poll");
+    public void start() {
+        poll();
+    }
+
+    private void poll() {
+        log.info("poll");
         ConsumerRecords<Long, Response.ServiceResponse> records = consumer.poll(0);
         for (ConsumerRecord<Long, Response.ServiceResponse> record : records) {
             //log.info("message received: " + record.key());
@@ -75,7 +85,10 @@ public class TMConsumerActor extends AbstractActor{
                     TOPICS_MAP.get(record.topic()));
             //log.info("TMConsumerActor: message received from : " + record.topic() + ": " + record.key() + " " + sr.getAttachment() );
             tmActor.tell(srm, getSelf());
+            //getSelf().tell(new PollMsg(), getSelf());
         }
+        getContext().system().scheduler().scheduleOnce(Duration.create(250, TimeUnit.MILLISECONDS),
+                getSelf(), new PollMsg(), getContext().dispatcher(), null);
     }
 
     private static Map<String, ServicesEnum> TOPICS_MAP;

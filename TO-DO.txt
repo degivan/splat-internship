@@ -7,11 +7,12 @@
 -ограничение ресурсов
 -SendConfirmation
 -коллбэк в TMConsumer
+-принимать TransactionStateMsg вместо TransactionState
 ==========CoreTM===========
 -async logging
 -SendConfirmation
 -коллбэк в TMConsumer
-
+-dispatcher & scheduler binging
 -"сложный коммит"
 
 ==========TESTBOOT===========
