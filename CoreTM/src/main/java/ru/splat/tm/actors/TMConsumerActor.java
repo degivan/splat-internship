@@ -9,7 +9,6 @@ import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.serialization.LongDeserializer;
-
 import ru.splat.kafka.deserializer.ProtoBufMessageDeserializer;
 import ru.splat.messages.Response;
 import ru.splat.messages.conventions.ServicesEnum;
@@ -18,7 +17,6 @@ import ru.splat.tm.LoggerGlobal;
 import ru.splat.tm.messages.PollMsg;
 import ru.splat.tm.messages.ServiceResponseMsg;
 import ru.splat.tm.protobuf.ResponseParser;
-
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -53,17 +51,19 @@ public class TMConsumerActor extends AbstractActor{
         consumer = new KafkaConsumer(propsConsumer, new LongDeserializer(),
                 new ProtoBufMessageDeserializer(Response.ServiceResponse.getDefaultInstance()));
         consumer.subscribe(Arrays.asList(topicsList));
-        if (consumer!=null)
-        resetConsumerToCommitedOffset();
+        resetToCommitedOffset();
         log.info("TMConsumerActor: is initialized");
     }
 
-    private void resetConsumerToCommitedOffset() {
+    private void resetToCommitedOffset() {
         /*for (String topic : topicsList) {
             TopicPartition partition = new TopicPartition(topic, 0);
             consumer.seek(partition, consumer.committed(partition).offset());
         }*/
+    }
 
+    public void commitTransaction(long trId) {
+        log.info("Transaction " + trId + " is commited");
     }
 
     private void poll(PollMsg p) {
@@ -87,3 +87,4 @@ public class TMConsumerActor extends AbstractActor{
         TOPICS_MAP.put("PunterRes", ServicesEnum.PunterService);
     }
 }
+

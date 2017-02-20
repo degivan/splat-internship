@@ -10,11 +10,11 @@ import ru.splat.kafka.serializer.ProtoBufMessageSerializer;
 import ru.splat.messages.conventions.ServicesEnum;
 import ru.splat.messages.conventions.TaskTypesEnum;
 import ru.splat.messages.uptm.TMResponse;
+import ru.splat.messages.uptm.TransactionStateMsg;
 import ru.splat.messages.uptm.trmetadata.LocalTask;
 import ru.splat.messages.uptm.trmetadata.TransactionMetadata;
 import ru.splat.messages.uptm.trstate.ServiceResponse;
 import ru.splat.messages.uptm.trstate.TransactionState;
-import ru.splat.tm.LoggerGlobal;
 import ru.splat.tm.messages.RetrySendMsg;
 import ru.splat.tm.messages.ServiceResponseMsg;
 import ru.splat.tm.messages.TaskSentMsg;
@@ -26,6 +26,7 @@ import akka.event.LoggingAdapter;
 
 
 
+
 /**
  * Created by Дмитрий on 05.01.2017.
  */
@@ -34,6 +35,8 @@ public  class TMActor extends AbstractActor {
     private Map<Long, TransactionState> states = new HashMap<>();
     private final ActorRef registry;
     private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
+
+
     @Override
     public Receive createReceive() {
         return receiveBuilder()
@@ -41,7 +44,7 @@ public  class TMActor extends AbstractActor {
                     createTransactionState(m);
                     processTransaction(m);
                 })
-                .match(TaskSentMsg.class, this::setIsSent)
+                .match(TaskSentMsg.class, this::processSent)
                 .match(RetrySendMsg.class, m ->
                 {
                     log.info("TMActor: processing RetrySendMsg for " + m.getTransactionId() + " to topic " + m.getTopic());
@@ -100,11 +103,12 @@ public  class TMActor extends AbstractActor {
         if (allReceived) {
             log.info("TMActor: all responses for transaction " + trId + " are received");
             registry.tell(transactionState, getSelf());
+            //registry.tell(new TransactionStateMsg(transactionState, () -> ))
             states.remove(trId);
         }
         //log.info("TMActor: responses for " + serviceResponseMsg.getService() + " " + trId + " checked"); for testing
     }
-    private void setIsSent(TaskSentMsg m) {
+    private void processSent(TaskSentMsg m) {
         //log.info("task " + m.getService().toString() + " of " + m.getTransactionId() + " is sent");
         Long trId = m.getTransactionId();
         states.get(trId).getLocalStates()   //may there be null pointer?
