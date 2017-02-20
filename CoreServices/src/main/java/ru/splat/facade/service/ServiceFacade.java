@@ -52,8 +52,11 @@ public class ServiceFacade<KafkaRecord extends Message, InternalTrType extends T
         List<TransactionResult> transactionResults = businessService.processTransactions(transactionsToStart);
 
         // добрасываем идемпотентность
-        exactlyOnceRepository.insertFilterTable(transactionResults);
 
+        LOGGER.info("Start Write Idemp");
+        LOGGER.info("Size = " + transactionResults.size());
+        exactlyOnceRepository.insertFilterTable(transactionResults);
+        LOGGER.info("Stop Write Idemp");
         readyTransactions.addAll(transactionResults);
 //        if (readyTransactions.size() == 1) throw new RuntimeException();
 

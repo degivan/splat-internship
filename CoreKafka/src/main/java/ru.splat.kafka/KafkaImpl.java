@@ -4,6 +4,7 @@ package ru.splat.kafka;
 import com.google.protobuf.Message;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.TopicPartition;
@@ -13,10 +14,7 @@ import ru.splat.kafka.deserializer.ProtoBufMessageDeserializer;
 import ru.splat.kafka.feautures.TransactionResult;
 import ru.splat.kafka.serializer.ProtoBufMessageSerializer;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
@@ -39,8 +37,11 @@ public class KafkaImpl<ProtobufRequest extends Message> implements Kafka<Protobu
         // propsConsumer.put("session.timeout.ms", "30000");
 
 
+
+
         consumer = new KafkaConsumer(propsConsumer, new LongDeserializer(), new ProtoBufMessageDeserializer(defaultInstance));
         consumer.subscribe(Arrays.asList(TOPIC_REQUEST));
+//        resetConsumerToCommitedOffset();
 
         Properties propsProducer = new Properties();
         propsProducer.put("bootstrap.servers", "localhost:9092");
@@ -74,8 +75,10 @@ public class KafkaImpl<ProtobufRequest extends Message> implements Kafka<Protobu
     {
         if (consumer!=null)
         {
-                    TopicPartition partition = new TopicPartition(TOPIC_REQUEST, 0);
-                    consumer.seek(partition, consumer.committed(partition).offset());
+            TopicPartition partition = new TopicPartition(TOPIC_REQUEST, 0);
+            if (consumer.committed(partition) != null)
+                consumer.seek(partition, consumer.committed(partition).offset());
+            System.out.println(consumer.committed(partition).offset());
         }
     }
 
@@ -110,11 +113,16 @@ public class KafkaImpl<ProtobufRequest extends Message> implements Kafka<Protobu
 
 
     @Override
-    public void commitKafka()
+    public void commitKafka(long offset)
     {
-        if (consumer!=null)
+        if (consumer!=null && offset!= 0)
         {
-            consumer.commitSync();
+            TopicPartition partition = new TopicPartition(TOPIC_REQUEST, 0);
+            Map<TopicPartition,OffsetAndMetadata> map = new HashMap<>(1);
+            long longOffset = (consumer.committed(partition) != null)?consumer.committed(partition).offset():0;
+            OffsetAndMetadata offsetAndMetadata = new OffsetAndMetadata(longOffset + offset);
+            map.put(partition,offsetAndMetadata);
+            consumer.commitSync(map);
         }
     }
 }
