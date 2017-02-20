@@ -7,13 +7,10 @@ import akka.event.LoggingAdapter;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
-import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.serialization.LongDeserializer;
 import ru.splat.kafka.deserializer.ProtoBufMessageDeserializer;
 import ru.splat.messages.Response;
 import ru.splat.messages.conventions.ServicesEnum;
-import ru.splat.messages.uptm.trstate.ServiceResponse;
-import ru.splat.tm.LoggerGlobal;
 import ru.splat.tm.messages.CommitTransactionMsg;
 import ru.splat.tm.messages.PollMsg;
 import ru.splat.tm.messages.ServiceResponseMsg;
@@ -77,7 +74,6 @@ public class TMConsumerActor extends AbstractActor{
     }
 
     private void poll() {
-        log.info("poll");
         ConsumerRecords<Long, Response.ServiceResponse> records = consumer.poll(0);
         for (ConsumerRecord<Long, Response.ServiceResponse> record : records) {
             //log.info("message received: " + record.key());
@@ -98,6 +94,16 @@ public class TMConsumerActor extends AbstractActor{
         TOPICS_MAP.put("EventRes", ServicesEnum.EventService);
         TOPICS_MAP.put("BillingRes", ServicesEnum.BillingService);
         TOPICS_MAP.put("PunterRes", ServicesEnum.PunterService);
+    }
+
+
+    private class topicTracker {
+        private Map<Long, Long> topicsMap = new HashMap<>();
+        private final String topicName;
+
+        private topicTracker(String topicName) {
+            this.topicName = topicName;
+        }
     }
 }
 

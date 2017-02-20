@@ -138,7 +138,6 @@ public  class TMActor extends AbstractActor {
     }
 
     public TMActor(ActorRef registry) {
-
         Properties propsProducer = new Properties();
         propsProducer.put("bootstrap.servers", "localhost:9092");
         propsProducer.put("acks", "all");

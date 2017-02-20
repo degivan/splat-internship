@@ -37,15 +37,15 @@ public class Main {
                 withDispatcher("tm-consumer-dispatcher"), "TMConsumerActor");*/
 
 
-//        Long time = System.currentTimeMillis();
-//        LocalTask fixBet1 = new FixBetTask(20L, time);
-//        LocalTask punterTask1 = new AddPunterLimitsTask(135, time);
-//        List<LocalTask> tasks = new LinkedList<>(); tasks.add(fixBet1); tasks.add(punterTask1);
-//        TransactionMetadata transactionMetadata = new TransactionMetadata(111L, tasks);
-//
-//        tmActor.tell(new TransactionMetadata(111L, tasks), ActorRef.noSender());
-//        ServiceMock serviceMock = new ServiceMock();
-//        serviceMock.sendRoutine();
+        Long time = System.currentTimeMillis();
+        LocalTask fixBet1 = new FixBetTask(20L, time);
+        LocalTask punterTask1 = new AddPunterLimitsTask(135, time);
+        List<LocalTask> tasks = new LinkedList<>(); tasks.add(fixBet1); tasks.add(punterTask1);
+        TransactionMetadata transactionMetadata = new TransactionMetadata(111L, tasks);
+
+        tmActor.tell(new TransactionMetadata(111L, tasks), ActorRef.noSender());
+        ServiceMock serviceMock = new ServiceMock();
+        serviceMock.sendRoutine();
         /*Cancellable cancellable = system.scheduler().schedule(Duration.Zero(),
                 Duration.create(500, TimeUnit.MILLISECONDS), consumerActor, new PollMsg(),
                 system.dispatcher(), null);*/
