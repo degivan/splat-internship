@@ -4,7 +4,6 @@ import com.google.protobuf.Message;
 import ru.splat.messages.Response;
 import ru.splat.messages.conventions.ServiceResult;
 import ru.splat.messages.uptm.trstate.ServiceResponse;
-import ru.splat.tm.LoggerGlobal;
 
 import static ru.splat.messages.Response.ServiceResponse.AttachmentOneofCase.*;
 
@@ -13,46 +12,35 @@ import static ru.splat.messages.Response.ServiceResponse.AttachmentOneofCase.*;
  */
 public class ResponseParser {
 
-    public static ServiceResponse unpackMessage(Message message) {
-        if (message instanceof Response.ServiceResponse) {
-            Enum attachmentCase = ((Response.ServiceResponse) message).getAttachmentOneofCase();
+    public static ServiceResponse unpackMessage(Response.ServiceResponse message) {
+        //if (message instanceof Response.ServiceResponse) {
+            int result = message.getResult();
+            Enum attachmentCase = message.getAttachmentOneofCase();
             if (attachmentCase.equals(LONGATTACHMENT)) {
-                Long attachment = ((Response.ServiceResponse) message).getLongAttachment();
-                int result = ((Response.ServiceResponse) message).getResult();
-                ServiceResponse<Long> sr = new ServiceResponse<>(attachment, ServiceResult.values()[result]);
-                return sr;
+                Long attachment = message.getLongAttachment();
+                return new ServiceResponse<>(attachment, ServiceResult.values()[result]);
             }
             else if (attachmentCase.equals(STRINGATTACHMENT)) {
-                String attachment = ((Response.ServiceResponse) message).getStringAttachment();
-                int result = ((Response.ServiceResponse) message).getResult();
-                ServiceResponse<String> sr = new ServiceResponse<>(attachment, ServiceResult.values()[result]);
-                return sr;
+                String attachment = message.getStringAttachment();
+                return new ServiceResponse<>(attachment, ServiceResult.values()[result]);
             }
             else if (attachmentCase.equals(BOOLEANATTACHMENT)) {
-                Boolean attachment = ((Response.ServiceResponse) message).getBooleanAttachment();
-                int result = ((Response.ServiceResponse) message).getResult();
-                ServiceResponse<Boolean> sr = new ServiceResponse<>(attachment, ServiceResult.values()[result]);
-                return sr;
+                Boolean attachment = message.getBooleanAttachment();
+                return new ServiceResponse<>(attachment, ServiceResult.values()[result]);
             }
             else if (attachmentCase.equals(DOUBLEATTACHMENT)) {
-                Double attachment = ((Response.ServiceResponse) message).getDoubleAttachment();
-                int result = ((Response.ServiceResponse) message).getResult();
-                ServiceResponse<Double> sr = new ServiceResponse<>(attachment, ServiceResult.values()[result]);
-                return sr;
+                Double attachment = message.getDoubleAttachment();
+                return new ServiceResponse<>(attachment, ServiceResult.values()[result]);
             }
             else if (attachmentCase.equals(ATTACHMENTONEOF_NOT_SET)) {  //для ответов от сервиса, не содержащих аттачмент
-                int result = ((Response.ServiceResponse) message).getResult();
-                ServiceResponse<Integer> sr = new ServiceResponse<>(-1, ServiceResult.values()[result]);
-                return sr;
+                return new ServiceResponse<>(-1, ServiceResult.values()[result]);
             }
             else {
-                LoggerGlobal.log(attachmentCase.toString());
                 throw new IllegalArgumentException("Invalid attachment type!");
             }
-
-        }
-        else {
+        //}
+        /*else {
             throw new IllegalArgumentException("Invalid message type");
-        }
+        }*/
     }
 }

@@ -12,7 +12,10 @@ import com.mongodb.async.client.MongoCollection;
 import com.mongodb.async.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Projections;
+import com.mongodb.client.model.UpdateOptions;
 import org.bson.Document;
+import org.bson.conversions.Bson;
+import org.jetbrains.annotations.NotNull;
 import ru.splat.LoggerGlobal;
 import ru.splat.messages.Transaction;
 import ru.splat.messages.uptm.trstate.TransactionState;
@@ -34,7 +37,6 @@ public class DBConnection {
     private static final MongoCollection<Document> counter;
     private static final Document searchIdBoundsQuery;
     private static final Document rangeQuery;
-    private static final Document emptyUpdateQuery;
     private static final ObjectMapper MAPPER;
 
 
@@ -46,7 +48,6 @@ public class DBConnection {
         counter = db.getCollection("bounds");
         searchIdBoundsQuery = Document.parse("{ _id : \"tr_id\" } ");
         rangeQuery = Document.parse("{ $inc: { lower : 10000 , upper : 10000 } }");
-        emptyUpdateQuery = Document.parse("{ }");
         MAPPER = new ObjectMapper();
     }
 
@@ -57,7 +58,9 @@ public class DBConnection {
      */
     public static void addTransactionState(TransactionState trState, Consumer<TransactionState> after) {
         try {
-            states.insertOne(Document.parse(MAPPER.writeValueAsString(trState)),
+            states.replaceOne(byTransactionId(trState.getTransactionId()),
+                    Document.parse(MAPPER.writeValueAsString(trState)),
+                    new UpdateOptions().upsert(true),
                     (aVoid, throwable) -> {
                         after.accept(trState);
 
@@ -69,16 +72,16 @@ public class DBConnection {
     }
 
     public static void findTransactionState(Long trId, Consumer<TransactionState> after) {
-        states.find(Filters.eq("transactionId", trId))
+        states.find(byTransactionId(trId))
                 .limit(1)
                 .projection(Projections.excludeId())
                 .forEach(document -> {
-                    try {
-                        after.accept(MAPPER.readValue(document.toJson(), TransactionState.class));
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }, (result, t) -> {});
+                            TransactionState tState = getObjectFromDocument(document,TransactionState.class);
+                            LoggerGlobal.log(tState.toString() + " finded in the database.");
+
+                            after.accept(tState);
+                        },
+                        (result, t) -> {});
     }
 
     /**
@@ -145,15 +148,20 @@ public class DBConnection {
 
     }
 
+    @NotNull
+    private static Bson byTransactionId(Long trId) {
+        return Filters.eq("transactionId", trId);
+    }
+
     private static FindIterable<Document> findUnfinishedTransactions() {
         return transactions.find(
                 and(ne("state", "COMPLETED"),
-                    ne("state", "DENIED")))
+                    ne("state", "CANCEL_COMPLETED")))
                 .projection(Projections.excludeId());
     }
 
     private static Block<? super Document> processResult(List<Transaction> list) {
-        return (Block<Document>) document -> list.add(getTransactionFromDocument(document));
+        return (Block<Document>) document -> list.add(getObjectFromDocument(document, Transaction.class));
     }
 
     private static SingleResultCallback<Void> createCallback(Consumer<List<Transaction>> processData, Procedure after,
@@ -164,12 +172,13 @@ public class DBConnection {
         };
     }
 
-    private static Transaction getTransactionFromDocument(Document document) {
-        try {
-            return MAPPER.readValue(document.toJson(), Transaction.class);
-        } catch(IOException e) {
-            e.printStackTrace();
-            throw new RuntimeJsonMappingException("Document is in inappropriate state: " + document.toString());
-        }
+    private static <T>  T getObjectFromDocument(Document document, Class<T> clazz ) {
+         try {
+             return MAPPER.readValue(document.toJson(), clazz);
+         } catch(IOException e) {
+             e.printStackTrace();
+             throw new RuntimeJsonMappingException("Document is in inappropriate state: " + document.toString());
+         }
     }
+
 }

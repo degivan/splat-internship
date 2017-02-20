@@ -5,8 +5,8 @@ import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.actor.Cancellable;
 import akka.actor.Props;
-import com.google.protobuf.Message;
 import junit.framework.TestCase;
+import org.slf4j.Logger;
 import ru.splat.messages.BetRequest;
 import ru.splat.messages.Response;
 import ru.splat.messages.conventions.ServicesEnum;
@@ -17,9 +17,8 @@ import ru.splat.messages.uptm.trmetadata.bet.FixBetTask;
 import ru.splat.messages.uptm.trstate.ServiceResponse;
 import ru.splat.tm.LoggerGlobal;
 import ru.splat.tm.actors.*;
-import ru.splat.tm.messages.MockRegistry;
+import ru.splat.tm.actors.MockRegistry;
 import ru.splat.tm.messages.PollMsg;
-import ru.splat.tm.messages.TaskSentMsg;
 import ru.splat.tm.protobuf.ProtobufFactory;
 import ru.splat.tm.protobuf.ResponseParser;
 import scala.concurrent.duration.Duration;
@@ -28,6 +27,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+
+import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * Created by Дмитрий on 01.01.2017.
@@ -38,6 +39,7 @@ public class TMTest extends TestCase {
     private Set<Integer> servicesOrd;
     private ResponseParser responseParser;
     //private TMStarter tmStarter;
+    private final Logger LOGGER = getLogger(TMActor.class);
 
     public void testActors() {
         //in Main
@@ -67,7 +69,7 @@ public class TMTest extends TestCase {
         ServiceMock betServiceMock = new ServiceMock();
 
         betServiceMock.sendRoutine();
-        int pollCount = tmConsumer.pollRecords().count(); LoggerGlobal.log("PollCount: " + pollCount);
+        int pollCount = tmConsumer.pollRecords().count(); log.info("PollCount: " + pollCount);
         assertEquals(pollCount, 0);
     }*/
 
@@ -114,10 +116,10 @@ public class TMTest extends TestCase {
     }
     //проверить после получения от кафки
     public void testResponseParser() {
-        Message message = Response.ServiceResponse.newBuilder().addAllServices(servicesOrd)
+        Response.ServiceResponse message = Response.ServiceResponse.newBuilder().addAllServices(servicesOrd)
                .setBooleanAttachment(true).setResult(1).build();
         ServiceResponse serviceResponse = ResponseParser.unpackMessage(message);
-        assertTrue(message instanceof Response.ServiceResponse);
+        assertTrue(message != null);
         LoggerGlobal.log(serviceResponse.getAttachment().toString());
         assertEquals(serviceResponse.getAttachment(), true);
     }

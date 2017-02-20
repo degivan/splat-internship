@@ -37,7 +37,7 @@ public class BetController
     public @ResponseBody
     NewResponse getTransactionId(@RequestBody BetInfo betInfo) throws Exception
     {
-        System.out.println(betInfo.toString());
+        //System.out.println(betInfo.toString());
         return proxy.sendNewRequest(betInfo);
         //return new NewResponse(betInfo.getUserId());
     }

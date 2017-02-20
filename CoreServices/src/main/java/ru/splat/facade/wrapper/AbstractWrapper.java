@@ -52,7 +52,7 @@ public abstract class AbstractWrapper<KafkaRecord extends Message, InternalTrTyp
             try {
                 // читаем
                 // конверитруем
-                Set<InternalTrType> transactionRequest = read();
+                Set<InternalTrType> transactionRequest = convertToSet(consumerRecords);
                 // обрабатываем с учётом идемпотентности
                 List<TransactionResult> transactionResults = service.customProcessMessage(transactionRequest);
                  // TODO подумать как завернуть через AOP

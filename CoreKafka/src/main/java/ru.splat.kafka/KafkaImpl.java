@@ -37,8 +37,6 @@ public class KafkaImpl<ProtobufRequest extends Message> implements Kafka<Protobu
         // propsConsumer.put("session.timeout.ms", "30000");
 
 
-
-
         consumer = new KafkaConsumer(propsConsumer, new LongDeserializer(), new ProtoBufMessageDeserializer(defaultInstance));
         consumer.subscribe(Arrays.asList(TOPIC_REQUEST));
 //        resetConsumerToCommitedOffset();

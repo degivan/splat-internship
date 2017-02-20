@@ -11,11 +11,14 @@ import ru.splat.kafka.serializer.ProtoBufMessageSerializer;
 import ru.splat.messages.BetRequest;
 import ru.splat.messages.Response;
 import ru.splat.tm.LoggerGlobal;
+import ru.splat.tm.actors.TMActor;
 
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.logging.Logger;
+
+import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * Created by Дмитрий on 05.02.2017.
@@ -23,6 +26,9 @@ import java.util.logging.Logger;
 public class ServiceMock {
     KafkaProducer<Long, Message> producer;
     KafkaConsumer<Long, Message> consumer;
+    private final org.slf4j.Logger LOGGER = getLogger(TMActor.class);
+    
+
     public ServiceMock() {
         Properties propsConsumer = new Properties();
         propsConsumer.put("bootstrap.servers", "localhost:9092");

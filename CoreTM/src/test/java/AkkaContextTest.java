@@ -8,13 +8,13 @@ import akka.actor.Props;
 import org.junit.Test;
 import ru.splat.tm.actors.MockRegistry;
 
-public class DispatcherTest {
+public class AkkaContextTest {
 
     @Test
     public void createWithDispatcherTest() {
         ActorSystem system = ActorSystem.create();
         ActorRef mockRegistry = system.actorOf(Props.create(MockRegistry.class).withDispatcher("phaser-dispatcher"),
-        "mock-registry");
+                "mock-registry");
         ActorRef tmActor = system.actorOf(Props.create(ru.splat.tm.actors.TMActor.class, mockRegistry).withDispatcher("tm-actor-dispatcher"),
                 "tmactor");
     }
