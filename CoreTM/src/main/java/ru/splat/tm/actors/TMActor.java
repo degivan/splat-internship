@@ -10,6 +10,7 @@ import org.apache.kafka.common.serialization.LongSerializer;
 import ru.splat.kafka.serializer.ProtoBufMessageSerializer;
 import ru.splat.messages.conventions.ServicesEnum;
 import ru.splat.messages.conventions.TaskTypesEnum;
+import ru.splat.messages.uptm.TMRecoverMsg;
 import ru.splat.messages.uptm.TMResponse;
 import ru.splat.messages.uptm.TransactionStateMsg;
 import ru.splat.messages.uptm.trmetadata.LocalTask;
@@ -37,10 +38,6 @@ public  class TMActor extends AbstractActor {
     private final ActorRef consumerActor;
     private static final String TM_CONSUMER_NAME = "tm_consumer";
 
-    /*public void setConsumerActor(ActorRef consumerActor) {
-        this.consumerActor = consumerActor;
-    }*/
-
     @Override
     public Receive createReceive() {
         return receiveBuilder()
@@ -54,6 +51,7 @@ public  class TMActor extends AbstractActor {
                     log.info("TMActor: processing RetrySendMsg for " + m.getTransactionId() + " to topic " + m.getTopic());
                     send(m.getTopic(), m.getTransactionId(), m.getMessage());})
                 .match(ServiceResponseMsg.class, this::processResponse)
+                .match(TMRecoverMsg.class, this::processRecover)
                 .matchAny(this::unhandled)
                 .build();
     }
@@ -70,6 +68,12 @@ public  class TMActor extends AbstractActor {
         });
         TransactionState transactionState = new TransactionState(transactionMetadata.getTransactionId(),responseMap);
         states.put(trId, transactionState);
+    }
+
+    private void processRecover(TMRecoverMsg m) {
+        m.getTransactions().forEach((id, list) -> {
+            //Map<ServicesEnum, ServiceResponse> responseMap = list.stream().collect(Collectors.toMap(servicesEnum -> (servicesEnum, new ServiceResponse()))
+        });
     }
 
     private void processTransaction(TransactionMetadata trMetadata) {

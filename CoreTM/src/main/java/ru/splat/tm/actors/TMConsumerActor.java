@@ -7,6 +7,7 @@ import akka.event.LoggingAdapter;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.serialization.LongDeserializer;
 import ru.splat.kafka.deserializer.ProtoBufMessageDeserializer;
 import ru.splat.messages.Response;
@@ -17,10 +18,7 @@ import ru.splat.tm.messages.ServiceResponseMsg;
 import ru.splat.tm.protobuf.ResponseParser;
 import scala.concurrent.duration.Duration;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 
@@ -29,7 +27,8 @@ import java.util.concurrent.TimeUnit;
  */
 public class TMConsumerActor extends AbstractActor{
     //KafkaConsumer<Long, Message> consumer;
-    private final String[] topicsList =  {"BetRes", "BillingRes", "EventRes", "PunterRes"};
+    private final String[] topics =  {"BetRes", "BillingRes", "EventRes", "PunterRes"};
+    private final Map<String, TopicTracker> trackers = new HashMap<>();
     private KafkaConsumer<Long, Response.ServiceResponse> consumer;
     private final ActorRef tmActor;
     private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
@@ -48,21 +47,25 @@ public class TMConsumerActor extends AbstractActor{
         Properties propsConsumer = new Properties();
         propsConsumer.put("bootstrap.servers", "localhost:9092");
         propsConsumer.put("group.id", "test");
-        propsConsumer.put("enable.auto.commit", "true");
-        propsConsumer.put("auto.commit.interval.ms", "500");//пока что с автокоммитом
+        propsConsumer.put("enable.auto.commit", "false");
         consumer = new KafkaConsumer(propsConsumer, new LongDeserializer(),
                 new ProtoBufMessageDeserializer(Response.ServiceResponse.getDefaultInstance()));
-        consumer.subscribe(Arrays.asList(topicsList));
+        //consumer.subscribe(Arrays.asList(topics));
+        List<TopicPartition> partitions = new LinkedList<>();
+        for (String topic : topics) {
+            partitions.add(new TopicPartition(topic, 0));
+            trackers.put(topic, new TopicTracker(topic, 0));
+        }
+        consumer.assign(partitions);
         resetToCommitedOffset();
         log.info("TMConsumerActor: initialized");
-        start();
     }
 
-    private void resetToCommitedOffset() {
-        /*for (String topic : topicsList) {
+    private void resetToCommitedOffset() { // Заставить работать
+        for (String topic : topics) {
             TopicPartition partition = new TopicPartition(topic, 0);
             consumer.seek(partition, consumer.committed(partition).offset());
-        }*/
+        }
     }
 
     private void commitTransaction(CommitTransactionMsg m) {
@@ -74,6 +77,7 @@ public class TMConsumerActor extends AbstractActor{
     }
 
     private void poll() {
+        log.info("poll");
         ConsumerRecords<Long, Response.ServiceResponse> records = consumer.poll(0);
         for (ConsumerRecord<Long, Response.ServiceResponse> record : records) {
             //log.info("message received: " + record.key());
@@ -95,14 +99,22 @@ public class TMConsumerActor extends AbstractActor{
         TOPICS_MAP.put("BillingRes", ServicesEnum.BillingService);
         TOPICS_MAP.put("PunterRes", ServicesEnum.PunterService);
     }
-
-
-    private class topicTracker {
-        private Map<Long, Long> topicsMap = new HashMap<>();
+    private class TopicTracker {
+        private Map<Long, Long> records = new HashMap<>();
         private final String topicName;
+        private final long currentOffset;
+        private Set<Long> pendingTransactions= new HashSet<>();
 
-        private topicTracker(String topicName) {
+        private TopicTracker(String topicName, long currentOffset) {
             this.topicName = topicName;
+            this.currentOffset = currentOffset;
+        }
+        public String getTopicName() {
+            return topicName;
+        }
+
+        public void addRecord(long trId) {
+            //records.put()
         }
     }
 }
