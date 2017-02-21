@@ -8,12 +8,14 @@
 -SendConfirmation
 -коллбэк в TMConsumer
 -принимать TransactionStateMsg вместо TransactionState
+-отправлять TMRecoverMsg с отправленными транзакциями ТМ-у
 ==========CoreTM===========
 -async logging
 -SendConfirmation
 -коллбэк в TMConsumer
 -dispatcher & scheduler binging
 -"сложный коммит"
+-Доделать рекавер
 
 ==========TESTBOOT===========
 -увеличить частоту отправки запросов
