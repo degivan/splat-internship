@@ -7,15 +7,13 @@ import akka.event.LoggingAdapter;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.serialization.LongDeserializer;
 import ru.splat.kafka.deserializer.ProtoBufMessageDeserializer;
 import ru.splat.messages.Response;
 import ru.splat.messages.conventions.ServicesEnum;
-import ru.splat.tm.messages.CommitTransactionMsg;
-import ru.splat.tm.messages.MarkSpareMsg;
-import ru.splat.tm.messages.PollMsg;
-import ru.splat.tm.messages.ServiceResponseMsg;
+import ru.splat.tm.messages.*;
 import ru.splat.tm.protobuf.ResponseParser;
 import scala.concurrent.duration.Duration;
 
@@ -40,6 +38,9 @@ public class TMConsumerActor extends AbstractActor{
                 .match(PollMsg.class, m -> poll())
                 .match(CommitTransactionMsg.class, this::commitTransaction)
                 .match(MarkSpareMsg.class, this::markSpareTransaction)
+                .match(RetryCommitMsg.class, m -> {
+                    log.info("retry commiting transaction " + m.getTransactionId());
+                })
                 .matchAny(this::unhandled)
                 .build();
     }
@@ -69,30 +70,43 @@ public class TMConsumerActor extends AbstractActor{
 
     private void resetToCommitedOffset(Set<TopicPartition> partitionSet) {
         for (TopicPartition partition : partitionSet) {
+            long offset = 0;
             try {
-                consumer.seek(partition, consumer.committed(partition).offset());
-                trackers.put(partition.topic(), new TopicTracker(partition.topic(),consumer.committed(partition).offset()));
-                log.info("created TopicTracker for topic " + partition.topic() + " with currentOffset on " + consumer.committed(partition).offset());
+                offset = consumer.committed(partition).offset();
+                consumer.seek(partition, offset);
+
                 //log.info("reset to commited offset for " + partition.topic());
             }
-            /*catch (NullPointerException e) {
+            catch (NullPointerException e) {
                 log.info(partition.topic() + " offset is null");
-            }*/
+            }
             catch (Exception e) {
                 e.printStackTrace();
+            }
+            finally {
+                trackers.put(partition.topic(), new TopicTracker(partition, offset));
+                log.info("created TopicTracker for topic " + partition.topic() + " with currentOffset on " + offset);
             }
         }
     }
 
     private void commitTransaction(CommitTransactionMsg m) {
         trackers.values().forEach(tracker -> {
-            long relOffset = tracker.commit(m.getTransactionId());
-            if (relOffset != -1) {
-
+            long offset = tracker.commit(m.getTransactionId());
+            if (offset != -1) {
+                OffsetAndMetadata offsetAndMetadata = new OffsetAndMetadata(offset);
+                Map<TopicPartition,OffsetAndMetadata> commitMap = new HashMap<>(1);
+                commitMap.put(tracker.getPartition(), offsetAndMetadata);
+                consumer.commitAsync(commitMap, (metadata, e) -> {
+                    if (e == null) log.info("Transaction " + m.getTransactionId() + " is commited in topic " + tracker.getTopicName());
+                    else {
+                        getSelf().tell(new RetryCommitMsg(m.getTransactionId()), getSelf());
+                    }
+                });
             }
+            log.info("Transaction " + m.getTransactionId() + " cannot be commited in topic " + tracker.getTopicName());
         });
-
-        log.info("Transaction " + m.getTransactionId() + " is commited");
+        //log.info("Transaction " + m.getTransactionId() + " is commited");
     }
 
     public void start() {
@@ -100,7 +114,7 @@ public class TMConsumerActor extends AbstractActor{
     }
 
     private void poll() {
-        //log.info("poll");
+        //
         ConsumerRecords<Long, Response.ServiceResponse> records = consumer.poll(0);
         for (ConsumerRecord<Long, Response.ServiceResponse> record : records) {
             //log.info("message received: " + record.key());
@@ -109,12 +123,11 @@ public class TMConsumerActor extends AbstractActor{
                     TOPIC_TO_SERVICE_MAP.get(record.topic()), record.offset());
             //log.info("message received from : " + record.topic() + ": " + record.key() + " " + sr.getAttachment() );
             tmActor.tell(srm, getSelf());
-
-            //getSelf().tell(new PollMsg(), getSelf());
         }
-        //consumer.commitAsync();
+        consumer.commitAsync();
         getContext().system().scheduler().scheduleOnce(Duration.create(250, TimeUnit.MILLISECONDS),
                 getSelf(), new PollMsg(), getContext().dispatcher(), null);
+        log.info("poll");
 
     }
 
@@ -139,11 +152,13 @@ public class TMConsumerActor extends AbstractActor{
     private class TopicTracker {
         private Map<Long, Long> records = new HashMap<>();  //TODO:проверить порядок оффсетов при poll() в список рекордов (разные топики), заменить на массив или ArrayList
         private final String topicName;
-        private final long currentOffset;   //текущий оффсет консюмера
+        private final TopicPartition partition;
+        private long currentOffset;   //текущий оффсет консюмера
         private Set<Long> commitedTransactions= new HashSet<>();
 
-        private TopicTracker(String topicName, long currentOffset) {
-            this.topicName = topicName;
+        private TopicTracker(TopicPartition partition, long currentOffset) {
+            this.topicName = partition.topic();
+            this.partition = partition;
             this.currentOffset = currentOffset;
         }
         String getTopicName() {
@@ -157,23 +172,24 @@ public class TMConsumerActor extends AbstractActor{
                 records.put(offset, trId);
             log.info(topicName + ": record with id " + trId);
         }
-        //возвращает число сообщений которые можно закоммитить или -1, если коммитить пока нельзя
+        //возвращает оффсет (абсолютный) до которого можно коммитить или -1, если коммитить пока нельзя
         long commit(long trId) {
             commitedTransactions.add(trId); //добавляем эту транзакцию в закоммиченные
             long offset = currentOffset;
-            boolean commitable = true;
-            /*for ()
-            for (long record : records) {
-                if (!(commitedTransactions.contains(record) || record != -1)) {
-                    commitable = false;
-                    break;
-                }
+            boolean commitable = false;
+            while(true) {   //TODO исправить сей быдлоцикл
+                Long record = records.get(offset);
+                if (record == null || !(commitedTransactions.contains(record) || record == -1)) break;
                 else {
                     offset++;
+                    if (record == trId)
+                        commitable = true;
                 }
-            }*/
-            if (commitable)
+            }
+            if (commitable) {
+                currentOffset = offset;
                 return offset;
+            }
             else
                 return -1;
         }
@@ -182,9 +198,9 @@ public class TMConsumerActor extends AbstractActor{
             records.put(offset, -1l);
         }
 
-
-
-
+        public TopicPartition getPartition() {
+            return partition;
+        }
     }
 }
 

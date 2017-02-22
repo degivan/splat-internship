@@ -16,9 +16,9 @@
 -dispatcher & scheduler binвing
 -"сложный коммит"
 -доделать рекавер ТМ-а              +
--доделать коммит транзакции (TMConsumerActor.TopicTracker.commit())
+-доделать коммит транзакции (TMConsumerActor.TopicTracker.commit())  + (надо тестить)
 -протестировать "сложный коммит"
--fix "Error while fetching metadata with correlation id ..."
+-fix "Error while fetching metadata with correlation id ..."   +
 
 
 
