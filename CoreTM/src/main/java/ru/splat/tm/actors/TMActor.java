@@ -20,11 +20,9 @@ import ru.splat.messages.uptm.trstate.TransactionState;
 import ru.splat.tm.messages.*;
 import ru.splat.tm.protobuf.ProtobufFactory;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
-import scala.concurrent.duration.Duration;
 
 
 /**
@@ -102,6 +100,7 @@ public  class TMActor extends AbstractActor {
     private void processResponse(ServiceResponseMsg serviceResponseMsg) {
         Long trId = serviceResponseMsg.getTransactionId();
         if (!states.containsKey(trId)) {
+            consumerActor.tell(new MarkSpareMsg(trId, serviceResponseMsg.getService(), serviceResponseMsg.getOffset()), getSelf());
             return;
         }
         ServiceResponse response = serviceResponseMsg.getMessage();
@@ -114,8 +113,8 @@ public  class TMActor extends AbstractActor {
                 .allMatch(e -> e);
         if (allReceived) {
             log.info("all responses for transaction " + trId + " are received");
-            registry.tell(transactionState, getSelf());
-            //registry.tell(new TransactionStateMsg(transactionState, () -> commitTransaction(trId)), getSelf());
+            //registry.tell(transactionState, getSelf());
+            registry.tell(new TransactionStateMsg(transactionState, () -> commitTransaction(trId)), getSelf());
             states.remove(trId);
         }
         //log.info("TMActor: responses for " + serviceResponseMsg.getService() + " " + trId + " checked"); for testing
@@ -160,7 +159,7 @@ public  class TMActor extends AbstractActor {
                 getContext().system().dispatcher(), null);*/
 
     }
-    private static Map<ServicesEnum, String> SERVICE_TO_TOPIC_MAP;
+    private static Map<ServicesEnum, String> SERVICE_TO_TOPIC_MAP;  //TODO: поменять на BiMap?
     private static Map<String, ServicesEnum> TOPIC_TO_SERVICE_MAP;
     static {
         SERVICE_TO_TOPIC_MAP = new HashMap<>();

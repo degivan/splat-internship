@@ -10,11 +10,13 @@ public class ServiceResponseMsg {
     private final ServiceResponse message;
     private final Long transactionId;
     private final ServicesEnum service;
+    private final long offset;
 
-    public ServiceResponseMsg(Long transactionId, ServiceResponse message, ServicesEnum service) {
+    public ServiceResponseMsg(Long transactionId, ServiceResponse message, ServicesEnum service, long offset) {
         this.message = message;
         this.transactionId = transactionId;
         this.service = service;
+        this.offset = offset;
     }
 
     public ServiceResponse getMessage() {
@@ -27,5 +29,9 @@ public class ServiceResponseMsg {
 
     public ServicesEnum getService() {
         return service;
+    }
+
+    public long getOffset() {
+        return offset;
     }
 }
