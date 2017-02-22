@@ -40,6 +40,7 @@ public class TMConsumerActor extends AbstractActor{
                 .match(MarkSpareMsg.class, this::markSpareTransaction)
                 .match(RetryCommitMsg.class, m -> {
                     log.info("retry commiting transaction " + m.getTransactionId());
+                    commitTransaction(m);
                 })
                 .matchAny(this::unhandled)
                 .build();
@@ -91,6 +92,7 @@ public class TMConsumerActor extends AbstractActor{
     }
 
     private void commitTransaction(CommitTransactionMsg m) {
+
         trackers.values().forEach(tracker -> {
             long offset = tracker.commit(m.getTransactionId());
             if (offset != -1) {
@@ -104,7 +106,8 @@ public class TMConsumerActor extends AbstractActor{
                     }
                 });
             }
-            log.info("Transaction " + m.getTransactionId() + " cannot be commited in topic " + tracker.getTopicName());
+            else
+                log.info("Transaction " + m.getTransactionId() + " cannot be commited in topic " + tracker.getTopicName());
         });
         //log.info("Transaction " + m.getTransactionId() + " is commited");
     }
@@ -124,7 +127,7 @@ public class TMConsumerActor extends AbstractActor{
             //log.info("message received from : " + record.topic() + ": " + record.key() + " " + sr.getAttachment() );
             tmActor.tell(srm, getSelf());
         }
-        consumer.commitAsync();
+        //consumer.commitAsync();
         getContext().system().scheduler().scheduleOnce(Duration.create(250, TimeUnit.MILLISECONDS),
                 getSelf(), new PollMsg(), getContext().dispatcher(), null);
         log.info("poll");
@@ -139,7 +142,7 @@ public class TMConsumerActor extends AbstractActor{
         SERVICE_TO_TOPIC_MAP.put(ServicesEnum.BetService, "BetRes");
         SERVICE_TO_TOPIC_MAP.put(ServicesEnum.EventService, "EventRes");
         SERVICE_TO_TOPIC_MAP.put(ServicesEnum.BillingService, "BillingRes");
-        SERVICE_TO_TOPIC_MAP.put(ServicesEnum.PunterService, "unterRes");
+        SERVICE_TO_TOPIC_MAP.put(ServicesEnum.PunterService, "PunterRes");
         TOPIC_TO_SERVICE_MAP = new HashMap<>();
         TOPIC_TO_SERVICE_MAP.put("BetRes", ServicesEnum.BetService);
         TOPIC_TO_SERVICE_MAP.put("EventRes", ServicesEnum.EventService);
@@ -170,7 +173,7 @@ public class TMConsumerActor extends AbstractActor{
                 records.put(offset, -1l);       //trId -1 - индикатор лишнего сообщения (можно коммитить)
             else
                 records.put(offset, trId);
-            log.info(topicName + ": record with id " + trId);
+            //log.info(topicName + ": record with id " + trId);
         }
         //возвращает оффсет (абсолютный) до которого можно коммитить или -1, если коммитить пока нельзя
         long commit(long trId) {
@@ -195,6 +198,7 @@ public class TMConsumerActor extends AbstractActor{
         }
         //make excess transaction message commitable
         void markTransaction(long offset) {
+            //log.info("excess message is caught!!! offset: " + offset + " topic: " + topicName); //for testing
             records.put(offset, -1l);
         }
 

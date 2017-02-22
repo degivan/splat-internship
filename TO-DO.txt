@@ -18,7 +18,8 @@
 -доделать рекавер ТМ-а              +
 -доделать коммит транзакции (TMConsumerActor.TopicTracker.commit())  + (надо тестить)
 -протестировать "сложный коммит"
--fix "Error while fetching metadata with correlation id ..."   +
+-fix: "Error while fetching metadata with correlation id ..."   +
+-fix: commitAsync не позволяет отлавливать продублированные сообщения при высокой частоте poll
 
 
 
