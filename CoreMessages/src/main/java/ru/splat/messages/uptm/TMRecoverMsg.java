@@ -2,6 +2,7 @@ package ru.splat.messages.uptm;
 
 import ru.splat.messages.conventions.ServicesEnum;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -16,6 +17,11 @@ public class TMRecoverMsg {
     public TMRecoverMsg(Map<Long, List<ServicesEnum>> transactions) {
         this.transactions = transactions;
     }
+
+    public TMRecoverMsg() {
+        transactions = new HashMap<>();
+    }
+
     public Map<Long, List<ServicesEnum>> getTransactions() {
         return transactions;
     }

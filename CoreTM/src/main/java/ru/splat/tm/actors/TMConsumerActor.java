@@ -58,13 +58,22 @@ public class TMConsumerActor extends AbstractActor{
         }
         consumer.assign(partitions);
         resetToCommitedOffset();
-        log.info("TMConsumerActor: initialized");
+        log.info("TMConsumerActor is initialized");
     }
 
     private void resetToCommitedOffset() { // Заставить работать
         for (String topic : topics) {
             TopicPartition partition = new TopicPartition(topic, 0);
-            consumer.seek(partition, consumer.committed(partition).offset());
+            try {
+                consumer.seek(partition, consumer.committed(partition).offset());
+                log.info("reset to commited offset for " + topic);
+            }
+            catch (NullPointerException e) {
+                log.info(topic + " offset is null");
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -77,18 +86,20 @@ public class TMConsumerActor extends AbstractActor{
     }
 
     private void poll() {
-        log.info("poll");
+        //log.info("poll");
         ConsumerRecords<Long, Response.ServiceResponse> records = consumer.poll(0);
         for (ConsumerRecord<Long, Response.ServiceResponse> record : records) {
             //log.info("message received: " + record.key());
             ServiceResponseMsg srm = new ServiceResponseMsg(record.key(), ResponseParser.unpackMessage(record.value()),
                     TOPICS_MAP.get(record.topic()));
-            //log.info("TMConsumerActor: message received from : " + record.topic() + ": " + record.key() + " " + sr.getAttachment() );
+            //log.info("message received from : " + record.topic() + ": " + record.key() + " " + sr.getAttachment() );
             tmActor.tell(srm, getSelf());
             //getSelf().tell(new PollMsg(), getSelf());
         }
+        consumer.commitAsync();
         getContext().system().scheduler().scheduleOnce(Duration.create(250, TimeUnit.MILLISECONDS),
                 getSelf(), new PollMsg(), getContext().dispatcher(), null);
+
     }
 
     private static Map<String, ServicesEnum> TOPICS_MAP;
