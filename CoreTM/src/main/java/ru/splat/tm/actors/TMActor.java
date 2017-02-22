@@ -73,7 +73,9 @@ public  class TMActor extends AbstractActor {
     private void processRecover(TMRecoverMsg m) {
         log.info("processing TMRecoverMsg with " + m.getTransactions().size() + " transactions");
         m.getTransactions().forEach((id, servicesList) -> {
-            //Map<ServicesEnum, ServiceResponse> responseMap = list.stream().collect(Collectors.toMap(servicesEnum -> (servicesEnum, new ServiceResponse()))
+            Map<ServicesEnum, ServiceResponse> responseMap = servicesList.stream()
+                    .collect(Collectors.toMap((servicesEnum) -> servicesEnum,  (servicesEnum) ->  (new ServiceResponse())));
+            states.put(id, new TransactionState(id, responseMap));
         });
         consumerActor.tell(new PollMsg(), getSelf());
     }
@@ -112,15 +114,15 @@ public  class TMActor extends AbstractActor {
                 .allMatch(e -> e);
         if (allReceived) {
             log.info("all responses for transaction " + trId + " are received");
-            //registry.tell(transactionState, getSelf());
-            registry.tell(new TransactionStateMsg(transactionState, () -> commitTransaction(trId)), getSelf());
+            registry.tell(transactionState, getSelf());
+            //registry.tell(new TransactionStateMsg(transactionState, () -> commitTransaction(trId)), getSelf());
             states.remove(trId);
         }
         //log.info("TMActor: responses for " + serviceResponseMsg.getService() + " " + trId + " checked"); for testing
     }
 
 
-
+    //сообщить консюмеру, что можно коммитить транзакцию trId в топиках
     private void commitTransaction(long trId) {
         consumerActor.tell(new CommitTransactionMsg(trId), getSelf());
     }
@@ -137,10 +139,6 @@ public  class TMActor extends AbstractActor {
             log.info("all requests for transaction " + trId + " are sent to services");
             registry.tell(new TMResponse(trId), getSelf());
         }
-        //for testing
-        /*ServiceResponse rs = states.get(m.getTransactionId()).getLocalStates()
-                .get(m.getService());
-        log.info("sent: " + rs.isRequestSent() + "received: " + rs.isResponseReceived() + "positive " + rs.isPositive());*/
     }
 
     public TMActor(ActorRef registry) {
@@ -164,7 +162,6 @@ public  class TMActor extends AbstractActor {
     }
     private static Map<ServicesEnum, String> SERVICE_TO_TOPIC_MAP;
     private static Map<String, ServicesEnum> TOPIC_TO_SERVICE_MAP;
-
     static {
         SERVICE_TO_TOPIC_MAP = new HashMap<>();
         SERVICE_TO_TOPIC_MAP.put(ServicesEnum.BetService, "BetReq");
@@ -176,9 +173,7 @@ public  class TMActor extends AbstractActor {
         TOPIC_TO_SERVICE_MAP.put("EventReq", ServicesEnum.EventService);
         TOPIC_TO_SERVICE_MAP.put("BillingReq", ServicesEnum.BillingService);
         TOPIC_TO_SERVICE_MAP.put("PunterReq", ServicesEnum.PunterService);
-
     }
-
 }
 
 
