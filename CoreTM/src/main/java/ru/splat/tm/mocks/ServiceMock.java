@@ -51,9 +51,19 @@ public class ServiceMock {
         Message message1 = Response.ServiceResponse.newBuilder()
                 .setLongAttachment(100L).setResult(1).build();
         sendMockResponse("BetRes", 111L, message1);
+        sendMockResponse("BetRes", 111L, message1);
+        sendMockResponse("BetRes", 111L, message1);
+        sendMockResponse("BetRes", 111L, message1);
+        sendMockResponse("BetRes", 111L, message1);
         Message message2 = Response.ServiceResponse.newBuilder()    //к BetService это не относится, ну и ладно
                 .setBooleanAttachment(true).setResult(1).build();
         sendMockResponse("PunterRes", 111L, message2);
+        try {
+            Thread.sleep(2000);
+            sendMockResponse("PunterRes", 111L, message2);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
     }
 

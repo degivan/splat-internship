@@ -8,12 +8,20 @@
 -SendConfirmation
 -коллбэк в TMConsumer
 -принимать TransactionStateMsg вместо TransactionState
+-отправлять TMRecoverMsg с отправленными транзакциями ТМ-у
 ==========CoreTM===========
--async logging
--SendConfirmation
--коллбэк в TMConsumer
--dispatcher & scheduler binging
+-async logging                      +
+-SendConfirmation                   +
+-коллбэк в TMConsumer               +
+-dispatcher & scheduler binвing
 -"сложный коммит"
+-доделать рекавер ТМ-а              +
+-доделать коммит транзакции (TMConsumerActor.TopicTracker.commit())  + (надо тестить)
+-протестировать "сложный коммит"
+-fix: "Error while fetching metadata with correlation id ..."   +
+-fix: commitAsync не позволяет отлавливать продублированные сообщения при высокой частоте poll
+
+
 
 ==========TESTBOOT===========
 -увеличить частоту отправки запросов

@@ -4,6 +4,7 @@ import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.actor.Cancellable;
 import akka.actor.Props;
+import ru.splat.messages.uptm.TMRecoverMsg;
 import ru.splat.messages.uptm.trmetadata.LocalTask;
 import ru.splat.messages.uptm.trmetadata.TransactionMetadata;
 import ru.splat.messages.uptm.trmetadata.bet.FixBetTask;
@@ -33,6 +34,7 @@ public class Main {
         //ActorRef ticker =  system.actorOf(Props.create(TickerSelf.class).withDispatcher("tm-actor-dispatcher"), "ticker");
         final ActorRef registry = system.actorOf(Props.create(MockRegistry.class), "MockRegistry");
         final ActorRef tmActor = system.actorOf(Props.create(TMActor.class, registry).withDispatcher("tm-actor-dispatcher"), "TMActor");
+        tmActor.tell(new TMRecoverMsg(), ActorRef.noSender());
         /*final ActorRef consumerActor = system.actorOf(Props.create(TMConsumerActor.class, tmActor).
                 withDispatcher("tm-consumer-dispatcher"), "TMConsumerActor");*/
 
@@ -49,11 +51,5 @@ public class Main {
         /*Cancellable cancellable = system.scheduler().schedule(Duration.Zero(),
                 Duration.create(500, TimeUnit.MILLISECONDS), consumerActor, new PollMsg(),
                 system.dispatcher(), null);*/
-
-
-
-
-
-
     }
 }
