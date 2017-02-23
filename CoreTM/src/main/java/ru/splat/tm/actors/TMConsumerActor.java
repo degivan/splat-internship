@@ -182,7 +182,7 @@ public class TMConsumerActor extends AbstractActor{
         //возвращает оффсет (абсолютный) до которого можно коммитить или -1, если коммитить пока нельзя
         long commit(long trId) {
             commitedTransactions.add(trId); //добавляем эту транзакцию в закоммиченные
-            log.info(topicName + "currentOffset:  " + currentOffset + " records: "); StringBuilder sb = new StringBuilder();
+            log.info(topicName + ": currentOffset:  " + currentOffset); StringBuilder sb = new StringBuilder();
             records.entrySet().forEach(entry -> sb.append(entry.getKey() + " : " + entry.getValue() + " | ")); log.info(sb.toString());
             long offset = currentOffset;
             boolean commitable = false;
@@ -196,9 +196,9 @@ public class TMConsumerActor extends AbstractActor{
                 }
             }
             if (commitable) {
-                log.info("commiting " + (offset - currentOffset + 1) + " records");
+                log.info("commiting " + (offset - currentOffset) + " records");
                 currentOffset = offset;
-                return offset - 1;
+                return offset;
             }
             else
                 return -1;
