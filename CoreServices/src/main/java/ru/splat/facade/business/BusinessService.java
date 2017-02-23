@@ -9,7 +9,7 @@ import ru.splat.facade.feautures.TransactionRequest;
 
 public interface BusinessService<T extends TransactionRequest>
 {
-    List<TransactionResult> processTransactions(List<T> transactionRequests);
+    List<TransactionResult> processTransactions(List<T> transactionRequests) throws Exception;
 
     void commitBusinessService();
 

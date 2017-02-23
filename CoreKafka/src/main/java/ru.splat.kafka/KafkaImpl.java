@@ -13,7 +13,6 @@ import org.apache.kafka.common.serialization.LongSerializer;
 import ru.splat.kafka.deserializer.ProtoBufMessageDeserializer;
 import ru.splat.kafka.feautures.TransactionResult;
 import ru.splat.kafka.serializer.ProtoBufMessageSerializer;
-
 import java.util.*;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
@@ -38,8 +37,8 @@ public class KafkaImpl<ProtobufRequest extends Message> implements Kafka<Protobu
 
 
         consumer = new KafkaConsumer(propsConsumer, new LongDeserializer(), new ProtoBufMessageDeserializer(defaultInstance));
-        consumer.subscribe(Arrays.asList(TOPIC_REQUEST));
-//        resetConsumerToCommitedOffset();
+        consumer.assign(Collections.singletonList(new TopicPartition(TOPIC_REQUEST,0)));
+//        consumer.subscribe(Arrays.asList(TOPIC_REQUEST));
 
         Properties propsProducer = new Properties();
         propsProducer.put("bootstrap.servers", "localhost:9092");
@@ -74,9 +73,7 @@ public class KafkaImpl<ProtobufRequest extends Message> implements Kafka<Protobu
         if (consumer!=null)
         {
             TopicPartition partition = new TopicPartition(TOPIC_REQUEST, 0);
-            if (consumer.committed(partition) != null)
-                consumer.seek(partition, consumer.committed(partition).offset());
-            System.out.println(consumer.committed(partition).offset());
+            consumer.seek(partition, consumer.committed(partition).offset());
         }
     }
 

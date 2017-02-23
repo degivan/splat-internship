@@ -22,7 +22,7 @@ public class ServiceFacade<KafkaRecord extends Message, InternalTrType extends T
     private BusinessService<InternalTrType> businessService;
 
     @Transactional
-    public List<TransactionResult> customProcessMessage(Set<InternalTrType> transactionRequests) throws RuntimeException
+    public List<TransactionResult> customProcessMessage(Set<InternalTrType> transactionRequests) throws Exception
     {
 
         if (transactionRequests == null || transactionRequests.isEmpty()) return null;

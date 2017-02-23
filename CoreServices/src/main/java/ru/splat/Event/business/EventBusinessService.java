@@ -141,8 +141,7 @@ public class EventBusinessService implements BusinessService<EventInfo>,LimitSer
 
 
     @Override
-    public List<TransactionResult> processTransactions(List<EventInfo> transactionRequests)
-    {
+    public List<TransactionResult> processTransactions(List<EventInfo> transactionRequests) throws Exception {
 
         LOGGER.info(getClassName() + " Start processTransaction");
 
@@ -177,6 +176,7 @@ public class EventBusinessService implements BusinessService<EventInfo>,LimitSer
         }
 
         LOGGER.info(getClassName() + " Stop processTransaction");
+//        throw new Exception();
         return results;
     }
 
