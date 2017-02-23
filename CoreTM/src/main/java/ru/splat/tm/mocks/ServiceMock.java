@@ -60,7 +60,7 @@ public class ServiceMock {
         sendMockResponse("PunterRes", 111L, message2);
         try {
             Thread.sleep(2000);
-            sendMockResponse("PunterRes", 111L, message2);
+            //sendMockResponse("PunterRes", 111L, message2);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
