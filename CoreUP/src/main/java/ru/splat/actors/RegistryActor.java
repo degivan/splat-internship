@@ -5,14 +5,16 @@ import ru.splat.db.Bounds;
 import ru.splat.message.RegisterRequest;
 import ru.splat.message.RegisterResponse;
 import ru.splat.messages.uptm.trstate.TransactionState;
+import scala.concurrent.duration.Duration;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Иван on 21.12.2016.
  */
-public class RegistryActor extends ResendingActor {
+public class RegistryActor extends LoggingActor {
     private final Map<Bounds, ActorRef> actors;
 
 
@@ -53,5 +55,15 @@ public class RegistryActor extends ResendingActor {
 
         actors.put(request.getBounds(), request.getActor());
         sender().tell(new RegisterResponse(), self());
+    }
+
+    private void resendOverDelay(Object o) {
+        log.info("Resending over delay: " + o.toString());
+
+        context().system()
+                .scheduler()
+                .scheduleOnce(
+                        Duration.create(500L, TimeUnit.MILLISECONDS),
+                        self(), o, context().dispatcher(), sender());
     }
 }

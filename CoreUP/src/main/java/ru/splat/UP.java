@@ -10,13 +10,9 @@ import ru.splat.db.DBConnection;
 import ru.splat.db.Procedure;
 import ru.splat.message.RecoverRequest;
 import ru.splat.tm.actors.TMActor;
-import ru.splat.tm.actors.TMConsumerActor;
-import ru.splat.tm.messages.PollMsg;
-import scala.concurrent.duration.Duration;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Wraps actor system.
@@ -27,7 +23,6 @@ public class UP {
     private static final String REGISTRY_NAME = "registry";
     private static final String ID_GEN_NAME = "id_gen";
     private static final int REGISTRY_SIZE = 10;
-    private static final String TM_CONSUMER_NAME = "tm_consumer";
 
     private final ActorSystem system;
     private final ActorRef registry;
@@ -60,15 +55,7 @@ public class UP {
 
         Proxy proxy = Proxy.createWith(this);
 
-        doRecover(() -> {
-            /*ActorRef consumerActor = system.actorOf(Props.create(TMConsumerActor.class, tmActor).withDispatcher("tm-consumer-dispatcher"), TM_CONSUMER_NAME);
-            system.scheduler().schedule(Duration.Zero(),
-                    Duration.create(250, TimeUnit.MILLISECONDS), consumerActor, new PollMsg(),
-                    system.dispatcher(), ActorRef.noSender());*/
-
-        });
-        LoggerGlobal.log("ACTOR SYSTEM INITALIZED", this);
-
+        doRecover(() -> LoggerGlobal.log("Actor system initialized.", this));
 
         return proxy;
     }
@@ -94,6 +81,7 @@ public class UP {
                 receivers.get(i % size)
                         .tell(new RecoverRequest(trList.get(i)), ActorRef.noSender());
             }
+
         }, afterRecover);
     }
 
