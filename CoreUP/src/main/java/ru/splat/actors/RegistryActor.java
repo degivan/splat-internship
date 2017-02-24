@@ -5,6 +5,7 @@ import ru.splat.db.Bounds;
 import ru.splat.message.RegisterRequest;
 import ru.splat.message.RegisterResponse;
 import ru.splat.messages.uptm.trstate.TransactionState;
+import ru.splat.messages.uptm.trstate.TransactionStateMsg;
 import scala.concurrent.duration.Duration;
 
 import java.util.HashMap;
@@ -22,6 +23,7 @@ public class RegistryActor extends LoggingActor {
     public Receive createReceive() {
         return receiveBuilder().match(RegisterRequest.class, this::processRegisterRequest)
                 .match(TransactionState.class, this::processTransactionState)
+                .match(TransactionStateMsg.class, this::processTransactionStateMsg) //BET-3 TransactionStateMsg fix
                 .matchAny(this::unhandled).build();
 
     }
@@ -42,6 +44,20 @@ public class RegistryActor extends LoggingActor {
             phaser.tell(o, self());
         }
     }
+    //BET-3 TransactionStateMsg fix
+    private void processTransactionStateMsg(TransactionStateMsg o) {
+        log.info("Processing TransactionState: " + o.getTransactionState().toString());
+
+        ActorRef phaser = actors.get(boundsFromTrId(o.getTransactionState().getTransactionId()));
+        if(phaser == null) {
+            log.info("Phaser for transactionId: " + o.getTransactionState().getTransactionId() + " wasn't created yet.");
+
+            resendOverDelay(o);
+        } else {
+            phaser.tell(o, self());
+        }
+    }
+
 
     private static Bounds boundsFromTrId(Long transactionId) {
         Long lowerBound = transactionId - (transactionId % IdGenerator.RANGE);
