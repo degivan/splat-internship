@@ -1,17 +1,13 @@
 package ru.splat.tm.actors;
 
 import akka.actor.AbstractActor;
-//import org.slf4j.Logger;
-import ru.splat.messages.uptm.TMResponse;
-import ru.splat.messages.uptm.TransactionStateMsg;
-import ru.splat.messages.uptm.trstate.TransactionState;
-
-import ru.splat.tm.LoggerGlobal;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
+import ru.splat.messages.uptm.TMResponse;
+import ru.splat.messages.uptm.trstate.TransactionState;
+import ru.splat.messages.uptm.trstate.TransactionStateMsg;
+
+//import org.slf4j.Logger;
 
 
 

@@ -3,20 +3,34 @@ package ru.splat;
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.actor.Props;
+import akka.dispatch.Futures;
+import akka.dispatch.OnSuccess;
+import akka.japi.Pair;
+import akka.pattern.Patterns;
+import akka.util.Timeout;
 import ru.splat.actors.IdGenerator;
 import ru.splat.actors.Receiver;
 import ru.splat.actors.RegistryActor;
 import ru.splat.db.DBConnection;
 import ru.splat.db.Procedure;
 import ru.splat.message.RecoverRequest;
+import ru.splat.message.RecoverResponse;
+import ru.splat.messages.Transaction;
+import ru.splat.messages.conventions.ServicesEnum;
+import ru.splat.messages.uptm.TMRecoverMsg;
+import ru.splat.messages.uptm.trmetadata.MetadataPatterns;
+import ru.splat.messages.uptm.trstate.TransactionState;
 import ru.splat.tm.actors.TMActor;
-import ru.splat.tm.actors.TMConsumerActor;
-import ru.splat.tm.messages.PollMsg;
-import scala.concurrent.duration.Duration;
+import scala.concurrent.ExecutionContext;
+import scala.concurrent.Future;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 /**
  * Wraps actor system.
@@ -27,15 +41,17 @@ public class UP {
     private static final String REGISTRY_NAME = "registry";
     private static final String ID_GEN_NAME = "id_gen";
     private static final int REGISTRY_SIZE = 10;
-    private static final String TM_CONSUMER_NAME = "tm_consumer";
+    private static final Timeout TIMEOUT = Timeout.apply(10, TimeUnit.SECONDS);
 
     private final ActorSystem system;
     private final ActorRef registry;
+    private final ActorRef tmActor;
     private final Map<Integer, ActorRef> receivers;
 
-    private UP(ActorSystem system, ActorRef registry) {
+    private UP(ActorSystem system, ActorRef registry, ActorRef tmActor) {
         this.system = system;
         this.registry = registry;
+        this.tmActor = tmActor;
         receivers = new HashMap<>();
     }
 
@@ -54,23 +70,17 @@ public class UP {
 
     //system bet
     public Proxy start() {
-        ActorRef tmActor = system.actorOf(Props.create(TMActor.class, registry).withDispatcher("tm-actor-dispatcher"), TM_ACTOR_NAME);
         ActorRef idGenerator = newActor(system, IdGenerator.class, ID_GEN_NAME);
         createReceivers(1, idGenerator, tmActor);
 
         Proxy proxy = Proxy.createWith(this);
 
-        doRecover(() -> {
-            /*ActorRef consumerActor = system.actorOf(Props.create(TMConsumerActor.class, tmActor).withDispatcher("tm-consumer-dispatcher"), TM_CONSUMER_NAME);
-            system.scheduler().schedule(Duration.Zero(),
-                    Duration.create(250, TimeUnit.MILLISECONDS), consumerActor, new PollMsg(),
-                    system.dispatcher(), ActorRef.noSender());*/
-
-        });
-        LoggerGlobal.log("ACTOR SYSTEM INITALIZED", this);
-
-
-        return proxy;
+        try {
+            return doRecover(proxy,
+                    () -> LoggerGlobal.log("Actor system initialized.", this));
+        } catch (Exception e) {
+            throw new Error("Recover failed!");
+        }
     }
 
     public static void main(String[] args) {
@@ -82,19 +92,123 @@ public class UP {
     public static UP create() {
         ActorSystem system = ActorSystem.create();
         ActorRef registryActor = newActor(system, RegistryActor.class, REGISTRY_NAME, REGISTRY_SIZE);
-        return new UP(system, registryActor);
+        ActorRef tmActor = system.actorOf(Props.create(TMActor.class, registryActor)
+                .withDispatcher("tm-actor-dispatcher"), TM_ACTOR_NAME);
+
+        return new UP(system, registryActor, tmActor);
     }
 
     //recover procedure
-    private void doRecover(Procedure afterRecover) {
-        int size = receivers.size();
+    private Proxy doRecover(Proxy proxy, Procedure afterRecover) throws Exception {
+        CompletableFuture<Proxy> proxyFuture = new CompletableFuture<>();
 
         DBConnection.processUnfinishedTransactions(trList -> {
-            for(int i = 0; i < trList.size(); i++) {
-                receivers.get(i % size)
-                        .tell(new RecoverRequest(trList.get(i)), ActorRef.noSender());
+            ExecutionContext ec = getSystem().dispatcher();
+
+            Future<Iterable<Object>> allAnswers = Futures.sequence(sendRecoverRequests(trList), ec);
+
+            addOnSuccessToFuture(allAnswers,
+                responses -> {
+                    LoggerGlobal.log("Responses from receivers here: " + responses.toString());
+
+                    checkResponsesPositive(responses);
+
+                    DBConnection.getTransactionStates(states -> {
+                        LoggerGlobal.log("TransactionsStates loaded: " + states.toString());
+
+                        Map<Long, List<ServicesEnum>> info = compareStatesAndTransactions(states, trList);
+                        Future<Object> tmRecover = Patterns.ask(tmActor, new TMRecoverMsg(info), TIMEOUT);
+                        addOnSuccessToFuture(tmRecover, o -> {
+                            afterRecover.process();
+                            proxyFuture.complete(proxy);
+                        }, ec);
+                    });
+                }, ec);
+        }, () -> {});
+
+        return proxyFuture.get();
+    }
+
+    private static void checkResponsesPositive(Iterable<Object> responses) {
+        for(Object response: responses) {
+            if(!((RecoverResponse)response).isPositive()) {
+                throw new Error("Recover response negative.");
             }
-        }, afterRecover);
+        }
+    }
+
+    private Iterable<Future<Object>> sendRecoverRequests(List<Transaction> trList) {
+        Map<ActorRef, List<Transaction>> recoverLists;
+        int size = receivers.size();
+
+        recoverLists = trList.stream().collect(Collectors.groupingBy(
+                transaction -> receivers.get(transaction.getBetInfo().getUserId() % size)
+        ));
+
+        return recoverLists.entrySet()
+                .stream()
+                .map(e -> Patterns.ask(e.getKey(), new RecoverRequest(e.getValue()), TIMEOUT))
+                .collect(Collectors.toList());
+    }
+
+    private static <T> void addOnSuccessToFuture(Future<T> future, Consumer<T> onSuccess, ExecutionContext ec) {
+        future.onSuccess(new OnSuccess<T>() {
+            @Override
+            public void onSuccess(T t) throws Throwable {
+                onSuccess.accept(t);
+            }
+        }, ec);
+    }
+
+    private static Map<Long, List<ServicesEnum>> compareStatesAndTransactions(List<TransactionState> states,
+                                                                              List<Transaction> trList) {
+        Map<Long, List<ServicesEnum>> recoverInfo = new HashMap<>();
+        List<Long> lowerBoundIdList = selectLowerBounds(trList);
+        Map<Long, Pair<Transaction, TransactionState>> statesAndTransactions = connectStatesAndTransactions(states, trList);
+
+        List<Long> firstPhaseSuccessful = selectFirstPhaseSuccessful(statesAndTransactions);
+
+        addUnsuccessfulToRecover(recoverInfo, statesAndTransactions);
+        addIdsWithListToRecover(recoverInfo, firstPhaseSuccessful, MetadataPatterns.getPhase2Services());
+        addIdsWithListToRecover(recoverInfo, lowerBoundIdList, MetadataPatterns.getPhase1Services());
+
+        return recoverInfo;
+    }
+
+    private static Map<Long, Pair<Transaction, TransactionState>> connectStatesAndTransactions(List<TransactionState> states, List<Transaction> trList) {
+        Map<Long, Pair<Transaction, TransactionState>> statesAndTransactions  = new HashMap<>();
+        trList.stream()
+                .filter(transaction -> !transaction.getLowerBound().equals(transaction.getCurrent()))
+                .forEach(transaction -> statesAndTransactions.put(transaction.getLowerBound(), new Pair<>(transaction, null)));
+        states.forEach(trState -> statesAndTransactions.computeIfPresent(trState.getTransactionId(),
+                (k, v) -> new Pair<>(v.first(), trState)));
+        return statesAndTransactions;
+    }
+
+    private static void addIdsWithListToRecover(Map<Long, List<ServicesEnum>> recoverInfo, List<Long> idList, List<ServicesEnum> services) {
+        idList.forEach(trId -> recoverInfo.put(trId, services));
+    }
+
+    private static void addUnsuccessfulToRecover(Map<Long, List<ServicesEnum>> recoverInfo, Map<Long, Pair<Transaction, TransactionState>> statesAndTransactions) {
+        statesAndTransactions.values()
+                .stream()
+                .filter(e -> e.second() != null)
+                .forEach(e -> recoverInfo.put(e.first().getCurrent(), MetadataPatterns.getCancelServices(e.second())));
+    }
+
+    private static List<Long> selectFirstPhaseSuccessful(Map<Long, Pair<Transaction, TransactionState>> statesAndTransactions) {
+        return statesAndTransactions.values()
+                .stream()
+                .filter(e -> e.second() == null)
+                .map(e -> e.first().getCurrent())
+                .collect(Collectors.toList());
+    }
+
+    private static List<Long> selectLowerBounds(List<Transaction> trList) {
+        return trList.stream()
+                .filter(transaction -> transaction.getLowerBound().equals(transaction.getCurrent()))
+                .map(Transaction::getCurrent)
+                .collect(Collectors.toList());
     }
 
     //create some receiver actors

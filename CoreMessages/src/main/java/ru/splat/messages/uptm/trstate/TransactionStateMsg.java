@@ -1,8 +1,4 @@
-package ru.splat.messages.uptm;
-
-import ru.splat.messages.uptm.trstate.TransactionState;
-
-import java.util.function.Consumer;
+package ru.splat.messages.uptm.trstate;
 
 /**
  * Created by Дмитрий on 20.02.2017.

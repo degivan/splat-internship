@@ -3,6 +3,8 @@ package ru.splat.tm.actors;
 import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
 import akka.actor.Props;
+import akka.event.Logging;
+import akka.event.LoggingAdapter;
 import com.google.protobuf.Message;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -11,18 +13,18 @@ import ru.splat.kafka.serializer.ProtoBufMessageSerializer;
 import ru.splat.messages.conventions.ServicesEnum;
 import ru.splat.messages.conventions.TaskTypesEnum;
 import ru.splat.messages.uptm.TMRecoverMsg;
+import ru.splat.messages.uptm.TMRecoverResponse;
 import ru.splat.messages.uptm.TMResponse;
-import ru.splat.messages.uptm.TransactionStateMsg;
 import ru.splat.messages.uptm.trmetadata.LocalTask;
 import ru.splat.messages.uptm.trmetadata.TransactionMetadata;
 import ru.splat.messages.uptm.trstate.ServiceResponse;
 import ru.splat.messages.uptm.trstate.TransactionState;
+import ru.splat.messages.uptm.trstate.TransactionStateMsg;
 import ru.splat.tm.messages.*;
 import ru.splat.tm.protobuf.ProtobufFactory;
+
 import java.util.*;
 import java.util.stream.Collectors;
-import akka.event.Logging;
-import akka.event.LoggingAdapter;
 
 
 /**
@@ -72,6 +74,9 @@ public  class TMActor extends AbstractActor {
                     .collect(Collectors.toMap((servicesEnum) -> servicesEnum,  (servicesEnum) ->  (new ServiceResponse())));
             states.put(id, new TransactionState(id, responseMap));
         });
+
+        sender().tell(new TMRecoverResponse(), self());
+
         consumerActor.tell(new PollMsg(), getSelf());
     }
 
