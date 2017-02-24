@@ -2,6 +2,7 @@ package ru.splat.actors;
 
 import akka.actor.ActorRef;
 import akka.actor.Props;
+import akka.dispatch.Futures;
 import akka.dispatch.OnSuccess;
 import akka.pattern.Patterns;
 import akka.util.Timeout;
@@ -15,11 +16,9 @@ import ru.splat.messages.proxyup.check.CheckRequest;
 import ru.splat.messages.proxyup.check.CheckResponse;
 import ru.splat.messages.proxyup.check.CheckResult;
 import scala.concurrent.Future;
+import scala.runtime.AbstractFunction1;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import static ru.splat.messages.Transaction.State;
@@ -42,8 +41,7 @@ public class Receiver extends LoggingActor {
                 .match(CheckRequest.class, this::processCheckRequest)
                 .match(CreateIdResponse.class,
                         m -> processTransactionReady(m.getTransaction()))
-                .match(RecoverRequest.class,
-                        m -> processDoRecover(m.getTransaction()))
+                .match(RecoverRequest.class, this::processDoRecover)
                 .match(PhaserResponse.class,
                         m -> processRequestResult(m.getTransaction()))
                 .matchAny(this::unhandled).build();
@@ -110,15 +108,50 @@ public class Receiver extends LoggingActor {
         }
     }
 
-    private void processDoRecover(Transaction transaction) {
-        log.info("Process DoRecover: " + transaction.toString());
+    private void processDoRecover(RecoverRequest request) {
+        log.info("Process DoRecover: " + request.toString());
 
-        if(!userIds.contains(transaction.getBetInfo().getUserId())) {
-            startTransaction(transaction);
-        } else {
-            //TODO: answer back to user
-            log.info("Transaction aborted: " + transaction.toString());
+        List<Transaction> transactions = request.getTransactions();
+        ActorRef sender = sender();
+
+        List<Future<Object>> futures = new ArrayList<>();
+
+        for(Transaction transaction: transactions) {
+            if(!userIds.contains(transaction.getBetInfo().getUserId())) {
+                futures.add(recoverTransaction(transaction));
+            } else {
+                //TODO: answer back to user
+                log.info("Transaction aborted: " + transaction.toString());
+            }
         }
+        Futures.sequence(futures, getContext().dispatcher())
+                .onSuccess(new OnSuccess<Iterable<Object>>() {
+                    @Override
+                    public void onSuccess(Iterable<Object> objects) throws Throwable {
+                        sender.tell(new RecoverResponse(true), ActorRef.noSender());
+                    }
+                }, getContext().dispatcher());
+    }
+
+    private Future<Object> recoverTransaction(Transaction transaction) {
+        saveState(transaction);
+
+        log.info("Creating phaser for transaction: " + transaction.toString());
+
+        ActorRef phaser = newPhaser("phaser" + transaction.getLowerBound());
+
+        Future<Object> future = Patterns.ask(registry,
+                new RegisterRequest(new Bounds(transaction.getLowerBound(), transaction.getUpperBound()), phaser),
+                Timeout.apply(10L, TimeUnit.MINUTES));
+        return future.flatMap(new AbstractFunction1<Object, Future<Object>>() {
+                           @Override
+                           public Future<Object> apply(Object o) {
+                               return Patterns.ask(phaser,
+                                   new PhaserRequest(transaction),
+                                   Timeout.apply(10, TimeUnit.SECONDS));
+                           }
+                       },
+                getContext().dispatcher());
     }
 
     private void processTransactionReady(Transaction transaction) {

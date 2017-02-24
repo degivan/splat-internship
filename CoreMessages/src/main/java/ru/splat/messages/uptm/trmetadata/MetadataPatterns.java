@@ -14,10 +14,7 @@ import ru.splat.messages.uptm.trmetadata.punter.AddPunterLimitsTask;
 import ru.splat.messages.uptm.trmetadata.punter.CancelPunterLimitsTask;
 import ru.splat.messages.uptm.trstate.TransactionState;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 
 import static java.util.Arrays.asList;
@@ -29,12 +26,29 @@ import static ru.splat.messages.conventions.ServicesEnum.*;
  * Factory class for phase metadata.
  * */
 public class MetadataPatterns {
+    private static final List<ServicesEnum> services = Arrays.asList(BetService, BillingService, EventService, PunterService);
+    private static final List<ServicesEnum> phase2Services = singletonList(BetService);
+
     private static final Map<ServicesEnum, Function<BetInfo, LocalTask>> cancelServices = new HashMap<>();
 
     static {
         cancelServices.put(BillingService, CancelWithdrawTask::create);
         cancelServices.put(EventService, CancelSelectionLimitsTask::create);
         cancelServices.put(PunterService, CancelPunterLimitsTask::create);
+    }
+
+    public static List<ServicesEnum> getPhase1Services() {
+        return services;
+    }
+
+    public static List<ServicesEnum> getPhase2Services() {
+        return phase2Services;
+    }
+
+    public static List<ServicesEnum> getCancelServices(TransactionState trState) {
+        return services.stream()
+                .filter(service -> trState.getLocalStates().get(service).isPositive())
+                .collect(toList());
     }
 
     //phase1 commands

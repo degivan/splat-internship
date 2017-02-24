@@ -4,16 +4,17 @@ import akka.actor.ActorRef;
 import akka.actor.ReceiveTimeout;
 import akka.japi.pf.UnitPFBuilder;
 import ru.splat.db.DBConnection;
+import ru.splat.message.PhaserConfirm;
 import ru.splat.message.PhaserRequest;
 import ru.splat.message.PhaserResponse;
 import ru.splat.messages.Transaction;
 import ru.splat.messages.conventions.ServicesEnum;
 import ru.splat.messages.uptm.TMResponse;
-import ru.splat.messages.uptm.TransactionStateMsg;
 import ru.splat.messages.uptm.trmetadata.MetadataPatterns;
 import ru.splat.messages.uptm.trmetadata.TransactionMetadata;
 import ru.splat.messages.uptm.trstate.ServiceResponse;
 import ru.splat.messages.uptm.trstate.TransactionState;
+import ru.splat.messages.uptm.trstate.TransactionStateMsg;
 import scala.PartialFunction;
 import scala.concurrent.duration.Duration;
 import scala.runtime.BoxedUnit;
@@ -56,6 +57,8 @@ public class PhaserActor extends LoggingActor {
 
     private void processPhaserRequest(PhaserRequest o) {
         log.info("Process PhaserRequest: " + o.toString());
+
+        sender().tell(new PhaserConfirm(), self());
 
         transaction = o.getTransaction();
         context().setReceiveTimeout(Duration.apply(10L, TimeUnit.SECONDS));
