@@ -39,10 +39,7 @@ public  class TMActor extends AbstractActor {
     @Override
     public Receive createReceive() {
         return receiveBuilder()
-                .match(TransactionMetadata.class, m -> {
-                    createTransactionState(m);
-                    processTransaction(m);
-                })
+                .match(TransactionMetadata.class, this::processTransaction)
                 .match(TaskSentMsg.class, this::processSent)
                 .match(RetrySendMsg.class, m ->
                 {
@@ -79,6 +76,8 @@ public  class TMActor extends AbstractActor {
     }
 
     private void processTransaction(TransactionMetadata trMetadata) {
+        long startTime = System.currentTimeMillis();
+        createTransactionState(trMetadata);
         List<LocalTask> taskList = trMetadata.getLocalTasks();
         Long transactionId = trMetadata.getTransactionId();
         log.info("processing transaction " + transactionId + " with " + taskList.size() + " tasks");
@@ -88,6 +87,7 @@ public  class TMActor extends AbstractActor {
             Message message = ProtobufFactory.buildProtobuf(task, services);
             send(SERVICE_TO_TOPIC_MAP.get(task.getService()), transactionId, message);
         });
+        log.info("processTransaction took " + (System.currentTimeMillis() - startTime));
     }
     private void send(String topic, Long transactionId, Message message) {
         //log.info("TMActor: sending " + transactionId + " to " + topic);
