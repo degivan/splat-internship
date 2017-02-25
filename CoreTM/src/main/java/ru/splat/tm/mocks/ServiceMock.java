@@ -58,9 +58,10 @@ public class ServiceMock {
         Message message2 = Response.ServiceResponse.newBuilder()    //к BetService это не относится, ну и ладно
                 .setBooleanAttachment(true).setResult(1).build();
         sendMockResponse("PunterRes", 111L, message2);
+        sendMockResponse("PunterRes", 111L, message2);
         try {
             Thread.sleep(2000);
-            sendMockResponse("PunterRes", 111L, message2);
+            sendMockResponse("PunterRes", 111L, message2);  //запоздалое сообщение, должно быть проигнорировано (помечено как commitable по-умолчанию)
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

@@ -4,6 +4,7 @@ import akka.actor.ActorRef;
 import akka.actor.ReceiveTimeout;
 import akka.japi.pf.UnitPFBuilder;
 import ru.splat.db.DBConnection;
+import ru.splat.message.PhaserConfirm;
 import ru.splat.message.PhaserRequest;
 import ru.splat.message.PhaserResponse;
 import ru.splat.messages.Transaction;
@@ -13,6 +14,7 @@ import ru.splat.messages.uptm.trmetadata.MetadataPatterns;
 import ru.splat.messages.uptm.trmetadata.TransactionMetadata;
 import ru.splat.messages.uptm.trstate.ServiceResponse;
 import ru.splat.messages.uptm.trstate.TransactionState;
+import ru.splat.messages.uptm.trstate.TransactionStateMsg;
 import scala.PartialFunction;
 import scala.concurrent.duration.Duration;
 import scala.runtime.BoxedUnit;
@@ -23,7 +25,7 @@ import java.util.function.Consumer;
 /**
  * Created by Иван on 15.12.2016.
  */
-public class PhaserActor extends ResendingActor {
+public class PhaserActor extends LoggingActor {
     private final ActorRef tmActor;
     private final ActorRef receiver;
 
@@ -32,8 +34,9 @@ public class PhaserActor extends ResendingActor {
     @Override
     public Receive createReceive() {
         return receiveBuilder().match(PhaserRequest.class, this::processPhaserRequest)
-                .match(TransactionState.class, this::resendOverDelay)
-                .match(TMResponse.class, m -> {/*TODO: RESEND IT */})
+                .match(TransactionStateMsg.class, this::processTransactionState)
+                .match(ReceiveTimeout.class, m -> processReceiveTimeout())
+                .match(TMResponse.class, m -> {/*TODO: Change state to PHASE1_RESPONDED */})
                 .matchAny(this::unhandled).build();
     }
 
@@ -54,6 +57,8 @@ public class PhaserActor extends ResendingActor {
 
     private void processPhaserRequest(PhaserRequest o) {
         log.info("Process PhaserRequest: " + o.toString());
+
+        sender().tell(new PhaserConfirm(), self());
 
         transaction = o.getTransaction();
         context().setReceiveTimeout(Duration.apply(10L, TimeUnit.SECONDS));
@@ -77,19 +82,28 @@ public class PhaserActor extends ResendingActor {
         becomeAndLog(timeout());
     }
 
-    private void processTransactionState(TransactionState trState) {
-        log.info("Processing TransactionState: " + trState.toString());
+    private void processTransactionState(TransactionStateMsg stateMsg) {
+        log.info("Processing TransactionState: " + stateMsg.toString());
+
+        TransactionState trState = stateMsg.getTransactionState();
+        Runnable tmAfter = stateMsg.getCommitTransaction();
 
         updateBetId(trState, transaction);
 
         if(isResponsePositive(trState)) {
             saveDBWithState(Transaction.State.PHASE2_SEND,
                     () -> {
+                        tmAfter.run();
                         sendPhase2(transaction);
                         sendResult(transaction);
                     });
         } else {
-            saveDBWithStateCancel(Transaction.State.DENIED, trState);
+            saveDBWithStateCancel(Transaction.State.DENIED, trState,
+                    () -> {
+                        tmAfter.run();
+                        cancelTransaction(transaction, trState);
+                        sendResult(transaction);
+                    });
         }
     }
 
@@ -103,13 +117,9 @@ public class PhaserActor extends ResendingActor {
         DBConnection.overwriteTransaction(transaction, after);
     }
 
-    private void saveDBWithStateCancel(Transaction.State state, TransactionState trState) {
+    private void saveDBWithStateCancel(Transaction.State state, TransactionState trState, ru.splat.db.Procedure after) {
         DBConnection.addTransactionState(trState,
-                tState -> saveDBWithState(state,
-                        () -> {
-                            cancelTransaction(transaction, trState);
-                            sendResult(transaction);
-                        }));
+                tState -> saveDBWithState(state, after));
     }
 
     private void sendResult(Transaction transaction) {
@@ -139,8 +149,7 @@ public class PhaserActor extends ResendingActor {
     }
 
     private void processNewTransaction(Transaction transaction) {
-        sendMetadataAndAfter(MetadataPatterns.createPhase1(transaction),
-                v -> becomeAndLog(phase1()));
+        sendMetadataAndAfter(MetadataPatterns.createPhase1(transaction), v -> {});
     }
 
     private void sendMetadataAndAfter(TransactionMetadata trMetadata, Consumer<Void> after) {
@@ -162,14 +171,12 @@ public class PhaserActor extends ResendingActor {
                 trState -> {
                     logTransactionState(trState);
                     updateBetId(trState, transaction);
-                    saveDBWithStateCancel(Transaction.State.CANCEL, trState);
+                    saveDBWithStateCancel(Transaction.State.CANCEL, trState,
+                            () -> {
+                                cancelTransaction(transaction, trState);
+                                sendResult(transaction);
+                            });
                 }).build();
-    }
-
-    private PartialFunction<Object, BoxedUnit> phase1() {
-        return state().match(TransactionState.class, this::processTransactionState)
-                .match(ReceiveTimeout.class, m -> processReceiveTimeout())
-                .build();
     }
 
     private PartialFunction<Object, BoxedUnit> phase2(){
@@ -186,8 +193,7 @@ public class PhaserActor extends ResendingActor {
                     logTransactionState(trState);
                     if(checkIdCorrect(trState, transaction)) {
                         if(isResponsePositive(trState)) {
-                            saveDBWithState(dbState,
-                                    () -> context().stop(self()));
+                            saveDBWithState(dbState, () -> context().stop(self()));
                         } else {
                             //can stage2 not pass???
                         }

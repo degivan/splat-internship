@@ -8,10 +8,8 @@ import ru.splat.messages.proxyup.ProxyUPMessage;
 import ru.splat.messages.proxyup.bet.BetInfo;
 import ru.splat.messages.proxyup.bet.NewRequest;
 import ru.splat.messages.proxyup.bet.NewResponse;
-import scala.concurrent.duration.Duration;
 
 import java.util.HashSet;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Иван on 18.12.2016.
@@ -38,7 +36,19 @@ public class UPTest {
            for(int i = 0; i < 1; i++) {
                up.getReceiver(i).tell(testRequest(i), getRef());
            }
-           expectMsgAnyClassOf(Duration.apply(40L, TimeUnit.SECONDS), NewResponse.class);
+           final NewResponse[] out =
+                   new ReceiveWhile<NewResponse>(
+                           NewResponse.class,
+                           duration("40 seconds"),
+                           duration("40 seconds"),
+                           30
+                           ) {
+
+                       @Override
+                       protected NewResponse match(Object msg) throws Exception {
+                           return null;
+                       }
+                   }.get();
        }};
     }
 

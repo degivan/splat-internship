@@ -35,8 +35,6 @@ public class Main {
         final ActorRef registry = system.actorOf(Props.create(MockRegistry.class), "MockRegistry");
         final ActorRef tmActor = system.actorOf(Props.create(TMActor.class, registry).withDispatcher("tm-actor-dispatcher"), "TMActor");
         tmActor.tell(new TMRecoverMsg(), ActorRef.noSender());
-        /*final ActorRef consumerActor = system.actorOf(Props.create(TMConsumerActor.class, tmActor).
-                withDispatcher("tm-consumer-dispatcher"), "TMConsumerActor");*/
 
 
         Long time = System.currentTimeMillis();

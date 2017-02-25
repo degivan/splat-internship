@@ -59,22 +59,21 @@ public class TMConsumerActor extends AbstractActor{
         for (String topic : topics) {
             partitions.add(new TopicPartition(topic, 0));
         }
-        consumer.assign(partitions);
-        Set<TopicPartition> partitionSet = consumer.assignment();
+        consumer.assign(partitions); log.info("assigned");
+        //consumer.commitSync();
+
+        Set<TopicPartition> partitionSet = consumer.assignment();log.info("fetched assignment");partitionSet.forEach(partition -> log.info(partition.topic() + partition.partition()));
         resetToCommitedOffset(partitionSet);
         log.info("TMConsumerActor is initialized");
     }
-    //make excess transaction message commitable
-    private void markSpareTransaction(MarkSpareMsg m) {
-        trackers.get(SERVICE_TO_TOPIC_MAP.get(m.getService())).markTransaction(m.getOffset());
-    }
+
 
     private void resetToCommitedOffset(Set<TopicPartition> partitionSet) {
         for (TopicPartition partition : partitionSet) {
             long offset = 0;
             try {
-                offset = consumer.committed(partition).offset();
-                consumer.seek(partition, offset);
+                offset = consumer.committed(partition).offset();    log.info(partition.topic() + partition.partition() + " offset is found " + offset);
+
 
                 //log.info("reset to commited offset for " + partition.topic());
             }
@@ -86,9 +85,15 @@ public class TMConsumerActor extends AbstractActor{
             }
             finally {
                 trackers.put(partition.topic(), new TopicTracker(partition, offset));
+                consumer.seek(partition, offset); log.info("seek");
                 log.info("created TopicTracker for topic " + partition.topic() + " with currentOffset on " + offset);
             }
         }
+    }
+
+    //make excess transaction message commitable
+    private void markSpareTransaction(MarkSpareMsg m) {
+        trackers.get(SERVICE_TO_TOPIC_MAP.get(m.getService())).markTransaction(m.getOffset());
     }
 
     private void commitTransaction(CommitTransactionMsg m) {
@@ -127,7 +132,6 @@ public class TMConsumerActor extends AbstractActor{
             //log.info("message received from : " + record.topic() + ": " + record.key() + " " + sr.getAttachment() );
             tmActor.tell(srm, getSelf());
         }
-        //consumer.commitAsync();
         getContext().system().scheduler().scheduleOnce(Duration.create(250, TimeUnit.MILLISECONDS),
                 getSelf(), new PollMsg(), getContext().dispatcher(), null);
         log.info("poll");
@@ -178,6 +182,8 @@ public class TMConsumerActor extends AbstractActor{
         //возвращает оффсет (абсолютный) до которого можно коммитить или -1, если коммитить пока нельзя
         long commit(long trId) {
             commitedTransactions.add(trId); //добавляем эту транзакцию в закоммиченные
+            log.info(topicName + ": currentOffset:  " + currentOffset); StringBuilder sb = new StringBuilder();
+            records.entrySet().forEach(entry -> sb.append(entry.getKey() + " : " + entry.getValue() + " | ")); log.info(sb.toString());
             long offset = currentOffset;
             boolean commitable = false;
             while(true) {   //TODO исправить сей быдлоцикл
@@ -190,6 +196,7 @@ public class TMConsumerActor extends AbstractActor{
                 }
             }
             if (commitable) {
+                log.info("commiting " + (offset - currentOffset) + " records");
                 currentOffset = offset;
                 return offset;
             }

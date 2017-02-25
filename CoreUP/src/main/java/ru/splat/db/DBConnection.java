@@ -84,6 +84,20 @@ public class DBConnection {
                         (result, t) -> {});
     }
 
+    public static void getTransactionStates(Consumer<List<TransactionState>> after) {
+        List<TransactionState> trStates = new ArrayList<>();
+
+        states.find()
+                .projection(Projections.excludeId())
+                .forEach(document -> {
+                    TransactionState tState = getObjectFromDocument(document, TransactionState.class);
+                    LoggerGlobal.log(tState.toString() + " finded in the database.");
+
+                    trStates.add(tState);
+                }, (result, t) -> after.accept(trStates));
+    }
+
+
     /**
      * Finds all unfinished transactions and work with them.
      * @param processData process list of transactions

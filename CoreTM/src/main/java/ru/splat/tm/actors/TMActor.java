@@ -3,6 +3,8 @@ package ru.splat.tm.actors;
 import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
 import akka.actor.Props;
+import akka.event.Logging;
+import akka.event.LoggingAdapter;
 import com.google.protobuf.Message;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -11,18 +13,18 @@ import ru.splat.kafka.serializer.ProtoBufMessageSerializer;
 import ru.splat.messages.conventions.ServicesEnum;
 import ru.splat.messages.conventions.TaskTypesEnum;
 import ru.splat.messages.uptm.TMRecoverMsg;
+import ru.splat.messages.uptm.TMRecoverResponse;
 import ru.splat.messages.uptm.TMResponse;
-import ru.splat.messages.uptm.TransactionStateMsg;
 import ru.splat.messages.uptm.trmetadata.LocalTask;
 import ru.splat.messages.uptm.trmetadata.TransactionMetadata;
 import ru.splat.messages.uptm.trstate.ServiceResponse;
 import ru.splat.messages.uptm.trstate.TransactionState;
+import ru.splat.messages.uptm.trstate.TransactionStateMsg;
 import ru.splat.tm.messages.*;
 import ru.splat.tm.protobuf.ProtobufFactory;
+
 import java.util.*;
 import java.util.stream.Collectors;
-import akka.event.Logging;
-import akka.event.LoggingAdapter;
 
 
 /**
@@ -39,10 +41,7 @@ public  class TMActor extends AbstractActor {
     @Override
     public Receive createReceive() {
         return receiveBuilder()
-                .match(TransactionMetadata.class, m -> {
-                    createTransactionState(m);
-                    processTransaction(m);
-                })
+                .match(TransactionMetadata.class, this::processTransaction)
                 .match(TaskSentMsg.class, this::processSent)
                 .match(RetrySendMsg.class, m ->
                 {
@@ -75,10 +74,15 @@ public  class TMActor extends AbstractActor {
                     .collect(Collectors.toMap((servicesEnum) -> servicesEnum,  (servicesEnum) ->  (new ServiceResponse())));
             states.put(id, new TransactionState(id, responseMap));
         });
+
+        sender().tell(new TMRecoverResponse(), self());
+
         consumerActor.tell(new PollMsg(), getSelf());
     }
 
     private void processTransaction(TransactionMetadata trMetadata) {
+        long startTime = System.currentTimeMillis();
+        createTransactionState(trMetadata);
         List<LocalTask> taskList = trMetadata.getLocalTasks();
         Long transactionId = trMetadata.getTransactionId();
         log.info("processing transaction " + transactionId + " with " + taskList.size() + " tasks");
@@ -88,6 +92,7 @@ public  class TMActor extends AbstractActor {
             Message message = ProtobufFactory.buildProtobuf(task, services);
             send(SERVICE_TO_TOPIC_MAP.get(task.getService()), transactionId, message);
         });
+        log.info("processTransaction took " + (System.currentTimeMillis() - startTime));
     }
     private void send(String topic, Long transactionId, Message message) {
         //log.info("TMActor: sending " + transactionId + " to " + topic);
@@ -127,7 +132,7 @@ public  class TMActor extends AbstractActor {
     }
 
     private void processSent(TaskSentMsg m) {
-        //log.info("task " + m.getService().toString() + " of " + m.getTransactionId() + " is sent");
+        log.info("task " + m.getService().toString() + " of " + m.getTransactionId() + " is sent");
         Long trId = m.getTransactionId();
         states.get(trId).getLocalStates()   //may there be null pointer?
                 .get(m.getService()).setRequestSent(true);

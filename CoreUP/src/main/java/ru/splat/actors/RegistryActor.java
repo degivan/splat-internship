@@ -5,14 +5,17 @@ import ru.splat.db.Bounds;
 import ru.splat.message.RegisterRequest;
 import ru.splat.message.RegisterResponse;
 import ru.splat.messages.uptm.trstate.TransactionState;
+import ru.splat.messages.uptm.trstate.TransactionStateMsg;
+import scala.concurrent.duration.Duration;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Иван on 21.12.2016.
  */
-public class RegistryActor extends ResendingActor {
+public class RegistryActor extends LoggingActor {
     private final Map<Bounds, ActorRef> actors;
 
 
@@ -20,6 +23,7 @@ public class RegistryActor extends ResendingActor {
     public Receive createReceive() {
         return receiveBuilder().match(RegisterRequest.class, this::processRegisterRequest)
                 .match(TransactionState.class, this::processTransactionState)
+                .match(TransactionStateMsg.class, this::processTransactionStateMsg) //BET-3 TransactionStateMsg fix
                 .matchAny(this::unhandled).build();
 
     }
@@ -40,6 +44,20 @@ public class RegistryActor extends ResendingActor {
             phaser.tell(o, self());
         }
     }
+    //BET-3 TransactionStateMsg fix
+    private void processTransactionStateMsg(TransactionStateMsg o) {
+        log.info("Processing TransactionState: " + o.getTransactionState().toString());
+
+        ActorRef phaser = actors.get(boundsFromTrId(o.getTransactionState().getTransactionId()));
+        if(phaser == null) {
+            log.info("Phaser for transactionId: " + o.getTransactionState().getTransactionId() + " wasn't created yet.");
+
+            resendOverDelay(o);
+        } else {
+            phaser.tell(o, self());
+        }
+    }
+
 
     private static Bounds boundsFromTrId(Long transactionId) {
         Long lowerBound = transactionId - (transactionId % IdGenerator.RANGE);
@@ -53,5 +71,15 @@ public class RegistryActor extends ResendingActor {
 
         actors.put(request.getBounds(), request.getActor());
         sender().tell(new RegisterResponse(), self());
+    }
+
+    private void resendOverDelay(Object o) {
+        log.info("Resending over delay: " + o.toString());
+
+        context().system()
+                .scheduler()
+                .scheduleOnce(
+                        Duration.create(500L, TimeUnit.MILLISECONDS),
+                        self(), o, context().dispatcher(), sender());
     }
 }

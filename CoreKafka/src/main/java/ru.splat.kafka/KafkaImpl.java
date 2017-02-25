@@ -66,7 +66,6 @@ public class KafkaImpl<ProtobufRequest extends Message> implements Kafka<Protobu
         return null;
     }
 
-
     @Override
     public void resetConsumerToCommitedOffset()
     {
