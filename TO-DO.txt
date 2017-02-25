@@ -2,13 +2,13 @@
 
 ==========CoreUP===========
 -тесты для latency и throughput
--убрать гонку TransactionState и PhaserRequest на recover'е //залито, жду теста
+-убрать гонку TransactionState и PhaserRequest на recover'е + //сделан синхронный recover, что убирает гонку
 -как устроен клиент монги для java
 -ограничение ресурсов
--SendConfirmation
--коллбэк в TMConsumer
--принимать TransactionStateMsg вместо TransactionState
--отправлять TMRecoverMsg с отправленными транзакциями ТМ-у
+-SendConfirmation +
+-коллбэк в TMConsumer +
+-принимать TransactionStateMsg вместо TransactionState +
+-отправлять TMRecoverMsg с отправленными транзакциями ТМ-у +
 ==========CoreTM===========
 -async logging                      +
 -SendConfirmation                   +
