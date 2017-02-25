@@ -4,7 +4,6 @@ import akka.actor.ActorRef;
 import ru.splat.db.Bounds;
 import ru.splat.message.RegisterRequest;
 import ru.splat.message.RegisterResponse;
-import ru.splat.messages.uptm.trstate.TransactionState;
 import ru.splat.messages.uptm.trstate.TransactionStateMsg;
 import scala.concurrent.duration.Duration;
 
@@ -22,8 +21,7 @@ public class RegistryActor extends LoggingActor {
     @Override
     public Receive createReceive() {
         return receiveBuilder().match(RegisterRequest.class, this::processRegisterRequest)
-                .match(TransactionState.class, this::processTransactionState)
-                .match(TransactionStateMsg.class, this::processTransactionStateMsg) //BET-3 TransactionStateMsg fix
+                .match(TransactionStateMsg.class, this::processTransactionStateMsg)
                 .matchAny(this::unhandled).build();
 
     }
@@ -32,21 +30,8 @@ public class RegistryActor extends LoggingActor {
         actors = new HashMap<>(size);
     }
 
-    private void processTransactionState(TransactionState o) {
-        log.info("Processing TransactionState: " + o.toString());
-
-        ActorRef phaser = actors.get(boundsFromTrId(o.getTransactionId()));
-        if(phaser == null) {
-            log.info("Phaser for transactionId: " + o.getTransactionId() + " wasn't created yet.");
-
-            resendOverDelay(o);
-        } else {
-            phaser.tell(o, self());
-        }
-    }
-    //BET-3 TransactionStateMsg fix
     private void processTransactionStateMsg(TransactionStateMsg o) {
-        log.info("Processing TransactionState: " + o.getTransactionState().toString());
+        log.info("Processing TransactionStateMsg: " + o.toString());
 
         ActorRef phaser = actors.get(boundsFromTrId(o.getTransactionState().getTransactionId()));
         if(phaser == null) {

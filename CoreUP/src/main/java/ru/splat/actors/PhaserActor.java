@@ -83,7 +83,7 @@ public class PhaserActor extends LoggingActor {
     }
 
     private void processTransactionState(TransactionStateMsg stateMsg) {
-        log.info("Processing TransactionState: " + stateMsg.toString());
+        log.info("Processing TransactionStateMsg: " + stateMsg.toString());
 
         TransactionState trState = stateMsg.getTransactionState();
         Runnable tmAfter = stateMsg.getCommitTransaction();
@@ -167,12 +167,16 @@ public class PhaserActor extends LoggingActor {
     }
 
     private PartialFunction<Object, BoxedUnit> timeout() {
-        return state().match(TransactionState.class,
-                trState -> {
+        return state().match(TransactionStateMsg.class,
+                msg -> {
+                    TransactionState trState = msg.getTransactionState();
+                    Runnable after = msg.getCommitTransaction();
+
                     logTransactionState(trState);
                     updateBetId(trState, transaction);
                     saveDBWithStateCancel(Transaction.State.CANCEL, trState,
                             () -> {
+                                after.run();
                                 cancelTransaction(transaction, trState);
                                 sendResult(transaction);
                             });
@@ -188,12 +192,18 @@ public class PhaserActor extends LoggingActor {
     }
 
     private PartialFunction<Object, BoxedUnit> transactionStateReceiver(Transaction.State dbState) {
-        return state().match(TransactionState.class,
-                trState -> {
+        return state().match(TransactionStateMsg.class,
+                msg -> {
+                    TransactionState trState = msg.getTransactionState();
+                    Runnable after = msg.getCommitTransaction();
+
                     logTransactionState(trState);
                     if(checkIdCorrect(trState, transaction)) {
                         if(isResponsePositive(trState)) {
-                            saveDBWithState(dbState, () -> context().stop(self()));
+                            saveDBWithState(dbState, () -> {
+                                after.run();
+                                context().stop(self());
+                            });
                         } else {
                             //can stage2 not pass???
                         }

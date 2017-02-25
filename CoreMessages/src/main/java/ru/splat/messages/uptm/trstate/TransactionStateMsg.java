@@ -19,4 +19,12 @@ public class TransactionStateMsg {
     public Runnable getCommitTransaction() {
         return commitTransaction;
     }
+
+    @Override
+    public String toString() {
+        return "TransactionStateMsg{" +
+                "transactionState=" + transactionState +
+                ", commitTransaction=" + commitTransaction +
+                '}';
+    }
 }
