@@ -73,7 +73,10 @@ public class KafkaImpl<ProtobufRequest extends Message> implements Kafka<Protobu
         if (consumer!=null)
         {
             TopicPartition partition = new TopicPartition(TOPIC_REQUEST, 0);
-            consumer.seek(partition, consumer.committed(partition).offset());
+            if (consumer.committed(partition) != null) {
+                System.out.println(consumer.committed(partition));
+                consumer.seek(partition, consumer.committed(partition).offset());
+            }
         }
     }
 
