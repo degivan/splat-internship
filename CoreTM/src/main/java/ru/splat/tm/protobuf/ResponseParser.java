@@ -15,6 +15,7 @@ public class ResponseParser {
     public static ServiceResponse unpackMessage(Response.ServiceResponse message) {
         //if (message instanceof Response.ServiceResponse) {
             int result = message.getResult();
+
             Enum attachmentCase = message.getAttachmentOneofCase();
             if (attachmentCase.equals(LONGATTACHMENT)) {
                 Long attachment = message.getLongAttachment();

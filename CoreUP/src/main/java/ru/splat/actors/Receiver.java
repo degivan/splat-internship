@@ -210,7 +210,7 @@ public class Receiver extends LoggingActor {
 
     private ActorRef newPhaser(String name) {
         return context().actorOf(Props.create(PhaserActor.class, tmActor, self())
-                .withDispatcher("phaser-dispatcher"), name);
+                .withDispatcher("my-settings.akka.actor.phaser-dispatcher"), name);
     }
 
 

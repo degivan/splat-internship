@@ -93,7 +93,7 @@ public class UP {
         ActorSystem system = ActorSystem.create();
         ActorRef registryActor = newActor(system, RegistryActor.class, REGISTRY_NAME, REGISTRY_SIZE);
         ActorRef tmActor = system.actorOf(Props.create(TMActor.class, registryActor)
-                .withDispatcher("tm-actor-dispatcher"), TM_ACTOR_NAME);
+                .withDispatcher("my-settings.akka.actor.tm-actor-dispatcher"), TM_ACTOR_NAME);
 
         return new UP(system, registryActor, tmActor);
     }

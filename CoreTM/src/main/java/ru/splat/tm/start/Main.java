@@ -31,9 +31,12 @@ public class Main {
     private final static Logger LOGGER = Logger.getLogger(TMActor.class);
     public static void main(String[] args) {
         ActorSystem system = ActorSystem.create("testactors");
+        //System.out.println("SETTINGS:");
+        //System.out.println(system.settings());
         //ActorRef ticker =  system.actorOf(Props.create(TickerSelf.class).withDispatcher("tm-actor-dispatcher"), "ticker");
         final ActorRef registry = system.actorOf(Props.create(MockRegistry.class), "MockRegistry");
-        final ActorRef tmActor = system.actorOf(Props.create(TMActor.class, registry).withDispatcher("tm-actor-dispatcher"), "TMActor");
+        final ActorRef tmActor = system.actorOf(Props.create(TMActor.class, registry)
+                .withDispatcher("my-settings.akka.actor.tm-actor-dispatcher"), "TMActor");
         tmActor.tell(new TMRecoverMsg(), ActorRef.noSender());
 
 

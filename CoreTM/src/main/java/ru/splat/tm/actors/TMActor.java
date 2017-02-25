@@ -158,7 +158,7 @@ public  class TMActor extends AbstractActor {
         this.registry = registry;
         log.info("TMActor is initialized");
         consumerActor = getContext().system().actorOf(Props.create(TMConsumerActor.class).
-                withDispatcher("tm-consumer-dispatcher"), TM_CONSUMER_NAME);
+                withDispatcher("my-settings.akka.actor.tm-consumer-dispatcher"), TM_CONSUMER_NAME);
 
         /*getContext().system().scheduler().schedule(Duration.Zero(),
                 Duration.create(500, TimeUnit.MILLISECONDS), consumerActor, new PollMsg(),
