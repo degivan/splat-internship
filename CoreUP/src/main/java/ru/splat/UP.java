@@ -206,7 +206,8 @@ public class UP {
 
     private static List<Long> selectLowerBounds(List<Transaction> trList) {
         return trList.stream()
-                .filter(transaction -> transaction.getLowerBound().equals(transaction.getCurrent()))
+                .filter(transaction -> transaction.getLowerBound().equals(transaction.getCurrent())
+                            && transaction.getState() == Transaction.State.PHASE1_RESPONDED )
                 .map(Transaction::getCurrent)
                 .collect(Collectors.toList());
     }

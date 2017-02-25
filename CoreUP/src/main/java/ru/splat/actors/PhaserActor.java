@@ -36,7 +36,7 @@ public class PhaserActor extends LoggingActor {
         return receiveBuilder().match(PhaserRequest.class, this::processPhaserRequest)
                 .match(TransactionStateMsg.class, this::processTransactionState)
                 .match(ReceiveTimeout.class, m -> processReceiveTimeout())
-                .match(TMResponse.class, m -> {/*TODO: Change state to PHASE1_RESPONDED */})
+                .match(TMResponse.class, m -> processTMResponse())
                 .matchAny(this::unhandled).build();
     }
 
@@ -70,16 +70,13 @@ public class PhaserActor extends LoggingActor {
             case PHASE2_SEND:
                 sendPhase2(transaction);
                 break;
+            case PHASE1_RESPONDED:
+                //silently waiting for TransactionState
+                break;
             default: //CANCEL OR DENIED
                 DBConnection.findTransactionState(transaction.getLowerBound(),
                         tState -> cancelTransaction(transaction, tState));
         }
-    }
-
-    private void processReceiveTimeout() {
-        log.info("Timeout received in phaser for transaction: " + transaction.toString());
-
-        becomeAndLog(timeout());
     }
 
     private void processTransactionState(TransactionStateMsg stateMsg) {
@@ -105,6 +102,18 @@ public class PhaserActor extends LoggingActor {
                         sendResult(transaction);
                     });
         }
+    }
+
+    private void processReceiveTimeout() {
+        log.info("Timeout received in phaser for transaction: " + transaction.toString());
+
+        becomeAndLog(timeout());
+    }
+
+    private void processTMResponse() {
+        transaction.setState(Transaction.State.PHASE1_RESPONDED);
+
+        DBConnection.overwriteTransaction(transaction, () -> {});
     }
 
     private static void updateBetId(TransactionState o, Transaction transaction) {

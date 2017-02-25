@@ -4,6 +4,7 @@ import akka.actor.ActorRef;
 import ru.splat.db.Bounds;
 import ru.splat.message.RegisterRequest;
 import ru.splat.message.RegisterResponse;
+import ru.splat.messages.uptm.TMResponse;
 import ru.splat.messages.uptm.trstate.TransactionStateMsg;
 import scala.concurrent.duration.Duration;
 
@@ -12,16 +13,16 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Created by Иван on 21.12.2016.
+ * Buffer between UP phasers and TMActor.
  */
 public class RegistryActor extends LoggingActor {
     private final Map<Bounds, ActorRef> actors;
 
-
     @Override
     public Receive createReceive() {
         return receiveBuilder().match(RegisterRequest.class, this::processRegisterRequest)
-                .match(TransactionStateMsg.class, this::processTransactionStateMsg)
+                .match(TMResponse.class, m -> sendToPhaser(m, m.getTransactionId()))
+                .match(TransactionStateMsg.class, m -> sendToPhaser(m, m.getTransactionState().getTransactionId()))
                 .matchAny(this::unhandled).build();
 
     }
@@ -30,19 +31,19 @@ public class RegistryActor extends LoggingActor {
         actors = new HashMap<>(size);
     }
 
-    private void processTransactionStateMsg(TransactionStateMsg o) {
-        log.info("Processing TransactionStateMsg: " + o.toString());
+    private void sendToPhaser(Object message, Long transactionId) {
+        log.info("Processing " + message.toString());
 
-        ActorRef phaser = actors.get(boundsFromTrId(o.getTransactionState().getTransactionId()));
+        ActorRef phaser = actors.get(boundsFromTrId(transactionId));
+
         if(phaser == null) {
-            log.info("Phaser for transactionId: " + o.getTransactionState().getTransactionId() + " wasn't created yet.");
+            log.info("Phaser for transactionId: " + transactionId + " wasn't created yet.");
 
-            resendOverDelay(o);
+            resendOverDelay(message);
         } else {
-            phaser.tell(o, self());
+            phaser.tell(message, self());
         }
     }
-
 
     private static Bounds boundsFromTrId(Long transactionId) {
         Long lowerBound = transactionId - (transactionId % IdGenerator.RANGE);
