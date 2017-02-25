@@ -157,7 +157,7 @@ public  class TMActor extends AbstractActor {
         producer = new KafkaProducer(propsProducer, new LongSerializer(), new ProtoBufMessageSerializer());
         this.registry = registry;
         log.info("TMActor is initialized");
-        consumerActor = getContext().system().actorOf(Props.create(TMConsumerActor.class).
+        consumerActor = getContext().actorOf(Props.create(TMConsumerActor.class).
                 withDispatcher("my-settings.akka.actor.tm-consumer-dispatcher"), TM_CONSUMER_NAME);
 
         /*getContext().system().scheduler().schedule(Duration.Zero(),

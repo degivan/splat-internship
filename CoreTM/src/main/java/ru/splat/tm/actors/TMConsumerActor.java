@@ -47,7 +47,7 @@ public class TMConsumerActor extends AbstractActor{
     }
 
     public TMConsumerActor() {
-        this.tmActor = getContext().parent();
+        this.tmActor = context().parent();
         Properties propsConsumer = new Properties();
         propsConsumer.put("bootstrap.servers", "localhost:9092");
         propsConsumer.put("group.id", "test");
@@ -122,10 +122,9 @@ public class TMConsumerActor extends AbstractActor{
     }
 
     private void poll() {
-        //
         ConsumerRecords<Long, Response.ServiceResponse> records = consumer.poll(0);
         for (ConsumerRecord<Long, Response.ServiceResponse> record : records) {
-            log.info("message received: " + record.key() + " from topic " + record.topic());
+            //log.info("message received: " + record.key() + " from topic " + record.topic());
             trackers.get(record.topic()).addRecord(record.offset(), record.key());
             ServiceResponseMsg srm = new ServiceResponseMsg(record.key(), ResponseParser.unpackMessage(record.value()),
                     ResponseTopicMapper.getService(record.topic()), record.offset());
