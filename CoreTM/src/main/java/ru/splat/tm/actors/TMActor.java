@@ -22,6 +22,7 @@ import ru.splat.messages.uptm.trstate.TransactionState;
 import ru.splat.messages.uptm.trstate.TransactionStateMsg;
 import ru.splat.tm.messages.*;
 import ru.splat.tm.protobuf.ProtobufFactory;
+import ru.splat.tm.util.TopicMapper;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -90,7 +91,7 @@ public  class TMActor extends AbstractActor {
                 .collect(Collectors.toSet());
         taskList.forEach(task->{
             Message message = ProtobufFactory.buildProtobuf(task, services);
-            send(SERVICE_TO_TOPIC_MAP.get(task.getService()), transactionId, message);
+            send(TopicMapper.getTopic(task.getService()), transactionId, message);
         });
         log.info("processTransaction took " + (System.currentTimeMillis() - startTime));
     }
@@ -99,7 +100,7 @@ public  class TMActor extends AbstractActor {
         /*Future isSend = */producer.send(new ProducerRecord<>(topic, transactionId, message),
                 (metadata, e) -> {
                     if (e != null) getSelf().tell(new RetrySendMsg(topic, transactionId, message), getSelf());
-                    else getSelf().tell(new TaskSentMsg(transactionId, TOPIC_TO_SERVICE_MAP.get(topic)), getSelf());
+                    else getSelf().tell(new TaskSentMsg(transactionId, TopicMapper.getService(topic)), getSelf());
                 });
     }
     private void processResponse(ServiceResponseMsg serviceResponseMsg) {
@@ -156,7 +157,7 @@ public  class TMActor extends AbstractActor {
         producer = new KafkaProducer(propsProducer, new LongSerializer(), new ProtoBufMessageSerializer());
         this.registry = registry;
         log.info("TMActor is initialized");
-        consumerActor = getContext().system().actorOf(Props.create(TMConsumerActor.class, getSelf()).
+        consumerActor = getContext().system().actorOf(Props.create(TMConsumerActor.class).
                 withDispatcher("tm-consumer-dispatcher"), TM_CONSUMER_NAME);
 
         /*getContext().system().scheduler().schedule(Duration.Zero(),

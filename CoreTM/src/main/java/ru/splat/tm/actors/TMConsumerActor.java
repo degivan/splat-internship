@@ -15,6 +15,7 @@ import ru.splat.messages.Response;
 import ru.splat.messages.conventions.ServicesEnum;
 import ru.splat.tm.messages.*;
 import ru.splat.tm.protobuf.ResponseParser;
+import ru.splat.tm.util.TopicMapper;
 import scala.concurrent.duration.Duration;
 
 import java.util.*;
@@ -46,8 +47,8 @@ public class TMConsumerActor extends AbstractActor{
                 .build();
     }
 
-    public TMConsumerActor(ActorRef tmActor) {
-        this.tmActor = tmActor;
+    public TMConsumerActor() {
+        this.tmActor = getContext().parent();
         Properties propsConsumer = new Properties();
         propsConsumer.put("bootstrap.servers", "localhost:9092");
         propsConsumer.put("group.id", "test");
@@ -93,7 +94,7 @@ public class TMConsumerActor extends AbstractActor{
 
     //make excess transaction message commitable
     private void markSpareTransaction(MarkSpareMsg m) {
-        trackers.get(SERVICE_TO_TOPIC_MAP.get(m.getService())).markTransaction(m.getOffset());
+        trackers.get(TopicMapper.getTopic(m.getService())).markTransaction(m.getOffset());
     }
 
     private void commitTransaction(CommitTransactionMsg m) {
@@ -128,32 +129,15 @@ public class TMConsumerActor extends AbstractActor{
             //log.info("message received: " + record.key());
             trackers.get(record.topic()).addRecord(record.offset(), record.key());
             ServiceResponseMsg srm = new ServiceResponseMsg(record.key(), ResponseParser.unpackMessage(record.value()),
-                    TOPIC_TO_SERVICE_MAP.get(record.topic()), record.offset());
+                    TopicMapper.getService(record.topic()), record.offset());
             //log.info("message received from : " + record.topic() + ": " + record.key() + " " + sr.getAttachment() );
             tmActor.tell(srm, getSelf());
         }
         getContext().system().scheduler().scheduleOnce(Duration.create(250, TimeUnit.MILLISECONDS),
                 getSelf(), new PollMsg(), getContext().dispatcher(), null);
-        log.info("poll");
+        log.info("poll" + context().dispatcher());
 
     }
-
-
-    private static Map<ServicesEnum, String> SERVICE_TO_TOPIC_MAP;  //TODO: поменять на BiMap? перенести в отдельный класс helper
-    private static Map<String, ServicesEnum> TOPIC_TO_SERVICE_MAP;
-    static {
-        SERVICE_TO_TOPIC_MAP = new HashMap<>();
-        SERVICE_TO_TOPIC_MAP.put(ServicesEnum.BetService, "BetRes");
-        SERVICE_TO_TOPIC_MAP.put(ServicesEnum.EventService, "EventRes");
-        SERVICE_TO_TOPIC_MAP.put(ServicesEnum.BillingService, "BillingRes");
-        SERVICE_TO_TOPIC_MAP.put(ServicesEnum.PunterService, "PunterRes");
-        TOPIC_TO_SERVICE_MAP = new HashMap<>();
-        TOPIC_TO_SERVICE_MAP.put("BetRes", ServicesEnum.BetService);
-        TOPIC_TO_SERVICE_MAP.put("EventRes", ServicesEnum.EventService);
-        TOPIC_TO_SERVICE_MAP.put("BillingRes", ServicesEnum.BillingService);
-        TOPIC_TO_SERVICE_MAP.put("PunterRes", ServicesEnum.PunterService);
-    }
-
 
     //TODO: проверить, соблюдается ли относительный порядок рекордов в ArrayList
     private class TopicTracker {
@@ -182,8 +166,8 @@ public class TMConsumerActor extends AbstractActor{
         //возвращает оффсет (абсолютный) до которого можно коммитить или -1, если коммитить пока нельзя
         long commit(long trId) {
             commitedTransactions.add(trId); //добавляем эту транзакцию в закоммиченные
-            log.info(topicName + ": currentOffset:  " + currentOffset); StringBuilder sb = new StringBuilder();
-            records.entrySet().forEach(entry -> sb.append(entry.getKey() + " : " + entry.getValue() + " | ")); log.info(sb.toString());
+            log.info(topicName + ": currentOffset:  " + currentOffset); //StringBuilder sb = new StringBuilder();
+            //records.entrySet().forEach(entry -> sb.append(entry.getKey() + " : " + entry.getValue() + " | ")); log.info(sb.toString());
             long offset = currentOffset;
             boolean commitable = false;
             while(true) {   //TODO исправить сей быдлоцикл
