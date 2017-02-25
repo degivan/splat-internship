@@ -79,7 +79,7 @@ public class Transaction {
     }
 
     public enum State {
-        CREATED, CANCEL, COMPLETED, DENIED, PHASE1_RESPONDED, PHASE2_SEND, CANCEL_COMPLETED
+        CREATED, CANCEL, COMPLETED, DENIED, PHASE1_RESPONDED, PHASE2_SEND, PHASE2_RESPONDED, CANCEL_RESPONDED, CANCEL_COMPLETED
     }
 
     public static class Builder {
@@ -87,6 +87,15 @@ public class Transaction {
 
         public static Builder builder() {
             return new Builder();
+        }
+
+        public Builder of(Transaction tr) {
+            state(tr.state);
+            betInfo(tr.betInfo);
+            lower(tr.lowerBound);
+            upper(tr.upperBound);
+            current(tr.current);
+            return this;
         }
 
         public Builder state(State state) {
@@ -109,8 +118,17 @@ public class Transaction {
             return this;
         }
 
-        public Transaction build() {
+        public Builder current(Long current) {
+            transaction.current = current;
+            return this;
+        }
+
+        public Transaction freshBuild() {
             transaction.current = transaction.lowerBound;
+            return transaction;
+        }
+
+        public Transaction build() {
             return transaction;
         }
     }

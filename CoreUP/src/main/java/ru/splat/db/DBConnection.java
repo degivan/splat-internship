@@ -139,7 +139,10 @@ public class DBConnection {
         try {
             transactions.findOneAndReplace(Filters.eq("lowerBound", transaction.getLowerBound()),
                     Document.parse(MAPPER.writeValueAsString(transaction)),
-                    (o, throwable) -> after.process());
+                    (o, throwable) -> {
+                        LoggerGlobal.log(transaction.toString() + "is overwrited.");
+                        after.process();
+                    });
 
         } catch (JsonProcessingException e) {
             e.printStackTrace();

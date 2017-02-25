@@ -192,14 +192,16 @@ public class UP {
     private static void addUnsuccessfulToRecover(Map<Long, List<ServicesEnum>> recoverInfo, Map<Long, Pair<Transaction, TransactionState>> statesAndTransactions) {
         statesAndTransactions.values()
                 .stream()
-                .filter(e -> e.second() != null)
+                .filter(e -> e.second() != null
+                        && e.first().getState() == Transaction.State.CANCEL_RESPONDED)
                 .forEach(e -> recoverInfo.put(e.first().getCurrent(), MetadataPatterns.getCancelServices(e.second())));
     }
 
     private static List<Long> selectFirstPhaseSuccessful(Map<Long, Pair<Transaction, TransactionState>> statesAndTransactions) {
         return statesAndTransactions.values()
                 .stream()
-                .filter(e -> e.second() == null)
+                .filter(e -> e.second() == null
+                        && e.first().getState() == Transaction.State.PHASE2_RESPONDED)
                 .map(e -> e.first().getCurrent())
                 .collect(Collectors.toList());
     }

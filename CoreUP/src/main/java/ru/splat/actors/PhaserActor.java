@@ -22,6 +22,8 @@ import scala.runtime.BoxedUnit;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
+import static ru.splat.messages.Transaction.Builder.builder;
+
 /**
  * Created by Иван on 15.12.2016.
  */
@@ -53,8 +55,6 @@ public class PhaserActor extends LoggingActor {
         log.info("Phaser stopped.");
     }
 
-
-
     private void processPhaserRequest(PhaserRequest o) {
         log.info("Process PhaserRequest: " + o.toString());
 
@@ -72,6 +72,12 @@ public class PhaserActor extends LoggingActor {
                 break;
             case PHASE1_RESPONDED:
                 //silently waiting for TransactionState
+                break;
+            case PHASE2_RESPONDED:
+                becomeAndLog(phase2());
+                break;
+            case CANCEL_RESPONDED:
+                becomeAndLog(cancel());
                 break;
             default: //CANCEL OR DENIED
                 DBConnection.findTransactionState(transaction.getLowerBound(),
@@ -113,9 +119,13 @@ public class PhaserActor extends LoggingActor {
     private void processTMResponse(TMResponse response) {
         log.info("Processing: "+ response.toString());
 
-        transaction.setState(Transaction.State.PHASE1_RESPONDED);
+        overwriteTransactionState(Transaction.State.PHASE1_RESPONDED);
+    }
 
-        DBConnection.overwriteTransaction(transaction, () -> {});
+    private void overwriteTransactionState(Transaction.State state) {
+        DBConnection.overwriteTransaction(builder().of(transaction)
+                        .build(),
+                        () -> {});
     }
 
     private static void updateBetId(TransactionState o, Transaction transaction) {
@@ -195,14 +205,15 @@ public class PhaserActor extends LoggingActor {
     }
 
     private PartialFunction<Object, BoxedUnit> phase2(){
-        return transactionStateReceiver(Transaction.State.COMPLETED);
+        return transactionStateReceiver(Transaction.State.COMPLETED, Transaction.State.PHASE2_RESPONDED);
     }
 
     private PartialFunction<Object, BoxedUnit> cancel(){
-        return transactionStateReceiver(Transaction.State.CANCEL_COMPLETED);
+        return transactionStateReceiver(Transaction.State.CANCEL_COMPLETED, Transaction.State.CANCEL_RESPONDED);
     }
 
-    private PartialFunction<Object, BoxedUnit> transactionStateReceiver(Transaction.State dbState) {
+    private PartialFunction<Object, BoxedUnit> transactionStateReceiver(Transaction.State dbStateSuccess,
+                                                                        Transaction.State dbStateConfirm) {
         return state().match(TransactionStateMsg.class,
                 msg -> {
                     TransactionState trState = msg.getTransactionState();
@@ -211,7 +222,7 @@ public class PhaserActor extends LoggingActor {
                     logTransactionState(trState);
                     if(checkIdCorrect(trState, transaction)) {
                         if(isResponsePositive(trState)) {
-                            saveDBWithState(dbState, () -> {
+                            saveDBWithState(dbStateSuccess, () -> {
                                 after.run();
                                 context().stop(self());
                             });
@@ -219,7 +230,14 @@ public class PhaserActor extends LoggingActor {
                             //can stage2 not pass???
                         }
                     }
-                }).build();
+                })
+                .match(TMResponse.class,
+                    msg -> {
+                        if(msg.getTransactionId().equals(transaction.getCurrent())) {
+                            overwriteTransactionState(dbStateConfirm);
+                        }
+                    })
+                .build();
     }
 
     private static boolean checkIdCorrect(TransactionState trState, Transaction transaction) {

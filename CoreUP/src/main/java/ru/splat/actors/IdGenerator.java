@@ -66,7 +66,7 @@ public class IdGenerator extends LoggingActor {
                     .state(State.CREATED)
                     .lower(bounds.getLowerBound())
                     .upper(bounds.getUpperBound())
-                    .build();
+                    .freshBuild();
 
             log.info("Saving new transaction: " + transaction);
 
