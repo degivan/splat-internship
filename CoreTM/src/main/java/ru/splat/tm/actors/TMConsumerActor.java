@@ -12,10 +12,9 @@ import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.serialization.LongDeserializer;
 import ru.splat.kafka.deserializer.ProtoBufMessageDeserializer;
 import ru.splat.messages.Response;
-import ru.splat.messages.conventions.ServicesEnum;
 import ru.splat.tm.messages.*;
 import ru.splat.tm.protobuf.ResponseParser;
-import ru.splat.tm.util.TopicMapper;
+import ru.splat.tm.util.ResponseTopicMapper;
 import scala.concurrent.duration.Duration;
 
 import java.util.*;
@@ -94,7 +93,7 @@ public class TMConsumerActor extends AbstractActor{
 
     //make excess transaction message commitable
     private void markSpareTransaction(MarkSpareMsg m) {
-        trackers.get(TopicMapper.getTopic(m.getService())).markTransaction(m.getOffset());
+        trackers.get(ResponseTopicMapper.getTopic(m.getService())).markTransaction(m.getOffset());
     }
 
     private void commitTransaction(CommitTransactionMsg m) {
@@ -126,16 +125,16 @@ public class TMConsumerActor extends AbstractActor{
         //
         ConsumerRecords<Long, Response.ServiceResponse> records = consumer.poll(0);
         for (ConsumerRecord<Long, Response.ServiceResponse> record : records) {
-            //log.info("message received: " + record.key());
+            log.info("message received: " + record.key() + " from topic " + record.topic());
             trackers.get(record.topic()).addRecord(record.offset(), record.key());
             ServiceResponseMsg srm = new ServiceResponseMsg(record.key(), ResponseParser.unpackMessage(record.value()),
-                    TopicMapper.getService(record.topic()), record.offset());
+                    ResponseTopicMapper.getService(record.topic()), record.offset());
             //log.info("message received from : " + record.topic() + ": " + record.key() + " " + sr.getAttachment() );
             tmActor.tell(srm, getSelf());
         }
         getContext().system().scheduler().scheduleOnce(Duration.create(250, TimeUnit.MILLISECONDS),
                 getSelf(), new PollMsg(), getContext().dispatcher(), null);
-        log.info("poll" + context().dispatcher());
+        //log.info("poll ");
 
     }
 

@@ -8,7 +8,7 @@ import java.util.Map;
 /**
  * Created by Дмитрий on 25.02.2017.
  */
-public class TopicMapper {
+public class ResponseTopicMapper {
     private static Map<ServicesEnum, String> SERVICE_TO_TOPIC_MAP;  //TODO: поменять на BiMap? перенести в отдельный класс helper
     private static Map<String, ServicesEnum> TOPIC_TO_SERVICE_MAP;
     static {

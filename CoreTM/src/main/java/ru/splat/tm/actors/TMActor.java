@@ -22,7 +22,7 @@ import ru.splat.messages.uptm.trstate.TransactionState;
 import ru.splat.messages.uptm.trstate.TransactionStateMsg;
 import ru.splat.tm.messages.*;
 import ru.splat.tm.protobuf.ProtobufFactory;
-import ru.splat.tm.util.TopicMapper;
+import ru.splat.tm.util.RequestTopicMapper;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -91,7 +91,7 @@ public  class TMActor extends AbstractActor {
                 .collect(Collectors.toSet());
         taskList.forEach(task->{
             Message message = ProtobufFactory.buildProtobuf(task, services);
-            send(TopicMapper.getTopic(task.getService()), transactionId, message);
+            send(RequestTopicMapper.getTopic(task.getService()), transactionId, message);
         });
         log.info("processTransaction took " + (System.currentTimeMillis() - startTime));
     }
@@ -100,7 +100,7 @@ public  class TMActor extends AbstractActor {
         /*Future isSend = */producer.send(new ProducerRecord<>(topic, transactionId, message),
                 (metadata, e) -> {
                     if (e != null) getSelf().tell(new RetrySendMsg(topic, transactionId, message), getSelf());
-                    else getSelf().tell(new TaskSentMsg(transactionId, TopicMapper.getService(topic)), getSelf());
+                    else getSelf().tell(new TaskSentMsg(transactionId, RequestTopicMapper.getService(topic)), getSelf());
                 });
     }
     private void processResponse(ServiceResponseMsg serviceResponseMsg) {
@@ -133,7 +133,7 @@ public  class TMActor extends AbstractActor {
     }
 
     private void processSent(TaskSentMsg m) {
-        log.info("task " + m.getService().toString() + " of " + m.getTransactionId() + " is sent");
+        //log.info("task " + m.getService().toString() + " of " + m.getTransactionId() + " is sent");
         Long trId = m.getTransactionId();
         states.get(trId).getLocalStates()   //may there be null pointer?
                 .get(m.getService()).setRequestSent(true);
@@ -164,20 +164,6 @@ public  class TMActor extends AbstractActor {
                 Duration.create(500, TimeUnit.MILLISECONDS), consumerActor, new PollMsg(),
                 getContext().system().dispatcher(), null);*/
 
-    }
-    private static Map<ServicesEnum, String> SERVICE_TO_TOPIC_MAP;  //TODO: поменять на BiMap?
-    private static Map<String, ServicesEnum> TOPIC_TO_SERVICE_MAP;
-    static {
-        SERVICE_TO_TOPIC_MAP = new HashMap<>();
-        SERVICE_TO_TOPIC_MAP.put(ServicesEnum.BetService, "BetReq");
-        SERVICE_TO_TOPIC_MAP.put(ServicesEnum.EventService, "EventReq");
-        SERVICE_TO_TOPIC_MAP.put(ServicesEnum.BillingService, "BillingReq");
-        SERVICE_TO_TOPIC_MAP.put(ServicesEnum.PunterService, "PunterReq");
-        TOPIC_TO_SERVICE_MAP = new HashMap<>();
-        TOPIC_TO_SERVICE_MAP.put("BetReq", ServicesEnum.BetService);
-        TOPIC_TO_SERVICE_MAP.put("EventReq", ServicesEnum.EventService);
-        TOPIC_TO_SERVICE_MAP.put("BillingReq", ServicesEnum.BillingService);
-        TOPIC_TO_SERVICE_MAP.put("PunterReq", ServicesEnum.PunterService);
     }
 }
 
