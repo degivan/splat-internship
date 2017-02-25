@@ -36,7 +36,7 @@ public class PhaserActor extends LoggingActor {
         return receiveBuilder().match(PhaserRequest.class, this::processPhaserRequest)
                 .match(TransactionStateMsg.class, this::processTransactionState)
                 .match(ReceiveTimeout.class, m -> processReceiveTimeout())
-                .match(TMResponse.class, m -> processTMResponse())
+                .match(TMResponse.class, this::processTMResponse)
                 .matchAny(this::unhandled).build();
     }
 
@@ -110,7 +110,9 @@ public class PhaserActor extends LoggingActor {
         becomeAndLog(timeout());
     }
 
-    private void processTMResponse() {
+    private void processTMResponse(TMResponse response) {
+        log.info("Processing: "+ response.toString());
+
         transaction.setState(Transaction.State.PHASE1_RESPONDED);
 
         DBConnection.overwriteTransaction(transaction, () -> {});
