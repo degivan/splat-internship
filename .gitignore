@@ -65,3 +65,4 @@ src/main/java/ru/splat/Event/
 target/
 
 /logs/*.log
+CoreUP/logs/*.log

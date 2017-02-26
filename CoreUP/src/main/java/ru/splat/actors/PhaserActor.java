@@ -124,6 +124,7 @@ public class PhaserActor extends LoggingActor {
 
     private void overwriteTransactionState(Transaction.State state) {
         DBConnection.overwriteTransaction(builder().of(transaction)
+                        .state(state)
                         .build(),
                         () -> {});
     }
