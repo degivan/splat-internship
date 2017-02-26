@@ -146,6 +146,33 @@
             <version>1.10.19</version>
             <scope>test</scope>
         </dependency>
+        <!--Kamon-->
+        <dependency>
+            <groupId>io.kamon</groupId>
+            <artifactId>kamon-core_2.11</artifactId>
+            <version>0.6.0</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/io.kamon/kamon-jmx_2.11 -->
+        <dependency>
+            <groupId>io.kamon</groupId>
+            <artifactId>kamon-jmx_2.11</artifactId>
+            <version>0.6.0</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/io.kamon/kamon-akka_2.11 -->
+        <dependency>
+            <groupId>io.kamon</groupId>
+            <artifactId>kamon-akka_2.11</artifactId>
+            <version>0.6.0</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.aspectj/aspectjweaver -->
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjweaver</artifactId>
+            <version>1.8.2</version>
+        </dependency>
 
 
     </dependencies>

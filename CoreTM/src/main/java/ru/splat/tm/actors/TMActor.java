@@ -110,7 +110,7 @@ public  class TMActor extends AbstractActor {
             return;
         }
         ServiceResponse response = serviceResponseMsg.getMessage();
-        log.info("response for " + trId + " from " + serviceResponseMsg.getService() + " :" + response.getResult());
+        //log.info("response for " + trId + " from " + serviceResponseMsg.getService() + " :" + response.getResult());
         states.get(trId).getLocalStates()   //may there be null pointer?
                 .put(serviceResponseMsg.getService(), response);
         TransactionState transactionState = states.get(trId);

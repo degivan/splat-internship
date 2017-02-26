@@ -13,14 +13,14 @@ import ru.splat.tm.actors.TMActor;
 import ru.splat.tm.actors.MockRegistry;
 import ru.splat.tm.messages.PollMsg;
 import ru.splat.tm.mocks.ServiceMock;
-import ru.splat.tm.actors.TMConsumerActor;
-import ru.splat.tm.mocks.TickerSelf;
-import scala.concurrent.duration.Duration;
+
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
+import kamon.Kamon;
+import kamon.jmx.JMXReporter;
+import kamon.jmx.JMXReporterActor;
 import org.apache.log4j.Logger;
 
 /**
@@ -31,12 +31,14 @@ public class Main {
     private final static Logger LOGGER = Logger.getLogger(TMActor.class);
     public static void main(String[] args) {
         ActorSystem system = ActorSystem.create("testactors");
+
         //System.out.println("SETTINGS:");
         //System.out.println(system.settings());
         //ActorRef ticker =  system.actorOf(Props.create(TickerSelf.class).withDispatcher("tm-actor-dispatcher"), "ticker");
         final ActorRef registry = system.actorOf(Props.create(MockRegistry.class), "MockRegistry");
         final ActorRef tmActor = system.actorOf(Props.create(TMActor.class, registry)
                 .withDispatcher("my-settings.akka.actor.tm-actor-dispatcher"), "TMActor");
+        Kamon.start();
         tmActor.tell(new TMRecoverMsg(), ActorRef.noSender());
 
 

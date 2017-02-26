@@ -1,4 +1,6 @@
-﻿==========CoreUP===========
+﻿==========CoreUP+CoreTM===========
+-тестировать throughput акторов с помощью Kamon
+
 
 ==========CoreUP===========
 -тесты для latency и throughput
@@ -13,13 +15,14 @@
 -async logging                      +
 -SendConfirmation                   +
 -коллбэк в TMConsumer               +
--dispatcher & scheduler binвing
--"сложный коммит"
+-dispatcher & scheduler binвing     +
+-"сложный коммит"                   +- (необходимо передавать список сервисов TMConsumer, чтобы сократить перебор)
 -доделать рекавер ТМ-а              +
--доделать коммит транзакции (TMConsumerActor.TopicTracker.commit())  + (надо тестить)
--протестировать "сложный коммит"
+-доделать коммит транзакции (TMConsumerActor.TopicTracker.commit())  +
+-протестировать "сложный коммит"    +
 -fix: "Error while fetching metadata with correlation id ..."   +
 -fix: commitAsync не позволяет отлавливать продублированные сообщения при высокой частоте poll
+
 
 
 
