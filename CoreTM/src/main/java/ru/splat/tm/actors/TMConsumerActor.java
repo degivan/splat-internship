@@ -42,6 +42,7 @@ public class TMConsumerActor extends AbstractActor{
                     log.info("retry commiting transaction " + m.getTransactionId());
                     commitTransaction(m);
                 })
+                .match(CommitTrackerMsg.class, this::processCommitTracker)
                 .matchAny(this::unhandled)
                 .build();
     }
@@ -51,7 +52,7 @@ public class TMConsumerActor extends AbstractActor{
         Properties propsConsumer = new Properties();
         propsConsumer.put("bootstrap.servers", "localhost:9092");
         propsConsumer.put("group.id", "test");
-        propsConsumer.put("enable.auto.commit", "false");
+        propsConsumer.put("enable.auto.getCommitableOffset", "false");
         consumer = new KafkaConsumer(propsConsumer, new LongDeserializer(),
                 new ProtoBufMessageDeserializer(Response.ServiceResponse.getDefaultInstance()));
         //consumer.subscribe(Arrays.asList(topics));
@@ -97,24 +98,33 @@ public class TMConsumerActor extends AbstractActor{
     }
 
     private void commitTransaction(CommitTransactionMsg m) {
-
-        trackers.values().forEach(tracker -> {
-            long offset = tracker.commit(m.getTransactionId());
+        m.getServices().forEach(s -> {
+            TopicTracker tracker = trackers.get(ResponseTopicMapper.getTopic(s));
+            long offset = tracker.getCommitableOffset(m.getTransactionId());
             if (offset != -1) {
                 OffsetAndMetadata offsetAndMetadata = new OffsetAndMetadata(offset);
                 Map<TopicPartition,OffsetAndMetadata> commitMap = new HashMap<>(1);
                 commitMap.put(tracker.getPartition(), offsetAndMetadata);
                 consumer.commitAsync(commitMap, (metadata, e) -> {
-                    if (e == null) log.info("Transaction " + m.getTransactionId() + " is commited in topic " + tracker.getTopicName());
+                    if (e == null) {
+                        //tracker.commitTracker(offset);
+                        getSelf().tell(new CommitTrackerMsg(offset, tracker.getTopicName()), getSelf());
+                        log.info("Transaction " + m.getTransactionId() + " is commited in topic " + tracker.getTopicName());
+                    }
                     else {
-                        getSelf().tell(new RetryCommitMsg(m.getTransactionId()), getSelf());
+                        getSelf().tell(new RetryCommitMsg(m.getTransactionId(), m.getServices()), getSelf());
                     }
                 });
             }
             else
                 log.info("Transaction " + m.getTransactionId() + " cannot be commited in topic " + tracker.getTopicName());
         });
+
         //log.info("Transaction " + m.getTransactionId() + " is commited");
+    }
+
+    private void processCommitTracker(CommitTrackerMsg m) {
+        trackers.get(m.getTopic()).commitTracker(m.getNewOffset());
     }
 
     public void start() {
@@ -162,7 +172,7 @@ public class TMConsumerActor extends AbstractActor{
             //log.info(topicName + ": record with id " + trId);
         }
         //возвращает оффсет (абсолютный) до которого можно коммитить или -1, если коммитить пока нельзя
-        long commit(long trId) {
+        long getCommitableOffset(long trId) {
             commitedTransactions.add(trId); //добавляем эту транзакцию в закоммиченные
             log.info(topicName + ": currentOffset:  " + currentOffset); //StringBuilder sb = new StringBuilder();
             //records.entrySet().forEach(entry -> sb.append(entry.getKey() + " : " + entry.getValue() + " | ")); log.info(sb.toString());
@@ -179,7 +189,7 @@ public class TMConsumerActor extends AbstractActor{
             }
             if (commitable) {
                 log.info("commiting " + (offset - currentOffset) + " records");
-                currentOffset = offset;
+                //currentOffset = offset;
                 return offset;
             }
             else
@@ -190,8 +200,15 @@ public class TMConsumerActor extends AbstractActor{
             //log.info("excess message is caught!!! offset: " + offset + " topic: " + topicName); //for testing
             records.put(offset, -1l);
         }
-
-        public TopicPartition getPartition() {
+        void commitTracker(long newOffset) {
+            while (currentOffset < newOffset) {
+                records.remove(currentOffset);
+                currentOffset++;
+            }
+            //records.remove(currentOffset);
+            log.info(topicName + "Tracker is now at offset: " + currentOffset);
+        }
+        TopicPartition getPartition() {
             return partition;
         }
     }

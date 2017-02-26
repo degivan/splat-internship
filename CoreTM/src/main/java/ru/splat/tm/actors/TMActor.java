@@ -121,7 +121,7 @@ public  class TMActor extends AbstractActor {
             log.info("all responses for transaction " + trId + " are received");
             //registry.tell(transactionState, getSelf());
             registry.tell(new TransactionStateMsg(transactionState, () -> commitTransaction(trId)), getSelf());
-            states.remove(trId);
+
         }
         //log.info("TMActor: responses for " + serviceResponseMsg.getService() + " " + trId + " checked"); for testing
     }
@@ -129,7 +129,11 @@ public  class TMActor extends AbstractActor {
 
     //сообщить консюмеру, что можно коммитить транзакцию trId в топиках
     private void commitTransaction(long trId) {
-        consumerActor.tell(new CommitTransactionMsg(trId), getSelf());
+        log.info("CALLBACK " + trId);
+        consumerActor.tell(
+                new CommitTransactionMsg(trId, states.get(trId).getLocalStates().keySet().stream().collect(Collectors.toSet())),
+                getSelf());
+        states.remove(trId);
     }
 
     private void processSent(TaskSentMsg m) {
