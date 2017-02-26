@@ -129,7 +129,10 @@ public  class TMActor extends AbstractActor {
 
     //сообщить консюмеру, что можно коммитить транзакцию trId в топиках
     private void commitTransaction(long trId) {
-        log.info("CALLBACK " + trId);
+        //log.info("CALLBACK " + trId);
+        if (!states.containsKey(trId)) {
+            return;
+        }
         consumerActor.tell(
                 new CommitTransactionMsg(trId, states.get(trId).getLocalStates().keySet().stream().collect(Collectors.toSet())),
                 getSelf());

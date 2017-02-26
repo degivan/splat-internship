@@ -135,11 +135,13 @@ public class TMConsumerActor extends AbstractActor{
         ConsumerRecords<Long, Response.ServiceResponse> records = consumer.poll(0);
         for (ConsumerRecord<Long, Response.ServiceResponse> record : records) {
             //log.info("message received: " + record.key() + " from topic " + record.topic());
-            trackers.get(record.topic()).addRecord(record.offset(), record.key());
-            ServiceResponseMsg srm = new ServiceResponseMsg(record.key(), ResponseParser.unpackMessage(record.value()),
-                    ResponseTopicMapper.getService(record.topic()), record.offset());
-            //log.info("message received from : " + record.topic() + ": " + record.key() + " " + sr.getAttachment() );
-            tmActor.tell(srm, getSelf());
+            if (!trackers.get(record.topic()).addRecord(record.offset(), record.key())) {
+                ServiceResponseMsg srm = new ServiceResponseMsg(record.key(), ResponseParser.unpackMessage(record.value()),
+                        ResponseTopicMapper.getService(record.topic()), record.offset());
+                //log.info("message received from : " + record.topic() + ": " + record.key() + " " + sr.getAttachment() );
+                tmActor.tell(srm, getSelf());
+            }
+
         }
         getContext().system().scheduler().scheduleOnce(Duration.create(250, TimeUnit.MILLISECONDS),
                 getSelf(), new PollMsg(), getContext().dispatcher(), null);
@@ -152,23 +154,33 @@ public class TMConsumerActor extends AbstractActor{
         private Map<Long, Long> records = new HashMap<>();  //TODO:проверить порядок оффсетов при poll() в список рекордов (разные топики), заменить на массив или ArrayList
         private final String topicName;
         private final TopicPartition partition;
-        private long currentOffset;   //текущий оффсет консюмера
+        private long currentOffset;   //текущий закомиченный оффсет консюмера
+        private long pollPosition;      //оффсет следующей (не считанной из топика) записи
         private Set<Long> commitedTransactions= new HashSet<>();
 
         private TopicTracker(TopicPartition partition, long currentOffset) {
             this.topicName = partition.topic();
             this.partition = partition;
             this.currentOffset = currentOffset;
+            this.pollPosition = currentOffset;
         }
         String getTopicName() {
             return topicName;
         }
-
-        void addRecord(long offset, long trId) { //TODO:изменить логику добавления повторного сообщения(если потребуется)
-            if (records.containsValue(trId))
-                records.put(offset, -1l);       //trId -1 - индикатор лишнего сообщения (можно коммитить)
-            else
+        //возрващает true, если запись уже встречалась
+        boolean addRecord(long offset, long trId) { //TODO:изменить логику добавления повторного сообщения(если потребуется)
+            if (offset < pollPosition) return true;
+            if (records.containsValue(trId)) {
+                records.put(offset, -1L);
+                pollPosition++;
+                return true;
+            }   //trId -1 - индикатор лишнего сообщения (можно коммитить)
+            else {
                 records.put(offset, trId);
+                pollPosition++;
+                return false;
+            }
+
             //log.info(topicName + ": record with id " + trId);
         }
         //возвращает оффсет (абсолютный) до которого можно коммитить или -1, если коммитить пока нельзя
@@ -198,7 +210,7 @@ public class TMConsumerActor extends AbstractActor{
         //make excess transaction message commitable
         void markTransaction(long offset) {
             //log.info("excess message is caught!!! offset: " + offset + " topic: " + topicName); //for testing
-            records.put(offset, -1l);
+            records.put(offset, -1L);
         }
         void commitTracker(long newOffset) {
             while (currentOffset < newOffset) {
