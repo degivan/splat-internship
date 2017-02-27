@@ -31,6 +31,7 @@ public class TMConsumerActor extends AbstractActor{
     private KafkaConsumer<Long, Response.ServiceResponse> consumer;
     private final ActorRef tmActor;
     private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
+    private final int maxPollInterval = 50;
 
     @Override
     public Receive createReceive() {
@@ -98,6 +99,7 @@ public class TMConsumerActor extends AbstractActor{
     }
 
     private void commitTransaction(CommitTransactionMsg m) {
+        long time = System.currentTimeMillis();
         m.getServices().forEach(s -> {
             TopicTracker tracker = trackers.get(ResponseTopicMapper.getTopic(s));
             long offset = tracker.getCommitableOffset(m.getTransactionId());
@@ -119,7 +121,7 @@ public class TMConsumerActor extends AbstractActor{
             else
                 log.info("Transaction " + m.getTransactionId() + " cannot be commited in topic " + tracker.getTopicName());
         });
-
+        log.info("commitTransaction took: " + (System.currentTimeMillis() - time));
         //log.info("Transaction " + m.getTransactionId() + " is commited");
     }
 
@@ -132,7 +134,9 @@ public class TMConsumerActor extends AbstractActor{
     }
 
     private void poll() {
+        long time = System.currentTimeMillis();
         ConsumerRecords<Long, Response.ServiceResponse> records = consumer.poll(0);
+        log.info("messages consumed: " + records.count());
         for (ConsumerRecord<Long, Response.ServiceResponse> record : records) {
             //log.info("message received: " + record.key() + " from topic " + record.topic());
             if (!trackers.get(record.topic()).addRecord(record.offset(), record.key())) {
@@ -143,8 +147,9 @@ public class TMConsumerActor extends AbstractActor{
             }
 
         }
-        getContext().system().scheduler().scheduleOnce(Duration.create(250, TimeUnit.MILLISECONDS),
+        getContext().system().scheduler().scheduleOnce(Duration.create(maxPollInterval - System.currentTimeMillis() + time, TimeUnit.MILLISECONDS),
                 getSelf(), new PollMsg(), getContext().dispatcher(), null);
+        log.info("poll took: " + (System.currentTimeMillis() - time));
         //log.info("poll ");
 
     }

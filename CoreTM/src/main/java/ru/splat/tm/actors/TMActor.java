@@ -103,6 +103,7 @@ public  class TMActor extends AbstractActor {
                 });
     }
     private void processResponse(ServiceResponseMsg serviceResponseMsg) {
+        //long time = System.currentTimeMillis();
         long trId = serviceResponseMsg.getTransactionId();
         if (!states.containsKey(trId)) {
             consumerActor.tell(new MarkSpareMsg(trId, serviceResponseMsg.getService(), serviceResponseMsg.getOffset()), getSelf());
@@ -122,6 +123,7 @@ public  class TMActor extends AbstractActor {
             registry.tell(new TransactionStateMsg(transactionState, () -> commitTransaction(trId)), getSelf());
         }
         //log.info("TMActor: responses for " + serviceResponseMsg.getService() + " " + trId + " checked"); for testing
+        //log.info("processResponse took: " + (System.currentTimeMillis() - time));
     }
     //сообщить консюмеру, что можно коммитить транзакцию trId в топиках
     private void commitTransaction(long trId) {
