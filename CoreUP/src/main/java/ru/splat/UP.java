@@ -8,6 +8,7 @@ import akka.dispatch.OnSuccess;
 import akka.japi.Pair;
 import akka.pattern.Patterns;
 import akka.util.Timeout;
+import kamon.Kamon;
 import ru.splat.actors.IdGenerator;
 import ru.splat.actors.Receiver;
 import ru.splat.actors.RegistryActor;
@@ -94,7 +95,7 @@ public class UP {
         ActorRef registryActor = newActor(system, RegistryActor.class, REGISTRY_NAME, REGISTRY_SIZE);
         ActorRef tmActor = system.actorOf(Props.create(TMActor.class, registryActor)
                 .withDispatcher("my-settings.akka.actor.tm-actor-dispatcher"), TM_ACTOR_NAME);
-
+        Kamon.start();
         return new UP(system, registryActor, tmActor);
     }
 

@@ -59,12 +59,12 @@ public  class TMActor extends AbstractActor {
     }
     //создание стейта транзакции из метадаты
     private void createTransactionState(TransactionMetadata transactionMetadata) {
-        Long trId = transactionMetadata.getTransactionId();
+        long trId = transactionMetadata.getTransactionId();
         Map<ServicesEnum, ServiceResponse> responseMap = new HashMap<>();
         transactionMetadata.getLocalTasks().forEach(localTask -> {
             responseMap.put(localTask.getService(), new ServiceResponse());    //создание "пустых ответов от сервисов"
         });
-        TransactionState transactionState = new TransactionState(transactionMetadata.getTransactionId(),responseMap);
+        TransactionState transactionState = new TransactionState(trId,responseMap);
         states.put(trId, transactionState);
     }
 
@@ -77,7 +77,6 @@ public  class TMActor extends AbstractActor {
         });
 
         sender().tell(new TMRecoverResponse(), self());
-
         consumerActor.tell(new PollMsg(), getSelf());
     }
 
@@ -85,7 +84,7 @@ public  class TMActor extends AbstractActor {
         long startTime = System.currentTimeMillis();
         createTransactionState(trMetadata);
         List<LocalTask> taskList = trMetadata.getLocalTasks();
-        Long transactionId = trMetadata.getTransactionId();
+        long transactionId = trMetadata.getTransactionId();
         log.info("processing transaction " + transactionId + " with " + taskList.size() + " tasks");
         Set<ServicesEnum> services = taskList.stream().map(LocalTask::getService)
                 .collect(Collectors.toSet());
@@ -104,7 +103,7 @@ public  class TMActor extends AbstractActor {
                 });
     }
     private void processResponse(ServiceResponseMsg serviceResponseMsg) {
-        Long trId = serviceResponseMsg.getTransactionId();
+        long trId = serviceResponseMsg.getTransactionId();
         if (!states.containsKey(trId)) {
             consumerActor.tell(new MarkSpareMsg(trId, serviceResponseMsg.getService(), serviceResponseMsg.getOffset()), getSelf());
             return;
@@ -114,19 +113,16 @@ public  class TMActor extends AbstractActor {
         states.get(trId).getLocalStates()   //may there be null pointer?
                 .put(serviceResponseMsg.getService(), response);
         TransactionState transactionState = states.get(trId);
-        Boolean allReceived = transactionState.getLocalStates()
+
+        if (transactionState.getLocalStates()
                 .entrySet().stream().map(state -> state.getValue().isResponseReceived())
-                .allMatch(e -> e);
-        if (allReceived) {
+                .allMatch(e -> e)) {
             log.info("all responses for transaction " + trId + " are received");
             //registry.tell(transactionState, getSelf());
             registry.tell(new TransactionStateMsg(transactionState, () -> commitTransaction(trId)), getSelf());
-
         }
         //log.info("TMActor: responses for " + serviceResponseMsg.getService() + " " + trId + " checked"); for testing
     }
-
-
     //сообщить консюмеру, что можно коммитить транзакцию trId в топиках
     private void commitTransaction(long trId) {
         //log.info("CALLBACK " + trId);
@@ -138,16 +134,14 @@ public  class TMActor extends AbstractActor {
                 getSelf());
         states.remove(trId);
     }
-
     private void processSent(TaskSentMsg m) {
         //log.info("task " + m.getService().toString() + " of " + m.getTransactionId() + " is sent");
-        Long trId = m.getTransactionId();
+        long trId = m.getTransactionId();
         states.get(trId).getLocalStates()   //may there be null pointer?
                 .get(m.getService()).setRequestSent(true);
-        Boolean allSent = states.get(trId).getLocalStates()
+        if (states.get(trId).getLocalStates()
                 .entrySet().stream().map(state -> state.getValue().isRequestSent())
-                .allMatch(e -> e);
-        if (allSent) {
+                .allMatch(e -> e)) {
             log.info("all requests for transaction " + trId + " are sent to services");
             registry.tell(new TMResponse(trId), getSelf());
         }
