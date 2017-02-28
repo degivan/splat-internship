@@ -136,7 +136,7 @@ public class TMConsumerActor extends AbstractActor{
     private void poll() {
         long time = System.currentTimeMillis();
         ConsumerRecords<Long, Response.ServiceResponse> records = consumer.poll(0);
-        log.info("messages consumed: " + records.count());
+        //log.info("messages consumed: " + records.count());
         for (ConsumerRecord<Long, Response.ServiceResponse> record : records) {
             //log.info("message received: " + record.key() + " from topic " + record.topic());
             if (!trackers.get(record.topic()).addRecord(record.offset(), record.key())) {
@@ -149,7 +149,7 @@ public class TMConsumerActor extends AbstractActor{
         }
         getContext().system().scheduler().scheduleOnce(Duration.create(maxPollInterval - System.currentTimeMillis() + time, TimeUnit.MILLISECONDS),
                 getSelf(), new PollMsg(), getContext().dispatcher(), null);
-        log.info("poll took: " + (System.currentTimeMillis() - time));
+        //log.info("poll took: " + (System.currentTimeMillis() - time));
         //log.info("poll ");
 
     }
@@ -191,7 +191,7 @@ public class TMConsumerActor extends AbstractActor{
         //возвращает оффсет (абсолютный) до которого можно коммитить или -1, если коммитить пока нельзя
         long getCommitableOffset(long trId) {
             commitedTransactions.add(trId); //добавляем эту транзакцию в закоммиченные
-            log.info(topicName + ": currentOffset:  " + currentOffset); //StringBuilder sb = new StringBuilder();
+            log.info(topicName + ": currentOffset:  " + currentOffset + ". Commit request " + trId); //StringBuilder sb = new StringBuilder();
             //records.entrySet().forEach(entry -> sb.append(entry.getKey() + " : " + entry.getValue() + " | ")); log.info(sb.toString());
             long offset = currentOffset;
             boolean commitable = false;
@@ -205,7 +205,7 @@ public class TMConsumerActor extends AbstractActor{
                 }
             }
             if (commitable) {
-                log.info("commiting " + (offset - currentOffset) + " records");
+                log.info("can commit to offset " + offset);
                 //currentOffset = offset;
                 return offset;
             }

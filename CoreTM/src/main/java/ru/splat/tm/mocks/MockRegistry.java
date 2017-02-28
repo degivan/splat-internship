@@ -25,12 +25,12 @@ public class MockRegistry extends AbstractActor {
     }
 
     private void processState(TransactionState m) {
-        log.info("Registry: state received" + m.getTransactionId() +
+        log.info("Registry: state received " + m.getTransactionId() +
                 " with " + m.getLocalStates().size());
     }
 
     private void processState(TransactionStateMsg m) {
-        log.info("Registry: state received" + m.getTransactionState().getTransactionId());
+        log.info("Registry: state received: " + m.getTransactionState().getTransactionId());
         m.getCommitTransaction().run();
     }
 

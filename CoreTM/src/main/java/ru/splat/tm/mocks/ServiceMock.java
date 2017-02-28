@@ -31,7 +31,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 /**
  * Created by Дмитрий on 05.02.2017.
  */
-public class ServiceMock {
+public class ServiceMock implements Runnable{
     private KafkaProducer<Long, Message> producer;
     private KafkaConsumer<Long, Message> consumer;
     private final org.slf4j.Logger LOGGER = getLogger(TMActor.class);
@@ -42,8 +42,9 @@ public class ServiceMock {
     public ServiceMock() {
         Properties propsConsumer = new Properties();
         propsConsumer.put("bootstrap.servers", "localhost:9092");
-        propsConsumer.put("group.id", "perftest");
-        propsConsumer.put("enable.auto.commit", "false");
+        propsConsumer.put("group.id", "perftest3");
+        propsConsumer.put("enable.auto.commit", "true");
+
         consumer = new KafkaConsumer(propsConsumer, new LongDeserializer(),
                 new ProtoBufMessageDeserializer(BetRequest.Bet.getDefaultInstance()));
         consumer.subscribe(Arrays.asList(topics));
@@ -84,7 +85,7 @@ public class ServiceMock {
         producer.send(new ProducerRecord<>(topic, transactionId, message),
                 (metadata, e) -> {
                     if (e != null) sendMockResponse(topic, transactionId, message);
-                    else System.out.println("sent to " + topic);
+                    else System.out.println(transactionId + " sent to " + topic);
                 });
     }
 
@@ -96,14 +97,26 @@ public class ServiceMock {
             counter += records.count();
             System.out.println("messages consumed this poll: " + records.count());
             System.out.println("messages consumed: " + counter);
-            for (ConsumerRecord record : records) {
+            for (ConsumerRecord<Long, Message>  record : records) {
                 Response.ServiceResponse message = Response.ServiceResponse.newBuilder().addAllServices(servicesOrd)
                         .setBooleanAttachment(true).setResult(1).build();
-                if (record.topic().equals("BetReq")) sendMockResponse("BetRes", (long) record.key(), message);
-
+                switch (record.topic()) {
+                    case "BetReq":
+                        sendMockResponse("BetRes", record.key(), message);
+                        break;
+                    case "BillingReq":
+                        sendMockResponse("BillingRes", record.key(), message);
+                        break;
+                    case "EventReq":
+                        sendMockResponse("EventRes", record.key(), message);
+                        break;
+                    case "PunterReq":
+                        sendMockResponse("PunterRes", record.key(), message);
+                        break;
+                }
             }
             try {
-                Thread.sleep(100);
+                Thread.sleep(250);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -113,6 +126,11 @@ public class ServiceMock {
 
 
 
+    }
+
+    @Override
+    public void run() {
+        pollRoutine();
     }
     // propsConsumer.put("session.timeout.ms", "30000");
 

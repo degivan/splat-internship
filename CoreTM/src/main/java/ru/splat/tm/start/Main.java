@@ -27,6 +27,8 @@ import org.apache.log4j.Logger;
 public class Main {
     private final static Logger LOGGER = Logger.getLogger(TMActor.class);
     public static void main(String[] args) {
+        ServiceMock serviceMock = new ServiceMock();
+        new Thread(serviceMock).start();
         ActorSystem system = ActorSystem.create("testactors");
 
         //System.out.println("SETTINGS:");
@@ -38,9 +40,10 @@ public class Main {
         final ActorRef mockPhaser = system.actorOf(Props.create(MockPhaser.class, tmActor), "mockPhaser");
         Kamon.start();
 
-        //tmActor.tell(new TMRecoverMsg(), ActorRef.noSender());
+        tmActor.tell(new TMRecoverMsg(), ActorRef.noSender());
         mockPhaser.tell(new MockPhaser.CreateTransactionMsg(), ActorRef.noSender());
         System.out.println("mockphaser started working");
+
 
 
         /*Long time = System.currentTimeMillis();
