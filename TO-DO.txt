@@ -16,12 +16,12 @@
 -SendConfirmation                   +
 -коллбэк в TMConsumer               +
 -dispatcher & scheduler binвing     +
--"сложный коммит"                   +- (необходимо передавать список сервисов TMConsumer, чтобы сократить перебор)
+-"сложный коммит"                   +
 -доделать рекавер ТМ-а              +
 -доделать коммит транзакции (TMConsumerActor.TopicTracker.commit())  +
 -протестировать "сложный коммит"    +
 -fix: "Error while fetching metadata with correlation id ..."   +
--fix: commitAsync не позволяет отлавливать продублированные сообщения при высокой частоте poll
+-fix: commitAsync не позволяет отлавливать продублированные сообщения при высокой частоте poll +
 
 
 

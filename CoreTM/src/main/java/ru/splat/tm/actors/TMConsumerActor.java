@@ -31,7 +31,8 @@ public class TMConsumerActor extends AbstractActor{
     private KafkaConsumer<Long, Response.ServiceResponse> consumer;
     private final ActorRef tmActor;
     private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
-    private final int maxPollInterval = 100;
+    private final int MAX_POLL_INTERVAL = 100;
+    private final long COMMIT_INTERVAL = 30000;
 
     @Override
     public Receive createReceive() {
@@ -67,7 +68,7 @@ public class TMConsumerActor extends AbstractActor{
         Set<TopicPartition> partitionSet = consumer.assignment();log.info("fetched assignment");partitionSet.forEach(partition -> log.info(partition.topic() + partition.partition()));
         resetToCommitedOffset(partitionSet);
         trackers.values().forEach(topicTracker -> {
-            getContext().system().scheduler().scheduleOnce(Duration.create(10000, TimeUnit.MILLISECONDS),
+            getContext().system().scheduler().scheduleOnce(Duration.create(COMMIT_INTERVAL, TimeUnit.MILLISECONDS),
                     getSelf(), new CommitTopicMsg(topicTracker.getTopicName()), getContext().dispatcher(), null);
         });
         log.info("TMConsumerActor is initialized");
@@ -118,7 +119,7 @@ public class TMConsumerActor extends AbstractActor{
         consumer.commitAsync(commitMap, (metadata, e) -> {
             if (e == null) {
                 log.info(tracker.getTopicName() + ": consumer commited to offset " + tracker.getCurrentOffset());
-                getContext().system().scheduler().scheduleOnce(Duration.create(10000, TimeUnit.MILLISECONDS),
+                getContext().system().scheduler().scheduleOnce(Duration.create(COMMIT_INTERVAL, TimeUnit.MILLISECONDS),
                         getSelf(), new CommitTopicMsg(tracker.getTopicName()), getContext().dispatcher(), null);
             }
             else {
@@ -144,14 +145,14 @@ public class TMConsumerActor extends AbstractActor{
         }
               //коммит всех трекеров
 
-        getContext().system().scheduler().scheduleOnce(Duration.create(maxPollInterval - System.currentTimeMillis() + time, TimeUnit.MILLISECONDS),
+        getContext().system().scheduler().scheduleOnce(Duration.create(MAX_POLL_INTERVAL - System.currentTimeMillis() + time, TimeUnit.MILLISECONDS),
                 getSelf(), new PollMsg(), getContext().dispatcher(), null);
         //log.info("poll took: " + (System.currentTimeMillis() - time));
     }
 
-    //TODO: проверить, соблюдается ли относительный порядок рекордов в ArrayList
+
     private class TopicTracker {
-        private Map<Long, Long> records = new HashMap<>();  //TODO:проверить порядок оффсетов при poll() в список рекордов (разные топики), заменить на массив или ArrayList
+        private Map<Long, Long> records = new HashMap<>();
         private final String topicName;
         private final TopicPartition partition;
         private long currentOffset;   //текущий коммитабельный оффсет консюмера
@@ -170,7 +171,7 @@ public class TMConsumerActor extends AbstractActor{
             return topicName;
         }
         //возрващает true, если запись уже встречалась
-        boolean addRecord(long offset, long trId) { //TODO:изменить логику добавления повторного сообщения(если потребуется)
+        boolean addRecord(long offset, long trId) {
             if (records.containsValue(trId)) {
                 records.put(offset, -1L);
                 return true;
@@ -188,7 +189,7 @@ public class TMConsumerActor extends AbstractActor{
             //records.entrySet().forEach(entry -> sb.append(entry.getKey() + " : " + entry.getValue() + " | ")); log.info(sb.toString());
             long offset = currentOffset;
             boolean commitable = false;
-            while(true) {   //TODO исправить сей быдлоцикл
+            while(true) {
                 Long record = records.get(offset);
                 if (record == null || !(commitedTransactions.contains(record) || record == -1)) break;
                 else {
