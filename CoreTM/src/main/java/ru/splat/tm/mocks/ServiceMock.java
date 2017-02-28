@@ -42,7 +42,7 @@ public class ServiceMock implements Runnable{
     public ServiceMock() {
         Properties propsConsumer = new Properties();
         propsConsumer.put("bootstrap.servers", "localhost:9092");
-        propsConsumer.put("group.id", "perftest3");
+        propsConsumer.put("group.id", "perftest1");
         propsConsumer.put("enable.auto.commit", "true");
 
         consumer = new KafkaConsumer(propsConsumer, new LongDeserializer(),

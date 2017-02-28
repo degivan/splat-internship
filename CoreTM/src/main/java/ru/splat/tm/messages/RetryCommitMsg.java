@@ -1,16 +1,13 @@
 package ru.splat.tm.messages;
 
-import ru.splat.messages.conventions.ServicesEnum;
-
-import java.util.Set;
-
 /**
  * Created by Дмитрий on 22.02.2017.
  */
-public class RetryCommitMsg extends CommitTransactionMsg
+public class RetryCommitMsg extends CommitTopicMsg
 {
 
-    public RetryCommitMsg(long transactionId, Set<ServicesEnum> services) {
-        super(transactionId, services);
+
+    public RetryCommitMsg(String topic) {
+        super(topic);
     }
 }
