@@ -1,6 +1,8 @@
 package ru.splat.tm.mocks;
 
 import com.google.protobuf.Message;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -12,8 +14,14 @@ import ru.splat.messages.BetRequest;
 import ru.splat.messages.Response;
 import ru.splat.tm.LoggerGlobal;
 import ru.splat.tm.actors.TMActor;
+import ru.splat.tm.messages.ServiceResponseMsg;
+import ru.splat.tm.protobuf.ResponseParser;
+import ru.splat.tm.util.ResponseTopicMapper;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Properties;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.logging.Logger;
@@ -24,18 +32,21 @@ import static org.slf4j.LoggerFactory.getLogger;
  * Created by Дмитрий on 05.02.2017.
  */
 public class ServiceMock {
-    KafkaProducer<Long, Message> producer;
-    KafkaConsumer<Long, Message> consumer;
+    private KafkaProducer<Long, Message> producer;
+    private KafkaConsumer<Long, Message> consumer;
     private final org.slf4j.Logger LOGGER = getLogger(TMActor.class);
+    private final String[] topics =  {"BetReq", "BillingReq", "EventReq", "PunterReq"};
+    private long counter;
     
 
     public ServiceMock() {
         Properties propsConsumer = new Properties();
         propsConsumer.put("bootstrap.servers", "localhost:9092");
-        propsConsumer.put("group.id", "test");
+        propsConsumer.put("group.id", "perftest");
         propsConsumer.put("enable.auto.commit", "false");
         consumer = new KafkaConsumer(propsConsumer, new LongDeserializer(),
                 new ProtoBufMessageDeserializer(BetRequest.Bet.getDefaultInstance()));
+        consumer.subscribe(Arrays.asList(topics));
 
         Properties propsProducer = new Properties();
         propsProducer.put("bootstrap.servers", "localhost:9092");
@@ -69,21 +80,40 @@ public class ServiceMock {
     }
 
 
-    private void sendMockResponse(String topic, Long transactionId, Message message) {
-        Future future = producer.send(new ProducerRecord<Long, Message>(topic, transactionId, message));
-        try {
-            future.get();
-        } catch (InterruptedException e) {
-            LoggerGlobal.log("InterruptedException");
-        } catch (ExecutionException e) {
-            LoggerGlobal.log("ExecutionException");
-        }
-        finally {
-            LoggerGlobal.log("sent to " + topic);
-        }
+    private void sendMockResponse(String topic, long transactionId, Message message) {
+        producer.send(new ProducerRecord<>(topic, transactionId, message),
+                (metadata, e) -> {
+                    if (e != null) sendMockResponse(topic, transactionId, message);
+                    else System.out.println("sent to " + topic);
+                });
     }
 
+    private void pollRoutine() {
+        Set<Integer> servicesOrd = new HashSet<>(); servicesOrd.add(0); servicesOrd.add(1); servicesOrd.add(2); servicesOrd.add(3);
+        while (true) {
+            long time = System.currentTimeMillis();
+            ConsumerRecords<Long, Message> records = consumer.poll(0);
+            counter += records.count();
+            System.out.println("messages consumed this poll: " + records.count());
+            System.out.println("messages consumed: " + counter);
+            for (ConsumerRecord record : records) {
+                Response.ServiceResponse message = Response.ServiceResponse.newBuilder().addAllServices(servicesOrd)
+                        .setBooleanAttachment(true).setResult(1).build();
+                if (record.topic().equals("BetReq")) sendMockResponse("BetRes", (long) record.key(), message);
 
+            }
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+
+
+
+
+    }
     // propsConsumer.put("session.timeout.ms", "30000");
 
 

@@ -6,7 +6,7 @@ import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.actor.Props;
 import org.junit.Test;
-import ru.splat.tm.actors.MockRegistry;
+import ru.splat.tm.mocks.MockRegistry;
 
 public class DispatcherTest {
 

@@ -17,7 +17,7 @@ import ru.splat.messages.uptm.trmetadata.bet.FixBetTask;
 import ru.splat.messages.uptm.trstate.ServiceResponse;
 import ru.splat.tm.LoggerGlobal;
 import ru.splat.tm.actors.*;
-import ru.splat.tm.actors.MockRegistry;
+import ru.splat.tm.mocks.MockRegistry;
 import ru.splat.tm.messages.PollMsg;
 import ru.splat.tm.protobuf.ProtobufFactory;
 import ru.splat.tm.protobuf.ResponseParser;

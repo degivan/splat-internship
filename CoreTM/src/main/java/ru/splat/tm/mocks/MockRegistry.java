@@ -1,4 +1,4 @@
-package ru.splat.tm.actors;
+package ru.splat.tm.mocks;
 
 import akka.actor.AbstractActor;
 import akka.event.Logging;
@@ -17,6 +17,8 @@ import ru.splat.messages.uptm.trstate.TransactionStateMsg;
  */
 public class MockRegistry extends AbstractActor {
     private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
+    private long firstTime;
+    private long lastTime;
 
     public MockRegistry() {
         log.info("Registry ready");
@@ -32,10 +34,18 @@ public class MockRegistry extends AbstractActor {
         m.getCommitTransaction().run();
     }
 
+    private void processTestSent(TMResponse m) {
+        if (m.getTransactionId() == 1) { firstTime = System.currentTimeMillis(); log.info("first state received at "); }
+        if (m.getTransactionId() == 1000) { lastTime = System.currentTimeMillis(); log.info("difference " + (lastTime - firstTime)); }
+
+
+
+    }
+
     @Override
     public Receive createReceive() {
         return receiveBuilder()
-                .match(TMResponse.class, m -> log.info("Registry: all requests for " + m.getTransactionId()+ " are sent"))
+                .match(TMResponse.class, this::processTestSent)
                 .match(TransactionState.class, this::processState)
                 .match(TransactionStateMsg.class, this::processState)
                 .build();

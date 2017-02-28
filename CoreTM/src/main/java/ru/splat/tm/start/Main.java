@@ -2,7 +2,6 @@ package ru.splat.tm.start;
 
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
-import akka.actor.Cancellable;
 import akka.actor.Props;
 import ru.splat.messages.uptm.TMRecoverMsg;
 import ru.splat.messages.uptm.trmetadata.LocalTask;
@@ -10,17 +9,15 @@ import ru.splat.messages.uptm.trmetadata.TransactionMetadata;
 import ru.splat.messages.uptm.trmetadata.bet.FixBetTask;
 import ru.splat.messages.uptm.trmetadata.punter.AddPunterLimitsTask;
 import ru.splat.tm.actors.TMActor;
-import ru.splat.tm.actors.MockRegistry;
-import ru.splat.tm.messages.PollMsg;
+import ru.splat.tm.mocks.MockPhaser;
+import ru.splat.tm.mocks.MockRegistry;
 import ru.splat.tm.mocks.ServiceMock;
 
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
+
 import kamon.Kamon;
-import kamon.jmx.JMXReporter;
-import kamon.jmx.JMXReporterActor;
 import org.apache.log4j.Logger;
 
 /**
@@ -38,11 +35,15 @@ public class Main {
         final ActorRef registry = system.actorOf(Props.create(MockRegistry.class), "MockRegistry");
         final ActorRef tmActor = system.actorOf(Props.create(TMActor.class, registry)
                 .withDispatcher("my-settings.akka.actor.tm-actor-dispatcher"), "TMActor");
+        final ActorRef mockPhaser = system.actorOf(Props.create(MockPhaser.class, tmActor), "mockPhaser");
         Kamon.start();
-        tmActor.tell(new TMRecoverMsg(), ActorRef.noSender());
+
+        //tmActor.tell(new TMRecoverMsg(), ActorRef.noSender());
+        mockPhaser.tell(new MockPhaser.CreateTransactionMsg(), ActorRef.noSender());
+        System.out.println("mockphaser started working");
 
 
-        Long time = System.currentTimeMillis();
+        /*Long time = System.currentTimeMillis();
         LocalTask fixBet1 = new FixBetTask(20L, time);
         LocalTask punterTask1 = new AddPunterLimitsTask(135, time);
         List<LocalTask> tasks = new LinkedList<>(); tasks.add(fixBet1); tasks.add(punterTask1);
