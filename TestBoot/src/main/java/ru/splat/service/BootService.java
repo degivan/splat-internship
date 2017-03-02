@@ -2,24 +2,25 @@ package ru.splat.service;
 
 
 import com.google.gson.Gson;
+import org.apache.log4j.Logger;
 import ru.splat.Constant;
-import ru.splat.messages.bet.BetRequest;
-import ru.splat.messages.bet.BetRequestFull;
-
+import ru.splat.messages.proxyup.bet.BetInfo;
+import ru.splat.messages.proxyup.bet.NewResponse;
+import ru.splat.messages.proxyup.bet.NewResponseClone;
+import ru.splat.messages.uptm.trmetadata.bet.BetOutcome;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 public class BootService
 {
     private static final String URL_ADRESS = "http://localhost:8080/dobet";
+    private Logger LOGGER = Logger.getLogger(BootService.class);
 
-    public long makeRequest(int punterCount) throws Exception
+    public NewResponseClone makeRequest(int punterCount) throws Exception
     {
         Gson g = new Gson();
 
@@ -28,7 +29,9 @@ public class BootService
         connection.setRequestMethod("POST");
         connection.setRequestProperty("Content-Type", "application/json");
 
-        String json = g.toJson(generateBet(punterCount));
+        BetInfo betInfo = generateBet(punterCount);
+        String json = g.toJson(betInfo);
+        LOGGER.info("JSON for Server: " + json);
 
 //        System.out.println(json);
 
@@ -48,13 +51,13 @@ public class BootService
         }
         in.close();
 
-        Long transactionId = g.fromJson(response.toString(), Long.class);
-        System.out.println(transactionId);
+        NewResponseClone newResponse = g.fromJson(response.toString(), NewResponseClone.class);
+//        System.out.println(transactionId);
 
-        return transactionId;
+        return newResponse;
     }
 
-    private BetRequestFull generateBet(int punterCount)
+    private BetInfo generateBet(int punterCount)
     {
         Random random = new Random(System.currentTimeMillis());
         int eventId1 = random.nextInt(Constant.EVENT_COUNT - 1);
@@ -68,13 +71,13 @@ public class BootService
         int outcomeId1 = random.nextInt(Constant.OUTCOME_COUNT-1) + eventId1*Constant.EVENT_COUNT;
         int outcomeId2 = random.nextInt(Constant.OUTCOME_COUNT-1) + eventId2*Constant.EVENT_COUNT;
 
-        BetRequest betRequest = new BetRequest(Math.random() + 1,outcomeId1, eventId1);
-        BetRequest betRequest2 = new BetRequest(Math.random() + 1,outcomeId2 ,eventId2);
-        Map<Integer,BetRequest> map = new HashMap<>();
-        map.put(1,betRequest);
-        map.put(2,betRequest2);
-        BetRequestFull betRequestFull = new BetRequestFull(map,random.nextInt(50), random.nextInt(Constant.PUNTER_COUNT));
-        return betRequestFull;
+        BetOutcome betOutcome1 = new BetOutcome(null,eventId1,outcomeId1,Math.random() + 1);
+        BetOutcome betOutcome2 = new BetOutcome(null,eventId2,outcomeId2,Math.random() + 1);
+        Set<BetOutcome> set = new HashSet<>(2);
+        set.add(betOutcome1);
+        set.add(betOutcome2);
+        BetInfo betInfo = new BetInfo(-1L,random.nextInt(punterCount), random.nextInt(Constant.PUNTER_COUNT),set);
+        return betInfo;
     }
 
     

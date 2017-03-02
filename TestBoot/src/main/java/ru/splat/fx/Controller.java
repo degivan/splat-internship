@@ -9,18 +9,18 @@ import javafx.stage.Stage;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import ru.splat.Constant;
+import ru.splat.messages.proxyup.bet.NewResponse;
+import ru.splat.messages.proxyup.bet.NewResponseClone;
 import ru.splat.service.EventDefaultDataService;
 import ru.splat.task.RequestTask;
 import ru.splat.task.StateRequestTask;
-
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Comparator;
+import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class Controller
 {
-
     public static Stage stage;
 
     @FXML
@@ -40,7 +40,7 @@ public class Controller
     private int punterCount;
     private long requestTimeout;
     private int requestCount;
-    private Set<Long> trIdSet;
+    private ConcurrentSkipListSet<NewResponseClone> trIdSet;
 
     private Alert alert;
 
@@ -80,7 +80,7 @@ public class Controller
             requestTimeout = requestTimeout * 1000;
         }
 
-        trIdSet = new HashSet<>();
+
 
         try
         {
@@ -90,13 +90,9 @@ public class Controller
         {
             requestCount = Constant.REQUEST_COUNT;
         }
-    }
 
-    public void addTransactionId(long id) {
-        trIdSet.add(id);
-    }
-    public void removeTransactionId(long id) {trIdSet.remove(id);}
 
+    }
 
     @FXML
     public void onClickStart()
@@ -110,9 +106,9 @@ public class Controller
             init();
             executorService = Executors.newFixedThreadPool(9);
             for (int i = 0; i < 8; i++) {
-                executorService.submit(new RequestTask(requestCount, requestTimeout, punterCount));
+                executorService.submit(new RequestTask(requestCount, requestTimeout, punterCount, this.trIdSet));
             }
-            executorService.submit(new StateRequestTask()); //проверка стейтов по trId
+            executorService.submit(new StateRequestTask(this.trIdSet)); //проверка стейтов по trId
 
         }
     }
@@ -129,6 +125,13 @@ public class Controller
 
     @FXML
     public void initialize(){
+        trIdSet = new ConcurrentSkipListSet<NewResponseClone>(new Comparator<NewResponseClone>()
+        {
+            public int compare(NewResponseClone o1, NewResponseClone o2)
+            {
+                return o1.getTransactionId() == o2.getTransactionId()?0:o1.getTransactionId() > o2.getTransactionId()?1:-1;
+            }
+        });
         tfRequestTimeout.setText(String.valueOf(Constant.REQUEST_TIMEOUT));
         tfPunterCount.setText(String.valueOf(Constant.PUNTER_COUNT));
         tfRequestCount.setText(String.valueOf(Constant.REQUEST_COUNT));
@@ -140,7 +143,6 @@ public class Controller
         alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Information");
         alert.setHeaderText(null);
-
     }
 
     //TODO подумать про зависимости лимитов в бд и во входных данных.
@@ -149,8 +151,6 @@ public class Controller
     {
         if (eventDefaultDataService.isEmptyEvent())
         {
-            init();
-
             eventDefaultDataService.insertDefaultData();
 
             alert.setContentText("Данные в БД успешно созданы");
@@ -169,7 +169,4 @@ public class Controller
         alert.showAndWait();
     }
 
-    public Set<Long> getTrIdSet() {
-        return trIdSet;
-    }
 }

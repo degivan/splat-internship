@@ -14,6 +14,16 @@ public class BetInfo {
     private Set<BetOutcome> betOutcomes;
     private Set<Integer> selectionsId;
 
+    public BetInfo() {
+    }
+
+    public BetInfo(Long betId, Integer userId, Integer bet, Set<BetOutcome> betOutcomes) {
+        this.betId = betId;
+        this.userId = userId;
+        this.bet = bet;
+        this.betOutcomes = betOutcomes;
+    }
+
     public Integer getBet() {
         return bet;
     }

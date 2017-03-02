@@ -1,17 +1,15 @@
 import akka.actor.ActorSystem;
 import akka.testkit.JavaTestKit;
-import ru.splat.UP;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import ru.splat.UP;
 import ru.splat.messages.proxyup.ProxyUPMessage;
 import ru.splat.messages.proxyup.bet.BetInfo;
 import ru.splat.messages.proxyup.bet.NewRequest;
-import scala.concurrent.duration.Duration;
+import ru.splat.messages.proxyup.bet.NewResponse;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Иван on 18.12.2016.
@@ -38,7 +36,19 @@ public class UPTest {
            for(int i = 0; i < 1; i++) {
                up.getReceiver(i).tell(testRequest(i), getRef());
            }
-           expectNoMsg(Duration.apply(20L, TimeUnit.SECONDS));
+           final NewResponse[] out =
+                   new ReceiveWhile<NewResponse>(
+                           NewResponse.class,
+                           duration("40 seconds"),
+                           duration("40 seconds"),
+                           30
+                           ) {
+
+                       @Override
+                       protected NewResponse match(Object msg) throws Exception {
+                           return null;
+                       }
+                   }.get();
        }};
     }
 

@@ -4,16 +4,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.splat.repository.EventRepository;
 
+import static ru.splat.Constant.EVENT_COUNT;
+import static ru.splat.Constant.MARKET_COUNT;
+import static ru.splat.Constant.OUTCOME_COUNT;
+
 public class EventDefaultDataService
 {
-    public static final int EVENT_COUNT = 100;
-
-    public static final int MARKET_COUNT = 100;
-
-    private static final int OUTCOME_COUNT = 5;
-
-
-
     @Autowired
     private EventRepository eventRepository;
 

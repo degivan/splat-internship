@@ -43,4 +43,13 @@ public class CancelWithdrawTask extends LocalTask {
                 betInfo.getBet(),
                 System.currentTimeMillis());
     }
+
+    @Override
+    public String toString() {
+        return "CancelWithdrawTask{" +
+                "punterId=" + punterId +
+                ", sum=" + sum +
+                ", service=" + service +
+                "} ";
+    }
 }

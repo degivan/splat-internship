@@ -39,6 +39,8 @@
             </list>
         </property>
     </bean>
+    <bean id="showEvents" class="ru.splat.mvc.service.ShowEvents"/>
+
 
     <bean id="eventRepository" class="ru.splat.mvc.repository.EventRepository"/>
 

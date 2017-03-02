@@ -1,7 +1,7 @@
 package ru.splat.messages.conventions;
 
 
-public enum  ServicesEnum
+public enum ServicesEnum
 {
     PunterService, // 0
     BillingService, // 1

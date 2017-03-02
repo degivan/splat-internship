@@ -33,4 +33,11 @@ public class CancelBetTask extends LocalTask {
     public static CancelBetTask create(BetInfo betInfo) {
         return new CancelBetTask(betInfo.getBetId(), System.currentTimeMillis());
     }
+
+    @Override
+    public String toString() {
+        return "CancelBetTask{" +
+                "betId=" + betId +
+                "} ";
+    }
 }

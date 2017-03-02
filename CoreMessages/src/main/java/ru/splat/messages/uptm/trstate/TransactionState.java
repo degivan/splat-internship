@@ -9,9 +9,11 @@ import java.util.Map;
  */
 //ответ от TMFinalizer об выполненной транзакции - посылается registry
 public class TransactionState {
-    private final Long transactionId;
+    private Long transactionId;
     //таски от всех сервисов
     private Map<ServicesEnum, ServiceResponse> localStates;
+
+    public TransactionState() {}
 
     //конструктор вызывается при инициализации транзакции через TMActor или при получении сообщения от сервисов с информацией о тасках
     public TransactionState(Long transactionId, Map<ServicesEnum, ServiceResponse> localStates) {
@@ -29,6 +31,14 @@ public class TransactionState {
 
     public Map<ServicesEnum, ServiceResponse> getLocalStates() {
         return localStates;
+    }
+
+    public void setTransactionId(Long transactionId) {
+        this.transactionId = transactionId;
+    }
+
+    public void setLocalStates(Map<ServicesEnum, ServiceResponse> localStates) {
+        this.localStates = localStates;
     }
 
     @Override

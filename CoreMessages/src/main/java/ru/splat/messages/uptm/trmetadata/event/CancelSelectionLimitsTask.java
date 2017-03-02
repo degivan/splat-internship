@@ -37,4 +37,12 @@ public class CancelSelectionLimitsTask extends LocalTask {
     public static CancelSelectionLimitsTask create(BetInfo betInfo) {
         return new CancelSelectionLimitsTask(betInfo.getSelectionsId(), System.currentTimeMillis());
     }
+
+    @Override
+    public String toString() {
+        return "CancelSelectionLimitsTask{" +
+                "selections=" + selections +
+                ", service=" + service +
+                "} ";
+    }
 }

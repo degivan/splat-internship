@@ -19,8 +19,8 @@ public class EventRepository
 
     private static final double CURRENT_KOEF = 1.5;
     private static final String STATUS = "NOT DESIGNED";
-    private static final int LIMIT = 100;
-    private static final long LIMIT_TIME = 60*1000;
+    private static final int LIMIT = (Constant.REQUEST_COUNT * 8)/10;
+    private static final long LIMIT_TIME = 180000;
 
     public List<Integer> isExistEvent()
     {
@@ -63,7 +63,7 @@ public class EventRepository
             {
                 ps.setInt(1, i);
                 ps.setString(2, i + " ");
-                ps.setInt(3,i/100);
+                ps.setInt(3,i%Constant.EVENT_COUNT);
             }
 
             public int getBatchSize() {
@@ -83,8 +83,8 @@ public class EventRepository
                 ps.setString(2, i + " ");
                 ps.setDouble(3,CURRENT_KOEF);
                 ps.setString(4, STATUS);
-                ps.setInt(5,i/5);
-                ps.setInt(6,LIMIT);
+                ps.setInt(5,i%(Constant.MARKET_COUNT*Constant.EVENT_COUNT));
+                ps.setInt(6,LIMIT );
                 ps.setLong(7, LIMIT_TIME);
             }
 

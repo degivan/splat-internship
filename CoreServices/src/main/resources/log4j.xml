@@ -10,8 +10,8 @@
       </layout>
    </appender>
    <appender name="fileAppender" class="org.apache.log4j.RollingFileAppender">
+      <param name="maxFileSize" value="10000MB" />
       <param name="Threshold" value="INFO" />
-      <param name="MaxBackupIndex" value="100" />
       <param name="File" value="logs/LogFile.log" />
       <layout class="org.apache.log4j.PatternLayout">
          <param name="ConversionPattern" value="%d  %-5p  [%c{1}] %m %n" />

@@ -47,4 +47,12 @@ public class AddBetTask extends LocalTask {
                 betInfo.getBetOutcomes(),
                 System.currentTimeMillis());
     }
+
+    @Override
+    public String toString() {
+        return "AddBetTask{" +
+                "punterId=" + punterId +
+                ", betOutcomes=" + betOutcomes +
+                "} ";
+    }
 }

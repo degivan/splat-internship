@@ -1,27 +1,24 @@
 package ru.splat.actors;
 
-import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
 import akka.actor.Props;
-import akka.actor.UntypedActor;
+import akka.dispatch.Futures;
 import akka.dispatch.OnSuccess;
-import akka.japi.pf.ReceiveBuilder;
-import akka.japi.pf.UnitPFBuilder;
 import akka.pattern.Patterns;
 import akka.util.Timeout;
-import ru.splat.LoggerGlobal;
+import ru.splat.db.Bounds;
+import ru.splat.message.*;
 import ru.splat.messages.Transaction;
-import ru.splat.messages.proxyup.ProxyUPMessage;
 import ru.splat.messages.proxyup.bet.BetInfo;
 import ru.splat.messages.proxyup.bet.NewRequest;
+import ru.splat.messages.proxyup.bet.NewResponse;
 import ru.splat.messages.proxyup.check.CheckRequest;
-import ru.splat.message.*;
+import ru.splat.messages.proxyup.check.CheckResponse;
+import ru.splat.messages.proxyup.check.CheckResult;
 import scala.concurrent.Future;
+import scala.runtime.AbstractFunction1;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import static ru.splat.messages.Transaction.State;
@@ -29,9 +26,7 @@ import static ru.splat.messages.Transaction.State;
 /**
  * Actor which receives messages from users and from id_generator.
  */
-public class Receiver extends AbstractActor {
-    private static final String NOT_ACTIVE_TR = "TRANSACTION IS NOT IN PROCESS";
-
+public class Receiver extends LoggingActor {
     private final ActorRef registry;
     private final ActorRef idGenerator;
     private final ActorRef tmActor;
@@ -40,53 +35,72 @@ public class Receiver extends AbstractActor {
     private final Map<Long, Transaction.State> results;
     private final Map<Integer, ActorRef> current;
 
+    @Override
+    public Receive createReceive() {
+        return receiveBuilder().match(NewRequest.class, this::processNewRequest)
+                .match(CheckRequest.class, this::processCheckRequest)
+                .match(CreateIdResponse.class,
+                        m -> processTransactionReady(m.getTransaction()))
+                .match(RecoverRequest.class, this::processDoRecover)
+                .match(PhaserResponse.class,
+                        m -> processRequestResult(m.getTransaction()))
+                .matchAny(this::unhandled).build();
+    }
+
     public Receiver(ActorRef registry, ActorRef idGenerator, ActorRef tmActor) {
         this.registry = registry;
         this.idGenerator = idGenerator;
         this.tmActor = tmActor;
+
         userIds = new HashSet<>();
         results = new HashMap<>();
         current = new HashMap<>();
-
-        UnitPFBuilder<Object> builder = ReceiveBuilder.create();
-
-        builder.match(NewRequest.class, this::processNewRequest)
-                .match(CheckRequest.class, this::processCheckRequest)
-                .match(CreateIdResponse.class,
-                       m -> processTransactionReady(m.getTransaction()))
-                .match(RecoverRequest.class,
-                       m -> processDoRecover(m.getTransaction()))
-                .match(PhaserResponse.class,
-                       m -> processRequestResult(m.getTransaction()))
-                .matchAny(this::unhandled);
-
-        receive(builder.build());
     }
 
     private void processCheckRequest(CheckRequest message) {
-        LoggerGlobal.log("Processing CheckRequest: " + message.toString());
+        log.info("Processing CheckRequest: " + message.toString());
 
         State state = results.get(message.getTransactionId());
         if(state == null) {
-            answer(NOT_ACTIVE_TR);
+            answer(new CheckResponse(message.getUserId(), CheckResult.NOT_ACTIVE_TR));
         } else {
-            answer(state);
+            answer(stateToCheckResponse(message.getUserId(), state));
         }
     }
 
+    private static CheckResponse stateToCheckResponse(Integer userId, State state) {
+        CheckResult checkResult;
+        switch(state) {
+            case PHASE2_SEND:
+                checkResult = CheckResult.ACCEPTED;
+                break;
+            case CREATED:
+                checkResult = CheckResult.PENDING;
+                break;
+            case CANCEL:
+                checkResult = CheckResult.CANCELLED;
+                break;
+            case DENIED:
+                checkResult = CheckResult.REJECTED;
+                break;
+            default:
+                checkResult = CheckResult.ACCEPTED;
+        }
+        return new CheckResponse(userId, checkResult);
+    }
+
     private void processNewRequest(NewRequest message) {
-        LoggerGlobal.log("Processing NewRequest: " + message.toString());
+        log.info("Processing NewRequest: " + message.toString());
 
         BetInfo betInfo = message.getBetInfo();
         Integer userId = betInfo.getUserId();
         boolean alreadyActive = userIds.contains(userId);
 
         if(alreadyActive) {
-            LoggerGlobal.log("Already active: " + userId);
-
-            answer("ALREADY ACTIVE");
+            log.info("Already active: " + userId);
+            answer(new NewResponse(userId));    //отказ от приема новой транзакции
         } else {
-            LoggerGlobal.log("User now active: " + userId);
+            log.info("User now active: " + userId);
 
             userIds.add(userId);
             current.put(userId, sender());
@@ -94,23 +108,61 @@ public class Receiver extends AbstractActor {
         }
     }
 
-    private void processDoRecover(Transaction transaction) {
-        LoggerGlobal.log("Process DoRecover: " + transaction.toString());
+    private void processDoRecover(RecoverRequest request) {
+        log.info("Process DoRecover: " + request.toString());
 
-        if(!userIds.contains(transaction.getBetInfo().getUserId())) {
-            startTransaction(transaction);
-        } else {
-            //TODO: answer back to user
-            LoggerGlobal.log("Transaction aborted: " + transaction.toString());
+        List<Transaction> transactions = request.getTransactions();
+        ActorRef sender = sender();
+
+        List<Future<Object>> futures = new ArrayList<>();
+
+        for(Transaction transaction: transactions) {
+            if(!userIds.contains(transaction.getBetInfo().getUserId())) {
+                futures.add(recoverTransaction(transaction));
+            } else {
+                //TODO: answer back to user
+                log.info("Transaction aborted: " + transaction.toString());
+            }
         }
+        Futures.sequence(futures, getContext().dispatcher())
+                .onSuccess(new OnSuccess<Iterable<Object>>() {
+                    @Override
+                    public void onSuccess(Iterable<Object> objects) throws Throwable {
+                        sender.tell(new RecoverResponse(true), ActorRef.noSender());
+                    }
+                }, getContext().dispatcher());
+    }
+
+    private Future<Object> recoverTransaction(Transaction transaction) {
+        saveState(transaction);
+
+        log.info("Creating phaser for transaction: " + transaction.toString());
+
+        ActorRef phaser = newPhaser("phaser" + transaction.getLowerBound());
+
+        Future<Object> future = Patterns.ask(registry,
+                new RegisterRequest(new Bounds(transaction.getLowerBound(), transaction.getUpperBound()), phaser),
+                Timeout.apply(10L, TimeUnit.MINUTES));
+        return future.flatMap(new AbstractFunction1<Object, Future<Object>>() {
+                           @Override
+                           public Future<Object> apply(Object o) {
+                               return Patterns.ask(phaser,
+                                   new PhaserRequest(transaction),
+                                   Timeout.apply(10, TimeUnit.SECONDS));
+                           }
+                       },
+                getContext().dispatcher());
     }
 
     private void processTransactionReady(Transaction transaction) {
-        LoggerGlobal.log("Process TransactionReady: " + transaction.toString());
+        log.info("Process TransactionReady: " + transaction.toString());
+
+        Integer userId = transaction.getBetInfo().getUserId();
+        Long trId = transaction.getLowerBound();
 
         startTransaction(transaction);
-        current.get(transaction.getBetInfo()
-                .getUserId()).tell(transaction, self());
+        current.get(userId)
+                .tell(new NewResponse(trId, userId), self());
     }
 
     private void startTransaction(Transaction transaction) {
@@ -119,13 +171,13 @@ public class Receiver extends AbstractActor {
     }
 
     private void createPhaser(Transaction transaction) {
-        LoggerGlobal.log("Creating phaser for transaction: " + transaction.toString());
+        log.info("Creating phaser for transaction: " + transaction.toString());
 
-        ActorRef phaser = newActor(PhaserActor.class, "phaser" + transaction.getLowerBound(), tmActor, self());
+        ActorRef phaser = newPhaser("phaser" + transaction.getLowerBound());
         ActorRef receiver = self();
 
         Future<Object> future = Patterns.ask(registry,
-                new RegisterRequest(transaction.getLowerBound(), phaser),
+                new RegisterRequest(new Bounds(transaction.getLowerBound(), transaction.getUpperBound()), phaser),
                 Timeout.apply(10L, TimeUnit.MINUTES));
 
         future.onSuccess(new OnSuccess<Object>() {
@@ -137,9 +189,15 @@ public class Receiver extends AbstractActor {
     }
 
     private void processRequestResult(Transaction transaction) {
-        LoggerGlobal.log("Process RequestResult: " + transaction.toString());
+        log.info("Process RequestResult: " + transaction.toString());
 
+        freeUser(transaction.getBetInfo().getUserId());
         saveState(transaction);
+    }
+
+    private void freeUser(Integer userId) {
+        userIds.remove(userId);
+        current.remove(userId);
     }
 
     private void saveState(Transaction transaction) {
@@ -150,7 +208,10 @@ public class Receiver extends AbstractActor {
         sender().tell(msg, self());
     }
 
-    private ActorRef newActor(Class<?> clazz, String name, Object... args) {
-        return getContext().actorOf(Props.create(clazz, args), name);
+    private ActorRef newPhaser(String name) {
+        return context().actorOf(Props.create(PhaserActor.class, tmActor, self())
+                .withDispatcher("my-settings.akka.actor.phaser-dispatcher"), name);
     }
+
+
 }

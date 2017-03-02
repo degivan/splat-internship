@@ -9,17 +9,17 @@ import ru.splat.facade.service.ServiceFacade;
 import ru.splat.facade.feautures.TransactionRequest;
 import ru.splat.kafka.Kafka;
 import ru.splat.kafka.feautures.TransactionResult;
+import ru.splat.messages.proxyup.bet.NewResponseClone;
+
 import javax.annotation.PostConstruct;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import static org.slf4j.LoggerFactory.getLogger;
 
 public abstract class AbstractWrapper<KafkaRecord extends Message, InternalTrType extends TransactionRequest>
 {
 
-    private Logger LOGGER = getLogger(AbstractWrapper.class);
+    private Logger LOGGER = getLogger(this.getClass());
 
     private long consumerTimeout;
 
@@ -32,23 +32,33 @@ public abstract class AbstractWrapper<KafkaRecord extends Message, InternalTrTyp
     @PostConstruct
     public abstract void init();
 
+    private long offset;
+
+    private long commitOffset;
+
+    private List<ConsumerRecord<Long,KafkaRecord>> consumerRecordList;
+
+
 
     public void mainProcess()
     {
+
+        kafka.resetConsumerToCommitedOffset();
+        offset = 0;
+        commitOffset = 0;
 
         while (!Thread.interrupted())
         {
             try {
                 // читаем
-                ConsumerRecords<Long, KafkaRecord> consumerRecords = kafka.readFromKafka(consumerTimeout);
                 // конверитруем
-                Set<InternalTrType> transactionRequest = convertToSet(consumerRecords);
+                Set<InternalTrType> transactionRequest = read();
                 // обрабатываем с учётом идемпотентности
                 List<TransactionResult> transactionResults = service.customProcessMessage(transactionRequest);
                  // TODO подумать как завернуть через AOP
                 service.commitService();
                 kafka.writeToKafka(transactionResults);
-                kafka.commitKafka();
+                kafka.commitKafka(commitOffset);
             }
             catch (Exception e)
             {
@@ -68,27 +78,43 @@ public abstract class AbstractWrapper<KafkaRecord extends Message, InternalTrTyp
 
             }
 
+        }
+    }
+
+    private Set<InternalTrType> read()
+    {
+        if (offset == 0)
+        {
             try {
-                Thread.sleep(100L);
+                Thread.currentThread().sleep(100L);
             } catch (InterruptedException e) {
                 LOGGER.error("ThreadSleep level",e);
             }
 
+            ConsumerRecords<Long, KafkaRecord> consumerRecords = kafka.readFromKafka(consumerTimeout);
+            consumerRecordList = new ArrayList<>(consumerRecords.count());
+            consumerRecords.forEach(p ->consumerRecordList.add(p));
+            offset = consumerRecords.count();
         }
-    }
 
-    private Set<InternalTrType> convertToSet(ConsumerRecords<Long, KafkaRecord> consumerRecords)
-    {
         Set<InternalTrType> transactionRequest = new HashSet<>();
-        for (ConsumerRecord<Long, KafkaRecord> consumerRecord: consumerRecords)
+        Iterator<ConsumerRecord<Long,KafkaRecord>> iterator = consumerRecordList.iterator();
+        int i = 0;
+        while (iterator.hasNext() && i < 500)
         {
+            ConsumerRecord<Long,KafkaRecord> consumerRecord = iterator.next();
+            iterator.remove();
             transactionRequest.add(converter.apply(consumerRecord));
             LOGGER.info("Transaction id = " + consumerRecord.key());
             LOGGER.info(consumerRecord.value().toString());
+            i++;
         }
 
+        offset -= i;
+        commitOffset = i;
         return transactionRequest;
     }
+
 
     public void setConsumerTimeout(long consumerTimeout)
     {

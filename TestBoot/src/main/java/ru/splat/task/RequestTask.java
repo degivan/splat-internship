@@ -1,22 +1,27 @@
 package ru.splat.task;
 
-import org.springframework.stereotype.Component;
-import ru.splat.fx.Controller;
-import ru.splat.service.BootService;
 
-@Component
+import org.apache.log4j.Logger;
+import ru.splat.messages.proxyup.bet.NewResponse;
+import ru.splat.messages.proxyup.bet.NewResponseClone;
+import ru.splat.service.BootService;
+import java.util.concurrent.ConcurrentSkipListSet;
+
+
+
 public class RequestTask implements Runnable {
 
     private int requestCount;
     private long requestTimeout;
     private int punterCount;
-    //@Autowired???
-    private Controller controller;
+    private ConcurrentSkipListSet<NewResponseClone> trIdSet;
+    private static Logger LOGGER = Logger.getLogger(RequestTask.class);
 
-    public RequestTask(int requestCount, long requestTimeout, int punterCount) {
+    public RequestTask(int requestCount, long requestTimeout, int punterCount, ConcurrentSkipListSet<NewResponseClone> trIdSet) {
         this.requestCount = requestCount;
         this.requestTimeout = requestTimeout;
         this.punterCount = punterCount;
+        this.trIdSet = trIdSet;
     }
 
     @Override
@@ -24,7 +29,7 @@ public class RequestTask implements Runnable {
 
         BootService bootService = new BootService();
 
-        while (!Thread.currentThread().interrupted() && !Thread.interrupted())
+        while (!Thread.currentThread().interrupted())
         {
             int i=0;
             long timeStart = System.currentTimeMillis();
@@ -32,26 +37,32 @@ public class RequestTask implements Runnable {
             while (i < requestCount && residual < requestTimeout)
             {
                 try {
-                    controller.addTransactionId(bootService.makeRequest(punterCount));  //добавление нового id в сет
+                    NewResponseClone newResponse = bootService.makeRequest(punterCount);
+                    LOGGER.info("Response from server: " + newResponse.toString());
+                    //System.out.println(newResponse.getActive());
+                    if (!newResponse.getActive()) trIdSet.add(newResponse);  //добавление нового id в сет
+                    else LOGGER.info("Another transaction is active for userId = " + newResponse.getUserId());
                 }catch (InterruptedException ie)
                 {
                     Thread.currentThread().interrupt();
+                    i = requestCount;
                 }
                 catch (Exception e) {
-                    e.printStackTrace();
-                }
-                finally {
+                    LOGGER.error("High level",e);
                     i = requestCount;
-                    residual = requestTimeout;
                 }
+
                 residual = System.currentTimeMillis() - timeStart;
                 i++;
             }
 
+
             if (residual < requestTimeout)
             {
+                long freeTime = requestTimeout - residual;
+                LOGGER.info("Sleep time: " + freeTime);
                 try {
-                    Thread.currentThread().sleep(requestTimeout - residual);
+                    Thread.currentThread().sleep(freeTime);
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }
