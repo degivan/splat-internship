@@ -30,26 +30,26 @@
 //
 //    @Test
 //    public void test1() throws InterruptedException {
-//       new JavaTestKit(system) {{
-//           UP up = UP.create();
-//           up.start();
-//           for(int i = 0; i < 1; i++) {
-//               up.getReceiver(i).tell(testRequest(i), getRef());
-//           }
-//           final NewResponse[] out =
-//                   new ReceiveWhile<NewResponse>(
-//                           NewResponse.class,
-//                           duration("40 seconds"),
-//                           duration("40 seconds"),
-//                           30
-//                           ) {
+//        new JavaTestKit(system) {{
+//            UP up = UP.create();
+//            up.start();
+//            for (int i = 0; i < 1; i++) {
+//                up.getReceiver(i).tell(testRequest(i), getRef());
+//            }
+//            final NewResponse[] out =
+//                    new ReceiveWhile<NewResponse>(
+//                            NewResponse.class,
+//                            duration("40 seconds"),
+//                            duration("40 seconds"),
+//                            30
+//                    ) {
 //
-//                       @Override
-//                       protected NewResponse match(Object msg) throws Exception {
-//                           return null;
-//                       }
-//                   }.get();
-//       }};
+//                        @Override
+//                        protected NewResponse match(Object msg) throws Exception {
+//                            return null;
+//                        }
+//                    }.get();
+//        }};
 //    }
 //
 //    private ProxyUPMessage testRequest(Integer userId) {
