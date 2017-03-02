@@ -99,6 +99,7 @@
         <version>1.2.1</version>
         <executions>
             <execution>
+                <id>someID</id>
                 <goals>
                     <goal>java</goal>
                 </goals>
