@@ -7,10 +7,11 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-
+import org.apache.log4j.Logger;
 /**
  * Created by Дмитрий on 03.03.2017.
  */
+
 public class TopicTracker { //TODO написать несколько юнит тестов.
     private Map<Long, Long> records = new HashMap<>();
     private final String topicName;
@@ -78,4 +79,7 @@ public class TopicTracker { //TODO написать несколько юнит 
     public TopicPartition getPartition() {
         return partition;
     }
+
+
+
 }
