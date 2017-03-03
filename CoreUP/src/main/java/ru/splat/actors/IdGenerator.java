@@ -71,7 +71,7 @@ public class IdGenerator extends LoggingActor {
             log.info("Saving new transaction: " + transaction);
 
             DBConnection.newTransaction(transaction,
-                tr -> receiver.tell(new CreateIdResponse(transaction), self()));
+                tr -> receiver.tell(new CreateIdResponse(transaction), self()), log);
 
             return true;
         }
@@ -79,7 +79,8 @@ public class IdGenerator extends LoggingActor {
 
     private void requestBounds() {
         DBConnection.createIdentifiers(
-                bounds -> self().tell(new NewIdsMessage(bounds), self()));
+                bounds -> self().tell(new NewIdsMessage(bounds), self()),
+                log);
         messagesRequested = true;
 
         log.info("Bounds requested");
@@ -94,7 +95,4 @@ public class IdGenerator extends LoggingActor {
     private boolean outOfIndexes() {
         return (bounds.getUpperBound() - bounds.getLowerBound() < RANGE);
     }
-
-
-
 }
