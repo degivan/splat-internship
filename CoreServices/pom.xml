@@ -109,6 +109,7 @@
             <mainClass>ru.splat.facade.Boot</mainClass>
         </configuration>
     </plugin>
+
                 <plugin>
                     <groupId>org.springframework.boot</groupId>
                     <artifactId>spring-boot-maven-plugin</artifactId>
@@ -122,6 +123,16 @@
                     </executions>
                 </plugin>
             </plugins>
+
     </build>
 
+    <pluginRepositories>
+        <pluginRepository>
+            <id>spring-snapshots</id>
+            <url>http://repo.spring.io/libs-snapshot</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
 </project>
