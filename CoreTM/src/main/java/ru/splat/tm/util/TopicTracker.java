@@ -1,4 +1,4 @@
-package ru.splat.tm.actors;
+package ru.splat.tm.util;
 
 import akka.event.LoggingAdapter;
 import org.apache.kafka.common.TopicPartition;
@@ -11,29 +11,28 @@ import java.util.Set;
 /**
  * Created by Дмитрий on 03.03.2017.
  */
-public class TopicTracker {
+public class TopicTracker { //TODO написать несколько юнит тестов.
     private Map<Long, Long> records = new HashMap<>();
     private final String topicName;
-    private final TopicPartition partition;
+    private final TopicPartition partition; //TODO убрать избыточное поле, добиться устранения exception-в при использованиии новых экземляров TopicPartition
     private long currentOffset;   //текущий коммитабельный оффсет консюмера
     private Set<Long> commitedTransactions= new HashSet<>();
     private final LoggingAdapter log;
 
-    long getCurrentOffset() {
+    public long getCurrentOffset() {
         return currentOffset;
     }
-
-    private TopicTracker(TopicPartition partition, long currentOffset, LoggingAdapter log) {
+    public TopicTracker(TopicPartition partition, long currentOffset, LoggingAdapter log) {
         this.topicName = partition.topic();
         this.partition = partition;
         this.currentOffset = currentOffset;
         this.log = log;
     }
-    String getTopicName() {
+    public String getTopicName() {
         return topicName;
     }
     //возрващает true, если запись уже встречалась
-    boolean addRecord(long offset, long trId) {
+    public boolean addRecord(long offset, long trId) {
         if (records.containsValue(trId)) {
             records.put(offset, -1L);
             return true;
@@ -45,7 +44,7 @@ public class TopicTracker {
         //log.info(topicName + ": record with id " + trId);
     }
     //возвращает оффсет (абсолютный) до которого можно коммитить или -1, если коммитить пока нельзя
-    void commitTransaction(long trId) {
+    public void commitTransaction(long trId) {
         commitedTransactions.add(trId); //добавляем эту транзакцию в закоммиченные
         log.info(topicName + ": currentOffset:  " + currentOffset + ". Commit request " + trId); //StringBuilder sb = new StringBuilder();
         //records.entrySet().forEach(entry -> sb.append(entry.getKey() + " : " + entry.getValue() + " | ")); log.info(sb.toString());
@@ -70,13 +69,13 @@ public class TopicTracker {
         }
     }
     //make excess transaction message commitable
-    void markTransaction(long offset) {
+    public void markTransaction(long offset) {
         //log.info("excess message is caught!!! offset: " + offset + " topic: " + topicName); //for testing
         if (records.containsKey(offset))
             records.put(offset, -1L);
     }
 
-    TopicPartition getPartition() {
+    public TopicPartition getPartition() {
         return partition;
     }
 }
