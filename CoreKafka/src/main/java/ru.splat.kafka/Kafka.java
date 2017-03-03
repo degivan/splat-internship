@@ -11,5 +11,5 @@ public interface Kafka<T>
     ConsumerRecords<Long, T> readFromKafka(long timeout);
     void writeToKafka(List<TransactionResult> transactionResults);
     void resetConsumerToCommitedOffset();
-    void commitKafka();
+    void commitKafka(long offset);
 }

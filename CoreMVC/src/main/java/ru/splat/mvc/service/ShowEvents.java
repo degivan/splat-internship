@@ -13,11 +13,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@Service
+
 public class ShowEvents
 {
-
-    EventRepository eventRepository = new EventRepository();
+    @Autowired
+    private EventRepository eventRepository;
 
     public ReposResult initMainPage()
     {

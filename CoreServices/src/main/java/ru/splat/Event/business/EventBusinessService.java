@@ -59,10 +59,15 @@ public class EventBusinessService implements BusinessService<EventInfo>,LimitSer
         return buffer;
     }
 
+    @Override
+    public String getClassName() {
+        return getClass().getName();
+    }
+
     private List<TransactionResult> addSelectionLimit(List<EventInfo> eventInfoList)
     {
-        LOGGER.info("Start addSelectionLimit");
-        LOGGER.info("Array for add");
+        LOGGER.info(getClassName() + " Start addSelectionLimit");
+        LOGGER.info( getClassName() + " Array for add");
         LOGGER.info(Arrays.toString(eventInfoList.toArray()));
 
         commitAddDequeMap = new HashMap<>();
@@ -129,16 +134,16 @@ public class EventBusinessService implements BusinessService<EventInfo>,LimitSer
             ));
         }
 
-        LOGGER.info("Stop addSelectionLimit");
+        LOGGER.info(getClassName() + " Stop addSelectionLimit");
 
         return result;
     }
 
 
     @Override
-    public List<TransactionResult> processTransactions(List<EventInfo> transactionRequests)
-    {
-        LOGGER.info("Start processTransaction");
+    public List<TransactionResult> processTransactions(List<EventInfo> transactionRequests) throws Exception {
+
+        LOGGER.info(getClassName() + " Start processTransaction");
 
         lastDeleteTime = scanDeque(lastDeleteTime);
 
@@ -150,9 +155,10 @@ public class EventBusinessService implements BusinessService<EventInfo>,LimitSer
             {
                 localTaskComplex.put(eventInfo.getLocalTask(), new TreeSet<EventInfo>(new Comparator<EventInfo>() {
 
+                    //TODO Добавить JMX, описание необходимости добавления
                     @Override
                     public int compare(EventInfo o1, EventInfo o2) {
-                        return (o1.getTime()) == o2.getTime() ? 0 : (o1.getTime() > o2.getTime() ? -1 : 1);
+                        return (o1.getTime() >= o2.getTime() ? -1 : 1);
                     }
                 }));
             }
@@ -169,7 +175,8 @@ public class EventBusinessService implements BusinessService<EventInfo>,LimitSer
                 results.addAll(cancelSelectionLimit(entry.getValue().stream().collect(Collectors.toList())));
         }
 
-        LOGGER.info("Stop processTransaction");
+        LOGGER.info(getClassName() + " Stop processTransaction");
+//        throw new Exception();
         return results;
     }
 
@@ -189,7 +196,7 @@ public class EventBusinessService implements BusinessService<EventInfo>,LimitSer
                         for (Long time : selection.getValue())
                         {
                             deque.addLast(time);
-                            LOGGER.info("Add in Deque for selection id = " + selection.getKey());
+                            LOGGER.info(getClassName() + " Add in Deque for selection id = " + selection.getKey());
                         }
                     }
                 }
@@ -212,7 +219,7 @@ public class EventBusinessService implements BusinessService<EventInfo>,LimitSer
                         {
                             i++;
                             deque.pollFirst();
-                            LOGGER.info("Delete from Deque for selection id = " + selection.getKey());
+                            LOGGER.info(getClassName() + " Delete from Deque for selection id = " + selection.getKey());
                         }
                     }
                 }
@@ -228,13 +235,13 @@ public class EventBusinessService implements BusinessService<EventInfo>,LimitSer
     {
         commitAddDequeMap = null;
         commitCancelDequeMap = null;
-        LOGGER.info("Rollback");
+        LOGGER.info(getClassName() + " Rollback");
     }
 
     private List<TransactionResult> cancelSelectionLimit(List<EventInfo> eventInfoList) {
 
-        LOGGER.info("Start cancelSelectionLimit");
-        LOGGER.info("Array for cancel");
+        LOGGER.info(getClassName() + " Start cancelSelectionLimit");
+        LOGGER.info(getClassName() + " Array for cancel");
         LOGGER.info(Arrays.toString(eventInfoList.toArray()));
 
         commitCancelDequeMap = new HashMap<>();
@@ -244,40 +251,38 @@ public class EventBusinessService implements BusinessService<EventInfo>,LimitSer
         long currentTime = System.currentTimeMillis();
 
         Set<Integer> outcomes = new HashSet<>();
-        for (EventInfo eventInfo : eventInfoList)
-        {
+        for (EventInfo eventInfo : eventInfoList) {
             outcomes.addAll(eventInfo.getOutcomes());
             result.add(new TransactionResult(
                     eventInfo.getTransactionId(),
                     Response.ServiceResponse.newBuilder().addAllServices(eventInfo.getServices())
-                    .setResult(ServiceResult.CONFIRMED.ordinal()).build()
-                    ));
-        }
+                            .setResult(ServiceResult.CONFIRMED.ordinal()).build()
+            ));
 
-        outcomes.forEach(p ->
-                {
-                    if (dequeMap.containsKey(p))
+            eventInfo.getOutcomes().forEach(p ->
                     {
-                        Proxy proxy = dequeMap.get(p);
-                        Deque<Long> deque = proxy.getDeque();
-                        while (!deque.isEmpty() && currentTime - deque.getFirst() > proxy.getLimitTime())
-                            deque.pollFirst();
+                        if (dequeMap.containsKey(p)) {
+                            Proxy proxy = dequeMap.get(p);
+                            Deque<Long> deque = proxy.getDeque();
+                            while (!deque.isEmpty() && currentTime - deque.getFirst() > proxy.getLimitTime())
+                                deque.pollFirst();
 
-                        if (!deque.isEmpty()) {
+                            if (!deque.isEmpty()) {
 
-                            if (!commitCancelDequeMap.containsKey(p))
-                            {
-                                commitCancelDequeMap.put(p,0);
+                                if (!commitCancelDequeMap.containsKey(p)) {
+                                    commitCancelDequeMap.put(p, 0);
+                                }
+
+                                Integer integer = commitCancelDequeMap.get(p);
+                                commitCancelDequeMap.put(p, integer + 1);
+                                // deque.pollFirst();
                             }
-
-                            Integer integer = commitCancelDequeMap.get(p);
-                            commitCancelDequeMap.put(p,integer + 1);
-                            // deque.pollFirst();
                         }
                     }
-                }
-        );
-        LOGGER.info("Stop cancelSelectionLimit");
+
+            );
+        }
+        LOGGER.info(getClassName() + " Stop cancelSelectionLimit");
         return result;
     }
 }

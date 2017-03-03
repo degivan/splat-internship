@@ -17,4 +17,15 @@ public abstract class LocalTask {
     public abstract TaskTypesEnum getType();
 
     public abstract ServicesEnum getService();
+
+    public Long getTime() {
+        return time;
+    }
+
+    @Override
+    public String toString() {
+        return "LocalTask{" +
+                "time=" + time +
+                '}';
+    }
 }

@@ -1,11 +1,6 @@
 package ru.splat.actors;
 
-import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
-import akka.actor.UntypedActor;
-import akka.japi.pf.ReceiveBuilder;
-import akka.japi.pf.UnitPFBuilder;
-import ru.splat.LoggerGlobal;
 import ru.splat.db.Bounds;
 import ru.splat.db.DBConnection;
 import ru.splat.message.CreateIdRequest;
@@ -13,76 +8,82 @@ import ru.splat.message.CreateIdResponse;
 import ru.splat.message.NewIdsMessage;
 import ru.splat.messages.Transaction;
 import ru.splat.messages.Transaction.State;
-import sun.rmi.runtime.Log;
 
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.HashMap;
+import java.util.Map;
 
-import static ru.splat.messages.Transaction.Builder.*;
+import static ru.splat.messages.Transaction.Builder.builder;
 
 /**
  * Puts transaction in DB and generates unique identifier for it.
  */
-public class IdGenerator extends AbstractActor {
-    private static final Long RANGE = 50L;
+public class IdGenerator extends LoggingActor {
+    public static final Long RANGE = 50L;
 
-    private Queue<CreateIdRequest> adjournedRequests = new LinkedList<>();
+    private Map<CreateIdRequest, ActorRef> adjournedRequests = new HashMap<>();
     private Bounds bounds = new Bounds(0L, 0L);
     private boolean messagesRequested = false;
 
-    public IdGenerator() {
-        UnitPFBuilder<Object> builder = ReceiveBuilder.create();
-
-        builder.match(CreateIdRequest.class, this::processCreateIdRequest)
-            .match(NewIdsMessage.class, this::processNewIdsMessage)
-            .matchAny(this::unhandled);
-
-        receive(builder.build());
+    @Override
+    public Receive createReceive() {
+        return receiveBuilder().match(CreateIdRequest.class, m -> processCreateIdRequest(m, sender()))
+                .match(NewIdsMessage.class, this::processNewIdsMessage)
+                .matchAny(this::unhandled).build();
     }
 
     private void processNewIdsMessage(NewIdsMessage message) {
-        LoggerGlobal.log("Process NewIdsMessage: " + message.toString());
+        log.info("Process NewIdsMessage: " + message.toString());
 
         bounds = message.getBounds();
         messagesRequested = false;
 
-        while(adjournedRequests.peek() != null &&
-              processCreateIdRequest(adjournedRequests.poll())) {}
+        processAdjournedRequests();
     }
 
-    private boolean processCreateIdRequest(CreateIdRequest message) {
-        LoggerGlobal.log("Process CreateIdRequest: " + message.toString());
+    private void processAdjournedRequests() {
+        adjournedRequests.entrySet()
+                .forEach(e -> processCreateIdRequest(e.getKey(), e.getValue()));
+
+        adjournedRequests = new HashMap<>();
+    }
+
+    private boolean processCreateIdRequest(CreateIdRequest message, ActorRef receiver) {
+        log.info("Process CreateIdRequest: " + message.toString());
 
         if(outOfIndexes()) {
-            LoggerGlobal.log("Out of indexes!");
+            log.info("Out of indexes!");
 
-            adjournedRequests.add(message);
+            adjournedRequests.put(message, receiver);
             if(!messagesRequested) {
-                DBConnection.createIdentifiers(
-                        bounds -> self().tell(new NewIdsMessage(bounds), self()));
-                messagesRequested = true;
-
-                LoggerGlobal.log("Messages requested");
+                requestBounds();
             }
 
             return false;
         } else {
-            ActorRef receiver = sender();
             Bounds bounds = getIndexes();
             Transaction transaction = builder()
                     .betInfo(message.getBetInfo())
                     .state(State.CREATED)
                     .lower(bounds.getLowerBound())
                     .upper(bounds.getUpperBound())
-                    .build();
+                    .freshBuild();
 
-            LoggerGlobal.log("Saving new transaction: " + transaction);
+            log.info("Saving new transaction: " + transaction);
 
             DBConnection.newTransaction(transaction,
-                tr -> receiver.tell(new CreateIdResponse(transaction), self()));
+                tr -> receiver.tell(new CreateIdResponse(transaction), self()), log);
 
             return true;
         }
+    }
+
+    private void requestBounds() {
+        DBConnection.createIdentifiers(
+                bounds -> self().tell(new NewIdsMessage(bounds), self()),
+                log);
+        messagesRequested = true;
+
+        log.info("Bounds requested");
     }
 
     private Bounds getIndexes() {
@@ -94,6 +95,4 @@ public class IdGenerator extends AbstractActor {
     private boolean outOfIndexes() {
         return (bounds.getUpperBound() - bounds.getLowerBound() < RANGE);
     }
-
-
 }

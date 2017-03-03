@@ -35,4 +35,12 @@ public class CancelPunterLimitsTask extends LocalTask {
     public static CancelPunterLimitsTask create(BetInfo betInfo) {
         return new CancelPunterLimitsTask(betInfo.getUserId(), System.currentTimeMillis());
     }
+
+    @Override
+    public String toString() {
+        return "CancelPunterLimitsTask{" +
+                "punterId=" + punterId +
+                ", service=" + service +
+                '}';
+    }
 }

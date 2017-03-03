@@ -35,4 +35,12 @@ public class FixBetTask extends LocalTask {
     public static FixBetTask create(BetInfo betInfo) {
         return new FixBetTask(betInfo.getBetId(), System.currentTimeMillis());
     }
+
+    @Override
+    public String toString() {
+        return "FixBetTask{" +
+                "service=" + service +
+                ", betId=" + betId +
+                "} ";
+    }
 }

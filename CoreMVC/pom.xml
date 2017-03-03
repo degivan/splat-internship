@@ -32,6 +32,12 @@
             <version>4.2.4.RELEASE</version>
         </dependency>
 
+        <dependency>
+            <groupId>ru.splat</groupId>
+            <artifactId>CoreUP</artifactId>
+            <version>0.1-SNAPSHOT</version>
+        </dependency>
+
         <!-- Jackson JSON Mapper -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>

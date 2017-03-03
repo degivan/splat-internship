@@ -95,6 +95,8 @@
             <column name="record_timestamp" type="bigint"/>
         </createTable>
 
+        <addPrimaryKey tableName="event_idemp" columnNames="transaction_id"/>
+
         <createTable tableName="ballance">
             <column name="sum" type="integer"/>
             <column name="bets_count" type="integer"/>

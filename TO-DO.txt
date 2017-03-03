@@ -1,19 +1,36 @@
-﻿TO-DO
-TM (05.02.17-06.02.17):
--добавить логгирование;
--общий контекст Spring с УП;
--протестировать взаимодействие акторов УП и ТМ;
--обработка повторных ответов от сервиса;
+﻿==========CoreUP+CoreTM===========
+-тестировать throughput акторов с помощью Kamon
 
 
-Code-Review by NKalugin
 ==========CoreUP===========
+-тесты для latency и throughput
+-убрать гонку TransactionState и PhaserRequest на recover'е + //сделан синхронный recover, что убирает гонку
+-как устроен клиент монги для java
+-ограничение ресурсов
+-SendConfirmation +
+-коллбэк в TMConsumer +
+-принимать TransactionStateMsg вместо TransactionState +
+-отправлять TMRecoverMsg с отправленными транзакциями ТМ-у +
 ==========CoreTM===========
-повсеместно перепилить UntypedActor-a на AbstractActor-a //done для CoreUP
-объединить модули CoreTM, CoreUP и CoreMVC
+-async logging                      +
+-SendConfirmation                   +
+-коллбэк в TMConsumer               +
+-dispatcher & scheduler binвing     +
+-"сложный коммит"                   +
+-доделать рекавер ТМ-а              +
+-доделать коммит транзакции (TMConsumerActor.TopicTracker.commit())  +
+-протестировать "сложный коммит"    +
+-fix: "Error while fetching metadata with correlation id ..."   +
+-fix: commitAsync не позволяет отлавливать продублированные сообщения при высокой частоте poll +
 
-TestBoot:
--DI для контроллера (доступ к сету/мапе)
--переделать сет<trId> в мапу<trId, time> и отслеживать просроченные ответы
--логгирование
--настраиваемая частота обращений.
+
+
+
+==========TESTBOOT===========
+-увеличить частоту отправки запросов
+
+==========CoreMVC===========
+
+==========CoreMVC===========
+==========CoreTM===========
+-регулировать частоту считывания новых сообщений из топика 
