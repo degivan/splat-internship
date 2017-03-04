@@ -35,11 +35,11 @@ public class TopicTracker { //TODO написать несколько юнит 
     //возрващает true, если запись уже встречалась
     public boolean addRecord(long offset, long trId) {
         if (records.containsValue(trId)) {
-            records.put(offset, -1L);
+            records.put(offset, -1L); log.info(topicName + ": duplicated record " + trId + " at offset " + offset);
             return true;
         }   //trId -1 - индикатор лишнего сообщения (можно коммитить)
         else {
-            records.put(offset, trId);
+            records.put(offset, trId); log.info(topicName + ": added record " + trId + " at offset " + offset);
             return false;
         }
         //log.info(topicName + ": record with id " + trId);
