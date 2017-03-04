@@ -17,7 +17,7 @@ import java.util.*;
 
 public class BootService
 {
-    private static final String URL_ADRESS = "http://localhost:8080/dobet";
+    private static final String URL_ADRESS = "http://172.17.51.54:8080/SpringMVC/dobet";
     private Logger LOGGER = Logger.getLogger(BootService.class);
 
     public NewResponseClone makeRequest(int punterCount) throws Exception

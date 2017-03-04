@@ -13,7 +13,7 @@ import java.net.URL;
  * Created by Дмитрий on 10.02.2017.
  */
 public class StateCheckService {
-    private static final String URL_ADRESS = "http://localhost:8080/checkbet?transactionId=";   //заглушка, узнать и Ивана форму запроса стейта
+    private static final String URL_ADRESS = "http://172.17.51.54:8080/SpringMVC/checkbet?transactionId=";   //заглушка, узнать и Ивана форму запроса стейта
 
     public int makeRequest(NewResponseClone trdata) throws Exception
     {
