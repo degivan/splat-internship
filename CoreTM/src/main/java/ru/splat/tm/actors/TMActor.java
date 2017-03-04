@@ -50,6 +50,7 @@ public  class TMActor extends AbstractActor {
                     send(m.getTopic(), m.getTransactionId(), m.getMessage());})
                 .match(ServiceResponseMsg.class, this::processResponse)
                 .match(TMRecoverMsg.class, this::processRecover)
+                .match(TMCommitTransactionMsg.class, this::commitTransaction)
                 .matchAny(this::unhandled)
                 .build();
     }
@@ -120,21 +121,21 @@ public  class TMActor extends AbstractActor {
                 .allMatch(e -> e)) {
             log.info("all responses for transaction " + trId + " are received");
             //registry.tell(transactionState, getSelf());
-            registry.tell(new TransactionStateMsg(transactionState, () -> commitTransaction(trId)), getSelf());
+            registry.tell(new TransactionStateMsg(transactionState, () -> getSelf().tell(new TMCommitTransactionMsg(trId), getSelf())), getSelf());
         }
         //log.info("TMActor: responses for " + serviceResponseMsg.getService() + " " + trId + " checked"); for testing
         //log.info("processResponse took: " + (System.currentTimeMillis() - time));
     }
     //сообщить консюмеру, что можно коммитить транзакцию trId в топиках
-    private void commitTransaction(long trId) {
+    private void commitTransaction(TMCommitTransactionMsg m) {
         //log.info("CALLBACK " + trId);
-        if (!states.containsKey(trId)) {
+        if (!states.containsKey(m.getTransactionId())) {
             return;
         }
         consumerActor.tell(
-                new CommitTransactionMsg(trId, states.get(trId).getLocalStates().keySet().stream().collect(Collectors.toSet())),
+                new CommitTransactionMsg(m.getTransactionId(), states.get(m.getTransactionId()).getLocalStates().keySet().stream().collect(Collectors.toSet())),
                 getSelf());
-        states.remove(trId);
+        states.remove(m.getTransactionId());
     }
     private void processSent(TaskSentMsg m) {
         //log.info("task " + m.getService().toString() + " of " + m.getTransactionId() + " is sent");
