@@ -7,13 +7,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.RuntimeJsonMappingException;
 import com.mongodb.Block;
 import com.mongodb.async.SingleResultCallback;
-import com.mongodb.async.client.FindIterable;
-import com.mongodb.async.client.MongoClients;
-import com.mongodb.async.client.MongoCollection;
-import com.mongodb.async.client.MongoDatabase;
+import com.mongodb.async.client.*;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Projections;
 import com.mongodb.client.model.UpdateOptions;
+import com.mongodb.connection.ConnectionPoolSettings;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.jetbrains.annotations.NotNull;
@@ -42,7 +40,13 @@ public class DBConnection {
 
 
     static {
-        MongoDatabase db = MongoClients.create()
+        MongoClientSettings settings = MongoClientSettings.builder()
+                .connectionPoolSettings(
+                        ConnectionPoolSettings.builder()
+                        .maxSize(300)
+                        .build()
+                ).build();
+        MongoDatabase db = MongoClients.create(settings)
                 .getDatabase("test");
         transactions = db.getCollection("transactions");
         states = db.getCollection("states");
