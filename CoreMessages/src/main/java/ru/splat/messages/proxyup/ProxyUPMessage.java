@@ -13,4 +13,6 @@ public class ProxyUPMessage {
     public Integer getUserId() {
         return userId;
     }
+
+
 }

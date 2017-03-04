@@ -16,7 +16,6 @@ app.controller('customersCtrl', function ($http, $interval, $timeout) {
     ctrl.sum = 0;
     ctrl.userId = 0;
     ctrl.selects = {};
-    ctrl.baseDir = '/';
 
     ctrl.buttonDisabled = false;
 
