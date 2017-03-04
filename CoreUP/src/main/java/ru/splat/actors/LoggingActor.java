@@ -9,4 +9,8 @@ import akka.event.LoggingAdapter;
  */
 public abstract class LoggingActor extends AbstractActor {
     protected final LoggingAdapter log = Logging.getLogger(getContext().system(), this);
+
+    protected void execute(Runnable runnable) {
+        context().dispatcher().execute(runnable);
+    }
 }

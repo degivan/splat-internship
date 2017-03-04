@@ -71,7 +71,7 @@ public class IdGenerator extends LoggingActor {
             log.info("Saving new transaction: " + transaction);
 
             DBConnection.newTransaction(transaction,
-                tr -> receiver.tell(new CreateIdResponse(transaction), self()), log);
+                tr -> execute(() -> receiver.tell(new CreateIdResponse(transaction), self())), log);
 
             return true;
         }
