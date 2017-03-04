@@ -26,6 +26,7 @@ app.controller('customersCtrl', function ($http, $interval, $timeout) {
     });
 
 
+
     ctrl.buttonClick = function () {
         var stop;
         var timeout = $timeout(function () {
