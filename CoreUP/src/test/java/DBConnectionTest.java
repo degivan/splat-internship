@@ -1,4 +1,3 @@
-//import com.mongodb.async.client.MongoClients;
 //import org.junit.Test;
 //import ru.splat.db.DBConnection;
 //import ru.splat.messages.conventions.ServiceResult;
@@ -26,14 +25,6 @@
 //    }
 //
 //    @Test
-//    public void testConnectionsSize() {
-//        System.err.println(MongoClients.create()
-//                .getSettings()
-//                .getConnectionPoolSettings()
-//                .getMaxSize());
-//    }
-
-//    @Test
 //    public void testAddTransactionState() throws InterruptedException {
 //        DBConnection.addTransactionState(testState(),
 //                transactionState -> System.err.println("I'm here"));
@@ -48,7 +39,7 @@
 //                transactionState -> System.err.println(transactionState.toString()));
 //        lock.await(2000, TimeUnit.MILLISECONDS);
 //    }
-
+//
 //    private static TransactionState testState() {
 //        TransactionState trState = new TransactionState(0L, new HashMap<>());
 //        trState.setLocalState(BetService, positive());
