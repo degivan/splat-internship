@@ -16,12 +16,13 @@ app.controller('customersCtrl', function ($http, $interval, $timeout) {
     ctrl.sum = 0;
     ctrl.userId = 0;
     ctrl.selects = {};
+    ctrl.baseDir = '/';
 
     ctrl.buttonDisabled = false;
 
     ctrl.betStatus = ["Sucessefull", "Fail"];
 
-    $http.get("/init").then(function (response) {
+    $http.get("/SpringMVC/init").then(function (response) {
         ctrl.languageSettings = response.data;
     });
 
@@ -52,7 +53,7 @@ app.controller('customersCtrl', function ($http, $interval, $timeout) {
         var betRequest = new BetRequest( ctrl.userId, ctrl.sum, betOutcomes);
 
         console.log(betRequest);
-        $http.post("/dobet", betRequest).then(function (response) {
+        $http.post("/SpringMVC/dobet", betRequest).then(function (response) {
             if (response.data["active"] == true) {
                 $timeout.cancel(timeout);
                 alert("Your previous bet hasn't been processed yet! Try again soon.");
@@ -60,7 +61,7 @@ app.controller('customersCtrl', function ($http, $interval, $timeout) {
             }
             else {
                 stop = $interval(function () {
-                    $http.get("/checkbet", {
+                    $http.get("/SpringMVC/checkbet", {
                         params: {
                             transactionId: response.data.transactionId,
                             userId: response.data.userId
