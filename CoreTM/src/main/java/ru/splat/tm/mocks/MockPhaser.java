@@ -45,17 +45,9 @@ public class MockPhaser extends AbstractActor {
         LocalTask billingTask = new BillingWithdrawTask(14, 100, time);
         List<LocalTask> localTasks = new ArrayList<>(); localTasks.add(betTask); localTasks.add(billingTask); localTasks.add(eventTask); localTasks.add(punterTask);
 
-        for (long trId = 0; trId <= 100; trId++) {
+        for (long trId = 0; trId <= 10000; trId++) {
             TransactionMetadata transactionMetadata = new TransactionMetadata(trId, localTasks);
             tmActor.tell(transactionMetadata, getSelf());
-
-
-
-            /*try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }*/
         }
     }
 

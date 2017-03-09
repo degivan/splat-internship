@@ -38,7 +38,7 @@ public class Main {
         final ActorRef tmActor = system.actorOf(Props.create(TMActor.class, registry)
                 .withDispatcher("my-settings.akka.actor.tm-actor-dispatcher"), "TMActor");
         final ActorRef mockPhaser = system.actorOf(Props.create(MockPhaser.class, tmActor), "mockPhaser");
-        Kamon.start();
+        //Kamon.start();
 
         tmActor.tell(new TMRecoverMsg(), ActorRef.noSender());
         mockPhaser.tell(new MockPhaser.CreateTransactionMsg(), ActorRef.noSender());

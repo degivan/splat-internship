@@ -35,11 +35,11 @@ public class TopicTracker { //TODO написать несколько юнит 
     //возрващает true, если запись уже встречалась
     public boolean addRecord(long offset, long trId) {
         if (records.containsValue(trId)) {
-            records.put(offset, -1L); log.info(topicName + ": duplicated record " + trId + " at offset " + offset);
+            records.put(offset, -1L); //log.info(topicName + ": duplicated record " + trId + " at offset " + offset);
             return true;
         }   //trId -1 - индикатор лишнего сообщения (можно коммитить)
         else {
-            records.put(offset, trId); log.info(topicName + ": added record " + trId + " at offset " + offset);
+            records.put(offset, trId); //log.info(topicName + ": added record " + trId + " at offset " + offset);
             return false;
         }
         //log.info(topicName + ": record with id " + trId);
@@ -47,7 +47,7 @@ public class TopicTracker { //TODO написать несколько юнит 
     //возвращает оффсет (абсолютный) до которого можно коммитить или -1, если коммитить пока нельзя
     public void commitTransaction(long trId) {
         commitedTransactions.add(trId); //добавляем эту транзакцию в закоммиченные
-        log.info(topicName + ": currentOffset:  " + currentOffset + ". Commit request " + trId); //StringBuilder sb = new StringBuilder();
+        //log.info(topicName + ": currentOffset:  " + currentOffset + ". Commit request " + trId); //StringBuilder sb = new StringBuilder();
         //records.entrySet().forEach(entry -> sb.append(entry.getKey() + " : " + entry.getValue() + " | ")); log.info(sb.toString());
         long offset = currentOffset;
         boolean commitable = false;
