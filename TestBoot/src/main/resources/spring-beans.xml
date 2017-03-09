@@ -7,7 +7,7 @@
 
     <bean id="eventRepository" class="ru.splat.repository.EventRepository"/>
     <bean id="eventDefaultDataService" class="ru.splat.service.EventDefaultDataService"/>
-    <bean id="bootService" class="ru.splat.service.BootService"/>
+
 
 
 </beans>
