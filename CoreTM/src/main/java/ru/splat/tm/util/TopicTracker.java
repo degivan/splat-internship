@@ -47,7 +47,7 @@ public class TopicTracker { //TODO написать несколько юнит 
     //возвращает оффсет (абсолютный) до которого можно коммитить или -1, если коммитить пока нельзя
     public void commitTransaction(long trId) {
         commitedTransactions.add(trId); //добавляем эту транзакцию в закоммиченные
-        log.info(topicName + ": currentOffset:  " + currentOffset + ". Commit request " + trId); //StringBuilder sb = new StringBuilder();
+        //log.info(topicName + ": currentOffset:  " + currentOffset + ". Commit request " + trId); //StringBuilder sb = new StringBuilder();
         //records.entrySet().forEach(entry -> sb.append(entry.getKey() + " : " + entry.getValue() + " | ")); log.info(sb.toString());
         long offset = currentOffset;
         boolean commitable = false;

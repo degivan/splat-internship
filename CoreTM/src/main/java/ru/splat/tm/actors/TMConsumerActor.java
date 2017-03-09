@@ -107,7 +107,7 @@ public class TMConsumerActor extends AbstractActor{
         m.getServices().forEach(s -> {
             trackers.get(ResponseTopicMapper.getTopic(s)).commitTransaction(m.getTransactionId());;
         });
-        log.info("commitTransaction took: " + (System.currentTimeMillis() - time));
+        log.info("commitTransaction " + m.getTransactionId() + "  took: " + (System.currentTimeMillis() - time));
         //log.info("Transaction " + m.getTransactionId() + " is commited");
     }
 

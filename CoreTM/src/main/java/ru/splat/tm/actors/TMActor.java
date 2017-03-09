@@ -93,7 +93,7 @@ public  class TMActor extends AbstractActor {
             Message message = ProtobufFactory.buildProtobuf(task, services);
             send(RequestTopicMapper.getTopic(task.getService()), transactionId, message);
         });
-        log.info("processTransaction took " + (System.currentTimeMillis() - startTime));
+        //log.info("processTransaction took " + (System.currentTimeMillis() - startTime));
     }
     private void send(String topic, Long transactionId, Message message) {
         //log.info("TMActor: sending " + transactionId + " to " + topic);
@@ -128,7 +128,7 @@ public  class TMActor extends AbstractActor {
     }
     //сообщить консюмеру, что можно коммитить транзакцию trId в топиках
     private void commitTransaction(TMCommitTransactionMsg m) {
-        //log.info("CALLBACK " + trId);
+        log.info("commitTransaction " + m.getTransactionId());
         if (!states.containsKey(m.getTransactionId())) {
             return;
         }
