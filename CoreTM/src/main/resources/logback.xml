@@ -10,7 +10,7 @@
         <immediateFlush>false</immediateFlush>
         <layout class="ch.qos.logback.classic.PatternLayout">
             <Pattern>
-                %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n
+                %d{yyyy-MM-dd HH:mm:ss.SSS} [%X{sourceThread}] %-5level %logger{36} - %msg%n
             </Pattern>
         </layout>
         <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
