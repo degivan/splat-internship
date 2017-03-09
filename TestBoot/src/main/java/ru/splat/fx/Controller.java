@@ -104,8 +104,8 @@ public class Controller
         if (executorService == null)
         {
             init();
-            executorService = Executors.newFixedThreadPool(9);
-            for (int i = 0; i < 8; i++) {
+            executorService = Executors.newFixedThreadPool(2);
+            for (int i = 0; i < 1; i++) {
                 executorService.submit(new RequestTask(requestCount, requestTimeout, punterCount, this.trIdSet));
             }
             executorService.submit(new StateRequestTask(this.trIdSet)); //проверка стейтов по trId

@@ -6,10 +6,11 @@ import ru.splat.messages.proxyup.bet.NewResponseClone;
 import ru.splat.messages.proxyup.check.CheckResult;
 import ru.splat.service.StateCheckService;
 import java.util.Iterator;
-import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.concurrent.*;
+import java.util.function.Supplier;
 
 /**
- * Created by Дмитрий on 10.02.2017.
+ * Created by Дмитрий & Ильнар on 10.02.2017.
  */
 public class StateRequestTask implements Runnable{
     private ConcurrentSkipListSet<NewResponseClone> trIdSet;
@@ -24,28 +25,33 @@ public class StateRequestTask implements Runnable{
     @Override
     public void run() {
 
-        StateCheckService stateCheckService = new StateCheckService();
         while (!Thread.currentThread().interrupted()) {    //настроить частоту обращений
 
             Iterator<NewResponseClone> iterator = trIdSet.iterator();
-            while (iterator.hasNext()) {
-                try {
+            while (iterator.hasNext())
+            {
                     NewResponseClone response = iterator.next();
 
                     LOGGER.info(response.toString());
+                    CompletableFuture<Void> completableFuture = CompletableFuture.supplyAsync(new StateCheckService(response))
+                            .exceptionally( (ex) ->
+                            {
+                                if (ex.getClass() == InterruptedException.class) Thread.currentThread().interrupt();
+                                return null;
+                            })
+                            .thenAccept( (state)->
+                            {
+                                LOGGER.info(state + "");
+                                if (state == CheckResult.ACCEPTED.ordinal()) {
+                                    LOGGER.info("TrState for " + response.getTransactionId() + ": ACCEPTED");
+                                    iterator.remove();
+                                } else if (state == CheckResult.REJECTED.ordinal()) {
+                                    LOGGER.info("TrState for " + response.getTransactionId() + ": REJECTED");
+                                    iterator.remove();
+                                } else if (state == CheckResult.PENDING.ordinal())
+                                    LOGGER.info("TrState for " + response.getTransactionId() + ": PENDING");
+                            });
 
-                    int state = stateCheckService.makeRequest(response);
-                    LOGGER.info(state + "");
-                    if (state == CheckResult.ACCEPTED.ordinal()) { LOGGER.info("TrState for " + response.getTransactionId() + ": ACCEPTED"); iterator.remove();}
-                    else if (state == CheckResult.REJECTED.ordinal()) { LOGGER.info("TrState for " + response.getTransactionId() + ": REJECTED"); iterator.remove();}
-                    else if (state == CheckResult.PENDING.ordinal()) LOGGER.info("TrState for " + response.getTransactionId() + ": PENDING");
-
-                } catch (InterruptedException ie)
-                {
-                    Thread.currentThread().interrupt();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
             }
 
             try {

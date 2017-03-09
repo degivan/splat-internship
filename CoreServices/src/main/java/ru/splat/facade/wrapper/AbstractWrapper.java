@@ -100,7 +100,7 @@ public abstract class AbstractWrapper<KafkaRecord extends Message, InternalTrTyp
         Set<InternalTrType> transactionRequest = new HashSet<>();
         Iterator<ConsumerRecord<Long,KafkaRecord>> iterator = consumerRecordList.iterator();
         int i = 0;
-        while (iterator.hasNext() && i < 500)
+        while (iterator.hasNext() && i < 1000)
         {
             ConsumerRecord<Long,KafkaRecord> consumerRecord = iterator.next();
             iterator.remove();
