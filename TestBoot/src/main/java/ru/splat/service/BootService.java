@@ -14,6 +14,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Supplier;
 
 public class BootService implements Supplier<NewResponseClone>
@@ -30,24 +31,24 @@ public class BootService implements Supplier<NewResponseClone>
 
     private BetInfo generateBet(int punterCount)
     {
-        Random random = new Random(System.currentTimeMillis());
-        int eventId1 = random.nextInt(Constant.EVENT_COUNT - 1);
-        int eventId2 = random.nextInt(Constant.EVENT_COUNT - 1);
+
+        int eventId1 = ThreadLocalRandom.current().nextInt(Constant.EVENT_COUNT - 1);
+        int eventId2 = ThreadLocalRandom.current().nextInt(Constant.EVENT_COUNT - 1);
 
         while (eventId1 == eventId2)
         {
-            eventId2 = random.nextInt(Constant.EVENT_COUNT);
+            eventId2 = ThreadLocalRandom.current().nextInt(Constant.EVENT_COUNT);
         }
 
-        int outcomeId1 = random.nextInt(Constant.OUTCOME_COUNT-1) + eventId1*Constant.EVENT_COUNT;
-        int outcomeId2 = random.nextInt(Constant.OUTCOME_COUNT-1) + eventId2*Constant.EVENT_COUNT;
+        int outcomeId1 = ThreadLocalRandom.current().nextInt(Constant.OUTCOME_COUNT-1) + eventId1*Constant.EVENT_COUNT;
+        int outcomeId2 =ThreadLocalRandom.current().nextInt(Constant.OUTCOME_COUNT-1) + eventId2*Constant.EVENT_COUNT;
 
         BetOutcome betOutcome1 = new BetOutcome(null,eventId1,outcomeId1,Math.random() + 1);
         BetOutcome betOutcome2 = new BetOutcome(null,eventId2,outcomeId2,Math.random() + 1);
         Set<BetOutcome> set = new HashSet<>(2);
         set.add(betOutcome1);
         set.add(betOutcome2);
-        BetInfo betInfo = new BetInfo(-1L,random.nextInt(punterCount), random.nextInt(Constant.PUNTER_COUNT),set);
+        BetInfo betInfo = new BetInfo(-1L,ThreadLocalRandom.current().nextInt(punterCount), ThreadLocalRandom.current().nextInt(Constant.PUNTER_COUNT),set);
         return betInfo;
     }
 
