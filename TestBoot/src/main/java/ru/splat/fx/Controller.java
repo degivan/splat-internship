@@ -14,10 +14,15 @@ import ru.splat.messages.proxyup.bet.NewResponseClone;
 import ru.splat.service.EventDefaultDataService;
 import ru.splat.task.RequestTask;
 import ru.splat.task.StateRequestTask;
+
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 public class Controller
 {
@@ -44,12 +49,12 @@ public class Controller
 
     private Alert alert;
 
-    private ExecutorService executorService;
+    private List<ExecutorService> threads;
 
     public void interruptThreads()
     {
-        if (executorService != null){ executorService.shutdownNow();}
-        executorService = null;
+        if (threads != null){ threads.stream().forEach(p -> p.shutdown());}
+        threads = null;
     }
 
     private void init()
@@ -101,14 +106,17 @@ public class Controller
 
         alert.showAndWait();
 
-        if (executorService == null)
+        if (threads == null)
         {
             init();
-            executorService = Executors.newFixedThreadPool(2);
-            for (int i = 0; i < 1; i++) {
-                executorService.submit(new RequestTask(requestCount, requestTimeout, punterCount, this.trIdSet));
+            threads = new ArrayList<>(requestCount + 1);
+
+            for (int i = 1; i <= requestCount; i++)
+            {
+                threads.add(Executors.newSingleThreadExecutor());
+                threads.get(i).submit(new RequestTask(requestTimeout, i, this.trIdSet));
             }
-            executorService.submit(new StateRequestTask(this.trIdSet)); //проверка стейтов по trId
+           threads.get(threads.size() - 1).submit(new StateRequestTask(this.trIdSet)); //проверка стейтов по trId
 
         }
     }
