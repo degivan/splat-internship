@@ -81,7 +81,7 @@ public class PhaserActor extends LoggingActor {
                 break;
             default: //CANCEL OR DENIED
                 DBConnection.findTransactionState(transaction.getLowerBound(),
-                        tState -> execute(() -> cancelTransaction(transaction, tState)), log);
+                        tState -> execute(() -> cancelTransaction(transaction, tState)));
         }
     }
 
@@ -126,8 +126,8 @@ public class PhaserActor extends LoggingActor {
         DBConnection.overwriteTransaction(builder().of(transaction)
                         .state(state)
                         .build(),
-                        () -> {},
-                        log);
+                        () -> {}
+        );
     }
 
     private static void updateBetId(TransactionState o, Transaction transaction) {
@@ -137,13 +137,13 @@ public class PhaserActor extends LoggingActor {
 
     private void saveDBWithState(Transaction.State state, ru.splat.db.Procedure after) {
         transaction.nextState(state);
-        DBConnection.overwriteTransaction(transaction, () -> execute(after::process), log);
+        DBConnection.overwriteTransaction(transaction, () -> execute(after::process));
     }
 
     private void saveDBWithStateCancel(Transaction.State state, TransactionState trState, ru.splat.db.Procedure after) {
         DBConnection.addTransactionState(trState,
-                tState -> execute(() -> saveDBWithState(state, after)),
-                log);
+                tState -> execute(() -> saveDBWithState(state, after))
+        );
     }
 
     private void sendResult(Transaction transaction) {
