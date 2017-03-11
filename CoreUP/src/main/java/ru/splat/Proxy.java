@@ -4,6 +4,8 @@ import akka.actor.ActorRef;
 import akka.dispatch.OnSuccess;
 import akka.pattern.Patterns;
 import akka.util.Timeout;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.splat.messages.proxyup.bet.BetInfo;
 import ru.splat.messages.proxyup.bet.NewRequest;
 import ru.splat.messages.proxyup.bet.NewResponse;
@@ -23,6 +25,7 @@ import java.util.stream.Collectors;
  */
 public class Proxy {
     private final static Timeout TIMEOUT = Timeout.apply(10, TimeUnit.SECONDS);
+    private final static Logger LOGGER = LoggerFactory.getLogger(Proxy.class);
 
     private final UP up;
 
@@ -66,7 +69,7 @@ public class Proxy {
         future.onSuccess(new OnSuccess<Object>() {
             @Override
             public void onSuccess(Object o) throws Throwable {
-                LoggerGlobal.log(logBuilder.apply(o), this);
+                LOGGER.info(logBuilder.apply(o), this);
             }
         },up.getSystem().dispatcher());
     }

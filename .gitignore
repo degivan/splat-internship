@@ -66,3 +66,4 @@ target/
 
 /logs/*.log
 CoreUP/logs/*.log
+*.log

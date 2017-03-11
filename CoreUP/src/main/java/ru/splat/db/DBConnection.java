@@ -1,22 +1,23 @@
 package ru.splat.db;
 
 
-import akka.event.LoggingAdapter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.RuntimeJsonMappingException;
 import com.mongodb.Block;
+import com.mongodb.ServerAddress;
 import com.mongodb.async.SingleResultCallback;
-import com.mongodb.async.client.FindIterable;
-import com.mongodb.async.client.MongoClients;
-import com.mongodb.async.client.MongoCollection;
-import com.mongodb.async.client.MongoDatabase;
+import com.mongodb.async.client.*;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Projections;
 import com.mongodb.client.model.UpdateOptions;
+import com.mongodb.connection.ClusterSettings;
+import com.mongodb.connection.ConnectionPoolSettings;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.splat.LoggerGlobal;
 import ru.splat.messages.Transaction;
 import ru.splat.messages.uptm.trstate.TransactionState;
@@ -28,6 +29,7 @@ import java.util.function.Consumer;
 
 import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.ne;
+import static java.util.Collections.singletonList;
 
 /**
  * Wrapper class for database.
@@ -39,10 +41,22 @@ public class DBConnection {
     private static final Document searchIdBoundsQuery;
     private static final Document rangeQuery;
     private static final ObjectMapper MAPPER;
+    private static final Logger LOGGER = LoggerFactory.getLogger(DBConnection.class);
 
 
     static {
-        MongoDatabase db = MongoClients.create()
+        ClusterSettings clusterSettings = ClusterSettings.builder()
+                .hosts(singletonList(new ServerAddress("localhost", 27017)))
+                .build();
+        ConnectionPoolSettings poolSettings = ConnectionPoolSettings.builder()
+                .maxSize(16)
+                .build();
+        MongoClientSettings clientSettings = MongoClientSettings.builder()
+                .clusterSettings(clusterSettings)
+                .connectionPoolSettings(poolSettings)
+                .build();
+
+        MongoDatabase db = MongoClients.create(clientSettings)
                 .getDatabase("test");
         transactions = db.getCollection("transactions");
         states = db.getCollection("states");
@@ -54,11 +68,10 @@ public class DBConnection {
 
     /**
      * Saves transactionState in the database.
-     * @param trState
-     * @param after
+     * @param trState TransactionState
+     * @param after callback
      */
-    public static void addTransactionState(TransactionState trState, Consumer<TransactionState> after,
-                                           LoggingAdapter log) {
+    public static void addTransactionState(TransactionState trState, Consumer<TransactionState> after) {
         try {
             states.replaceOne(byTransactionId(trState.getTransactionId()),
                     Document.parse(MAPPER.writeValueAsString(trState)),
@@ -66,21 +79,20 @@ public class DBConnection {
                     (aVoid, throwable) -> {
                         after.accept(trState);
 
-                        log.info(trState.toString() + " added to UP database.");
+                        LOGGER.info(trState.toString() + " added to UP database.");
                     });
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
     }
 
-    public static void findTransactionState(Long trId, Consumer<TransactionState> after,
-                                            LoggingAdapter log) {
+    public static void findTransactionState(Long trId, Consumer<TransactionState> after) {
         states.find(byTransactionId(trId))
                 .limit(1)
                 .projection(Projections.excludeId())
                 .forEach(document -> {
                             TransactionState tState = getObjectFromDocument(document,TransactionState.class);
-                            log.info(tState.toString() + " finded in the database.");
+                            LOGGER.info(tState.toString() + " finded in the database.");
 
                             after.accept(tState);
                         },
@@ -119,14 +131,13 @@ public class DBConnection {
      * @param transaction information about bet
      * @param after what to do with transaction after inserting
      */
-    public static void newTransaction(Transaction transaction, Consumer<Transaction> after,
-                                      LoggingAdapter log) {
+    public static void newTransaction(Transaction transaction, Consumer<Transaction> after) {
         try {
             transactions.insertOne(Document.parse(MAPPER.writeValueAsString(transaction)),
                     (aVoid, throwable) -> {
                         after.accept(transaction);
 
-                        log.info("New transaction in the database:"
+                       LOGGER.info("New transaction in the database:"
                                 + transaction.toString());
                     });
         } catch (JsonProcessingException e) {
@@ -139,12 +150,12 @@ public class DBConnection {
      * @param transaction transaction to overwrite
      * @param after action after overwriting
      */
-    public static void overwriteTransaction(Transaction transaction, Procedure after, LoggingAdapter log) {
+    public static void overwriteTransaction(Transaction transaction, Procedure after) {
         try {
             transactions.findOneAndReplace(Filters.eq("lowerBound", transaction.getLowerBound()),
                     Document.parse(MAPPER.writeValueAsString(transaction)),
                     (o, throwable) -> {
-                        log.info(transaction.toString() + "is overwrited.");
+                        LOGGER.info(transaction.toString() + "is overwrited.");
                         after.process();
                     });
 
@@ -157,14 +168,14 @@ public class DBConnection {
      * Create new identifiers for transactions.
      * @param after processing transactions after creating
      */
-    public static void createIdentifiers(Consumer<Bounds> after, LoggingAdapter log) {
+    public static void createIdentifiers(Consumer<Bounds> after) {
         counter.findOneAndUpdate(searchIdBoundsQuery, rangeQuery, ((document, throwable) -> {
             Long lower = document.getLong("lower");
             Long upper = document.getLong("upper");
 
             after.accept(new Bounds(lower, upper));
 
-            log.info("Indexes created from " + lower + " to " + upper);
+            LOGGER.info("Indexes created from " + lower + " to " + upper);
         }));
 
     }
