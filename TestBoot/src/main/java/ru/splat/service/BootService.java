@@ -17,19 +17,19 @@ import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Supplier;
 
-public class BootService implements Supplier<NewResponseClone>
+public class BootService
 {
     private static final String URL_ADRESS = "http://172.17.51.54:8080/SpringMVC/dobet";
     private Logger LOGGER = Logger.getLogger(BootService.class);
+    private int punterId;
 
-    private int punterCount;
 
-    public BootService(int punterCount)
+    public BootService(int punterId)
     {
-        this.punterCount = punterCount;
+        this.punterId = punterId;
     }
 
-    private BetInfo generateBet(int punterCount)
+    private BetInfo generateBet()
     {
 
         int eventId1 = ThreadLocalRandom.current().nextInt(Constant.EVENT_COUNT - 1);
@@ -48,50 +48,43 @@ public class BootService implements Supplier<NewResponseClone>
         Set<BetOutcome> set = new HashSet<>(2);
         set.add(betOutcome1);
         set.add(betOutcome2);
-        BetInfo betInfo = new BetInfo(-1L,ThreadLocalRandom.current().nextInt(punterCount), ThreadLocalRandom.current().nextInt(Constant.PUNTER_COUNT),set);
+        BetInfo betInfo = new BetInfo(-1L,punterId, ThreadLocalRandom.current().nextInt(Constant.PUNTER_COUNT),set);
         return betInfo;
     }
 
 
-    @Override
-    public NewResponseClone get()
+    public NewResponseClone doRequest() throws Exception
     {
         Gson g = new Gson();
 
-        NewResponseClone newResponse = new NewResponseClone();
-        try
-        {
+        NewResponseClone newResponse;
+        URL url = new URL(URL_ADRESS);
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setRequestMethod("POST");
+        connection.setRequestProperty("Content-Type", "application/json");
 
-            URL url = new URL(URL_ADRESS);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("POST");
-            connection.setRequestProperty("Content-Type", "application/json");
-
-            BetInfo betInfo = generateBet(punterCount);
-            String json = g.toJson(betInfo);
-            LOGGER.info("JSON for Server: " + json);
+        BetInfo betInfo = generateBet();
+        String json = g.toJson(betInfo);
+        LOGGER.info("JSON for Server: " + json);
 
 
-            connection.setDoOutput(true);
-            DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
-            wr.writeBytes(json);
-            wr.flush();
-            wr.close();
+        connection.setDoOutput(true);
+        DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
+        wr.writeBytes(json);
+        wr.flush();
+        wr.close();
 
-            BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            String inputLine;
-            StringBuilder response = new StringBuilder();
+        BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+        String inputLine;
+        StringBuilder response = new StringBuilder();
 
-            while ((null != (inputLine = in.readLine()))) {
-                response.append(inputLine);
-            }
-            in.close();
-
-             newResponse = g.fromJson(response.toString(), NewResponseClone.class);
-        }catch (Exception ex)
-        {
-
+        while ((null != (inputLine = in.readLine()))) {
+            response.append(inputLine);
         }
+        in.close();
+
+        newResponse = g.fromJson(response.toString(), NewResponseClone.class);
+
 
         return newResponse;
     }
