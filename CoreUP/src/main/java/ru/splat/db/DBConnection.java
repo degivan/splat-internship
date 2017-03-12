@@ -18,17 +18,16 @@ import org.bson.conversions.Bson;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.splat.LoggerGlobal;
 import ru.splat.messages.Transaction;
 import ru.splat.messages.uptm.trstate.TransactionState;
+import scala.concurrent.ExecutionContextExecutor;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-import static com.mongodb.client.model.Filters.and;
-import static com.mongodb.client.model.Filters.ne;
+import static com.mongodb.client.model.Filters.*;
 import static java.util.Collections.singletonList;
 
 /**
@@ -67,35 +66,54 @@ public class DBConnection {
     }
 
     /**
+     * Deletes all finished transactions and corresponding transactionStates.
+     */
+    public static void clearFinishedTransactionsAndStates() {
+        List<Transaction> finished = new ArrayList<>();
+        findFinishedTransactions()
+                .forEach(processResult(finished),
+                        createCallback(
+                                finishedTransactions -> {
+                                    transactions.deleteMany(finishedFilter(), (result, t) -> {});
+                                    finishedTransactions.forEach(transaction ->
+                                            states.deleteOne(eq("transactionId", transaction.getLowerBound()),
+                                                (result, t) -> LOGGER.info("Finished transactions cleared.")));
+                                },
+                                () -> {},
+                                finished));
+    }
+
+    /**
      * Saves transactionState in the database.
      * @param trState TransactionState
      * @param after callback
+     * @param executor thread pool for callback execution
      */
-    public static void addTransactionState(TransactionState trState, Consumer<TransactionState> after) {
+    public static void addTransactionState(TransactionState trState, Consumer<TransactionState> after, ExecutionContextExecutor executor) {
         try {
             states.replaceOne(byTransactionId(trState.getTransactionId()),
                     Document.parse(MAPPER.writeValueAsString(trState)),
                     new UpdateOptions().upsert(true),
-                    (aVoid, throwable) -> {
+                    (aVoid, throwable) -> executor.execute(() -> {
                         after.accept(trState);
 
                         LOGGER.info(trState.toString() + " added to UP database.");
-                    });
+                    }));
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
     }
 
-    public static void findTransactionState(Long trId, Consumer<TransactionState> after) {
+    public static void findTransactionState(Long trId, Consumer<TransactionState> after, ExecutionContextExecutor executor) {
         states.find(byTransactionId(trId))
                 .limit(1)
                 .projection(Projections.excludeId())
-                .forEach(document -> {
-                            TransactionState tState = getObjectFromDocument(document,TransactionState.class);
-                            LOGGER.info(tState.toString() + " finded in the database.");
+                .forEach(document -> executor.execute(() -> {
+                    TransactionState tState = getObjectFromDocument(document,TransactionState.class);
+                    LOGGER.info(tState.toString() + " finded in the database.");
 
-                            after.accept(tState);
-                        },
+                    after.accept(tState);
+                }),
                         (result, t) -> {});
     }
 
@@ -106,7 +124,7 @@ public class DBConnection {
                 .projection(Projections.excludeId())
                 .forEach(document -> {
                     TransactionState tState = getObjectFromDocument(document, TransactionState.class);
-                    LoggerGlobal.log(tState.toString() + " finded in the database.");
+                    LOGGER.info(tState.toString() + " finded in the database.");
 
                     trStates.add(tState);
                 }, (result, t) -> after.accept(trStates));
@@ -123,23 +141,24 @@ public class DBConnection {
         findUnfinishedTransactions()
                 .forEach(processResult(list), createCallback(processData, after, list));
 
-        LoggerGlobal.log("Unfinished transactions sended.");
+        LOGGER.info("Unfinished transactions sended.");
     }
 
     /**
      * Put new transaction in database.
      * @param transaction information about bet
      * @param after what to do with transaction after inserting
+     * @param executor thread pool for callback execution
      */
-    public static void newTransaction(Transaction transaction, Consumer<Transaction> after) {
+    public static void newTransaction(Transaction transaction, Consumer<Transaction> after, ExecutionContextExecutor executor) {
         try {
             transactions.insertOne(Document.parse(MAPPER.writeValueAsString(transaction)),
-                    (aVoid, throwable) -> {
+                    (aVoid, throwable) -> executor.execute(() -> {
                         after.accept(transaction);
 
-                       LOGGER.info("New transaction in the database:"
+                        LOGGER.info("New transaction in the database:"
                                 + transaction.toString());
-                    });
+                    }));
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
@@ -149,15 +168,16 @@ public class DBConnection {
      * Overwrites existing transaction in database
      * @param transaction transaction to overwrite
      * @param after action after overwriting
+     * @param executor thread pool for callback execution
      */
-    public static void overwriteTransaction(Transaction transaction, Procedure after) {
+    public static void overwriteTransaction(Transaction transaction, Procedure after, ExecutionContextExecutor executor) {
         try {
             transactions.findOneAndReplace(Filters.eq("lowerBound", transaction.getLowerBound()),
                     Document.parse(MAPPER.writeValueAsString(transaction)),
-                    (o, throwable) -> {
+                    (o, throwable) -> executor.execute(() -> {
                         LOGGER.info(transaction.toString() + "is overwrited.");
                         after.process();
-                    });
+                    }));
 
         } catch (JsonProcessingException e) {
             e.printStackTrace();
@@ -191,6 +211,18 @@ public class DBConnection {
                     ne("state", "CANCEL_COMPLETED")))
                 .projection(Projections.excludeId());
     }
+
+    private static FindIterable<Document> findFinishedTransactions() {
+        return transactions.find(finishedFilter())
+                .projection(Projections.excludeId());
+    }
+
+    private static Bson finishedFilter() {
+        return Filters.or(
+                eq("state", "COMPLETED"),
+                eq("state", "CANCEL_COMPLETED"));
+    }
+
 
     private static Block<? super Document> processResult(List<Transaction> list) {
         return (Block<Document>) document -> list.add(getObjectFromDocument(document, Transaction.class));

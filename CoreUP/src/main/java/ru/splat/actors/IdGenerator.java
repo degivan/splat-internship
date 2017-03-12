@@ -18,7 +18,7 @@ import static ru.splat.messages.Transaction.Builder.builder;
  * Puts transaction in DB and generates unique identifier for it.
  */
 public class IdGenerator extends LoggingActor {
-    public static final Long RANGE = 50L;
+    static final Long RANGE = 50L;
 
     private Map<CreateIdRequest, ActorRef> adjournedRequests = new HashMap<>();
     private Bounds bounds = new Bounds(0L, 0L);
@@ -71,7 +71,8 @@ public class IdGenerator extends LoggingActor {
             log.info("Saving new transaction: " + transaction);
 
             DBConnection.newTransaction(transaction,
-                tr -> execute(() -> receiver.tell(new CreateIdResponse(transaction), self())));
+                tr -> receiver.tell(new CreateIdResponse(transaction), self()),
+                executor);
 
             return true;
         }
