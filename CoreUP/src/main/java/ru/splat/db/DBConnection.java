@@ -18,7 +18,6 @@ import org.bson.conversions.Bson;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.splat.LoggerGlobal;
 import ru.splat.messages.Transaction;
 import ru.splat.messages.uptm.trstate.TransactionState;
 import scala.concurrent.ExecutionContextExecutor;
@@ -108,7 +107,7 @@ public class DBConnection {
                 .projection(Projections.excludeId())
                 .forEach(document -> {
                     TransactionState tState = getObjectFromDocument(document, TransactionState.class);
-                    LoggerGlobal.log(tState.toString() + " finded in the database.");
+                    LOGGER.info(tState.toString() + " finded in the database.");
 
                     trStates.add(tState);
                 }, (result, t) -> after.accept(trStates));
@@ -125,7 +124,7 @@ public class DBConnection {
         findUnfinishedTransactions()
                 .forEach(processResult(list), createCallback(processData, after, list));
 
-        LoggerGlobal.log("Unfinished transactions sended.");
+        LOGGER.info("Unfinished transactions sended.");
     }
 
     /**

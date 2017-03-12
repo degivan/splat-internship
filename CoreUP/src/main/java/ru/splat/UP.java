@@ -9,6 +9,8 @@ import akka.japi.Pair;
 import akka.pattern.Patterns;
 import akka.util.Timeout;
 import kamon.Kamon;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.splat.actors.IdGenerator;
 import ru.splat.actors.Receiver;
 import ru.splat.actors.RegistryActor;
@@ -43,6 +45,7 @@ public class UP {
     private static final String ID_GEN_NAME = "id_gen";
     private static final int REGISTRY_SIZE = 10;
     private static final Timeout TIMEOUT = Timeout.apply(10, TimeUnit.SECONDS);
+    private static final Logger LOGGER = LoggerFactory.getLogger(UP.class);
 
     private final ActorSystem system;
     private final ActorRef registry;
@@ -78,7 +81,7 @@ public class UP {
 
         try {
             return doRecover(proxy,
-                    () -> LoggerGlobal.log("Actor system initialized.", this));
+                    () -> LOGGER.info("Actor system initialized.", this));
         } catch (Exception e) {
             throw new Error("Recover failed!");
         }
@@ -105,17 +108,16 @@ public class UP {
 
         DBConnection.processUnfinishedTransactions(trList -> {
             ExecutionContext ec = getSystem().dispatcher();
-
             Future<Iterable<Object>> allAnswers = Futures.sequence(sendRecoverRequests(trList), ec);
 
             addOnSuccessToFuture(allAnswers,
                 responses -> {
-                    LoggerGlobal.log("Responses from receivers here: " + responses.toString());
+                    LOGGER.info("Responses from receivers here: " + responses.toString());
 
                     checkResponsesPositive(responses);
 
                     DBConnection.getTransactionStates(states -> {
-                        LoggerGlobal.log("TransactionsStates loaded: " + states.toString());
+                        LOGGER.info("TransactionsStates loaded: " + states.toString());
 
                         Map<Long, List<ServicesEnum>> info = compareStatesAndTransactions(states, trList);
                         Future<Object> tmRecover = Patterns.ask(tmActor, new TMRecoverMsg(info), TIMEOUT);
