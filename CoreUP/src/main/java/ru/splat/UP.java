@@ -26,6 +26,7 @@ import ru.splat.messages.uptm.trstate.TransactionState;
 import ru.splat.tm.actors.TMActor;
 import scala.concurrent.ExecutionContext;
 import scala.concurrent.Future;
+import scala.concurrent.duration.FiniteDuration;
 
 import java.util.HashMap;
 import java.util.List;
@@ -81,7 +82,14 @@ public class UP {
 
         try {
             return doRecover(proxy,
-                    () -> LOGGER.info("Actor system initialized.", this));
+                    () -> {
+                        LOGGER.info("Actor system initialized.", this);
+                        getSystem().scheduler()
+                                .schedule(FiniteDuration.apply(0L, TimeUnit.SECONDS),
+                                        FiniteDuration.apply(3L, TimeUnit.MINUTES),
+                                        DBConnection::clearFinishedTransactionsAndStates,
+                                        getSystem().dispatcher());
+                    });
         } catch (Exception e) {
             throw new Error("Recover failed!");
         }

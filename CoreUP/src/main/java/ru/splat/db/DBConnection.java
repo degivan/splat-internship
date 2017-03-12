@@ -27,8 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-import static com.mongodb.client.model.Filters.and;
-import static com.mongodb.client.model.Filters.ne;
+import static com.mongodb.client.model.Filters.*;
 import static java.util.Collections.singletonList;
 
 /**
@@ -64,6 +63,24 @@ public class DBConnection {
         searchIdBoundsQuery = Document.parse("{ _id : \"tr_id\" } ");
         rangeQuery = Document.parse("{ $inc: { lower : 10000 , upper : 10000 } }");
         MAPPER = new ObjectMapper();
+    }
+
+    /**
+     * Deletes all finished transactions and corresponding transactionStates.
+     */
+    public static void clearFinishedTransactionsAndStates() {
+        List<Transaction> finished = new ArrayList<>();
+        findFinishedTransactions()
+                .forEach(processResult(finished),
+                        createCallback(
+                                finishedTransactions -> {
+                                    transactions.deleteMany(finishedFilter(), (result, t) -> {});
+                                    finishedTransactions.forEach(transaction ->
+                                            states.deleteOne(eq("transactionId", transaction.getLowerBound()),
+                                                (result, t) -> LOGGER.info("Finished transactions cleared.")));
+                                },
+                                () -> {},
+                                finished));
     }
 
     /**
@@ -194,6 +211,18 @@ public class DBConnection {
                     ne("state", "CANCEL_COMPLETED")))
                 .projection(Projections.excludeId());
     }
+
+    private static FindIterable<Document> findFinishedTransactions() {
+        return transactions.find(finishedFilter())
+                .projection(Projections.excludeId());
+    }
+
+    private static Bson finishedFilter() {
+        return Filters.or(
+                eq("state", "COMPLETED"),
+                eq("state", "CANCEL_COMPLETED"));
+    }
+
 
     private static Block<? super Document> processResult(List<Transaction> list) {
         return (Block<Document>) document -> list.add(getObjectFromDocument(document, Transaction.class));
