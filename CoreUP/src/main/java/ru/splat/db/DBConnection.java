@@ -77,9 +77,9 @@ public class DBConnection {
                                     transactions.deleteMany(finishedFilter(), (result, t) -> {});
                                     finishedTransactions.forEach(transaction ->
                                             states.deleteOne(eq("transactionId", transaction.getLowerBound()),
-                                                (result, t) -> LOGGER.info("Finished transactions cleared.")));
+                                                (result, t) -> {}));
                                 },
-                                () -> {},
+                                () -> LOGGER.info("Finished transactions cleared."),
                                 finished));
     }
 

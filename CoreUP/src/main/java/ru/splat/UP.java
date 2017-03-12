@@ -85,8 +85,8 @@ public class UP {
                     () -> {
                         LOGGER.info("Actor system initialized.", this);
                         getSystem().scheduler()
-                                .schedule(FiniteDuration.apply(3L, TimeUnit.MINUTES),
-                                        FiniteDuration.apply(0L, TimeUnit.SECONDS),
+                                .schedule(FiniteDuration.apply(1L, TimeUnit.MINUTES),
+                                        FiniteDuration.apply(3L, TimeUnit.MINUTES),
                                         DBConnection::clearFinishedTransactionsAndStates,
                                         getSystem().dispatcher());
                     });
