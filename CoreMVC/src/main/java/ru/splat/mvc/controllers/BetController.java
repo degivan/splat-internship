@@ -10,7 +10,6 @@ import ru.splat.messages.proxyup.bet.BetInfo;
 import ru.splat.messages.proxyup.bet.NewResponse;
 import ru.splat.mvc.features.ReposResult;
 import ru.splat.mvc.service.ShowEvents;
-
 import javax.annotation.PostConstruct;
 
 
@@ -18,8 +17,14 @@ import javax.annotation.PostConstruct;
 public class BetController
 {
     private Proxy proxy;
-    @Autowired
     private ShowEvents showEvents;
+
+    @Autowired
+    public BetController(ShowEvents showEvents)
+    {
+        this.showEvents = showEvents;
+        init();
+    }
 
     private static Logger LOGGER = Logger.getLogger(BetController.class);
 
@@ -52,7 +57,8 @@ public class BetController
 
     @RequestMapping(value = "/checkbet", method = RequestMethod.GET)
     public @ResponseBody
-    int chekBet(@RequestParam(value="transactionId", defaultValue="false") long transactionId,@RequestParam(value="userId", defaultValue="false") int userId) throws Exception {
+    int chekBet(@RequestParam(value="transactionId", defaultValue="false") long transactionId,@RequestParam(value="userId", defaultValue="false") int userId) throws Exception
+    {
 
         int check = proxy.sendCheckRequest(transactionId, userId).ordinal();
         LOGGER.info("/checkbet request: " + transactionId + " " + userId + " response: " + check);
@@ -60,8 +66,8 @@ public class BetController
         //return 1;
     }
 
-    @PostConstruct
-    public void init() {
+    public void init()
+    {
         UP up = UP.create();
         proxy = up.start();
     }

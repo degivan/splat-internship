@@ -16,7 +16,7 @@ import java.util.function.Supplier;
 /**
  * Created by Дмитрий on 10.02.2017.
  */
-public class StateCheckService implements Supplier<Integer>{
+public class StateCheckService{
 
     private static final String URL_ADRESS = "http://172.17.51.54:8080/SpringMVC/checkbet?transactionId=";   //заглушка, узнать и Ивана форму запроса стейта
     private NewResponseClone trdata;
@@ -27,32 +27,26 @@ public class StateCheckService implements Supplier<Integer>{
     }
 
 
-    @Override
-    public Integer get()
+    public Integer doRequest() throws Exception
     {
         Gson g = new Gson();
         URL url = null;
         StringBuilder response = new StringBuilder();
-        try
-        {
-            url = new URL(URL_ADRESS + trdata.getTransactionId() + "&userId=" + trdata.getUserId());
-            HttpURLConnection connection = null;
-            connection = (HttpURLConnection)url.openConnection();
-            connection.setRequestMethod("GET");
-            // connection.setRequestProperty("Content-Type", "application/json");
+        url = new URL(URL_ADRESS + trdata.getTransactionId() + "&userId=" + trdata.getUserId());
+        HttpURLConnection connection = null;
+        connection = (HttpURLConnection)url.openConnection();
+        connection.setRequestMethod("GET");
+        // connection.setRequestProperty("Content-Type", "application/json");
 
-            BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            String inputLine;
-            response = new StringBuilder();
-            while((null != (inputLine = in.readLine())))
-            {
-                response.append(inputLine);
-            }
-            in.close();
+        BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+        String inputLine;
+        response = new StringBuilder();
+        while((null != (inputLine = in.readLine())))
+        {
+            response.append(inputLine);
         }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
+        in.close();
+
         int betState = g.fromJson(response.toString(), Integer.class);
         return betState;
     }

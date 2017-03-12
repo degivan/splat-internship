@@ -13,8 +13,8 @@
 <GridPane alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.splat.fx.Controller">
   <columnConstraints>
       <ColumnConstraints hgrow="SOMETIMES" maxWidth="341.0" minWidth="10.0" prefWidth="41.0" />
-    <ColumnConstraints hgrow="SOMETIMES" maxWidth="341.0" minWidth="10.0" prefWidth="130.0" />
-    <ColumnConstraints hgrow="SOMETIMES" maxWidth="497.0" minWidth="10.0" prefWidth="63.0" />
+    <ColumnConstraints hgrow="SOMETIMES" maxWidth="341.0" minWidth="10.0" prefWidth="126.0" />
+    <ColumnConstraints hgrow="SOMETIMES" maxWidth="497.0" minWidth="10.0" prefWidth="65.0" />
       <ColumnConstraints hgrow="SOMETIMES" maxWidth="497.0" minWidth="10.0" prefWidth="138.0" />
       <ColumnConstraints hgrow="SOMETIMES" maxWidth="497.0" minWidth="10.0" prefWidth="67.0" />
       <ColumnConstraints hgrow="SOMETIMES" maxWidth="497.0" minWidth="10.0" prefWidth="127.0" />
@@ -30,12 +30,11 @@
   </rowConstraints>
    <children>
       <TextField fx:id="tfRequestTimeout" GridPane.columnIndex="3" GridPane.rowIndex="2" />
-      <TextField fx:id="tfRequestCount" prefHeight="25.0" prefWidth="111.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+      <TextField fx:id="tfPunterCount1" prefHeight="21.0" prefWidth="125.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
       <Button alignment="TOP_CENTER" contentDisplay="TOP" mnemonicParsing="false" onAction="#onClickStart" prefHeight="25.0" prefWidth="75.0" text="Старт" GridPane.columnIndex="2" GridPane.rowIndex="4" />
-      <Label alignment="TOP_CENTER" contentDisplay="TOP" prefHeight="17.0" prefWidth="138.0" text="Количество ставок" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+      <Label alignment="TOP_CENTER" contentDisplay="TOP" prefHeight="17.0" prefWidth="138.0" text="Диапазон игроков" GridPane.columnIndex="1" GridPane.rowIndex="1" />
       <Label alignment="TOP_CENTER" contentDisplay="TOP" prefHeight="17.0" prefWidth="140.0" text="Промежуток времени " GridPane.columnIndex="3" GridPane.rowIndex="1" />
-      <Label alignment="TOP_CENTER" contentDisplay="TOP" prefHeight="17.0" prefWidth="132.0" text="Количество игроков" GridPane.columnIndex="5" GridPane.rowIndex="1" />
-      <TextField fx:id="tfPunterCount" GridPane.columnIndex="5" GridPane.rowIndex="2" />
+      <TextField fx:id="tfPunterCount2" GridPane.columnIndex="1" GridPane.rowIndex="3" />
       <Button alignment="TOP_CENTER" contentDisplay="TOP" mnemonicParsing="false" onAction="#onClickStop" prefHeight="25.0" prefWidth="82.0" text="Стоп" GridPane.columnIndex="4" GridPane.rowIndex="4" />
        <ComboBox fx:id="timeCombo" prefWidth="150.0" promptText="Выбрать" GridPane.columnIndex="3" GridPane.rowIndex="3">
            <items>
@@ -45,8 +44,8 @@
                </FXCollections>
            </items>
        </ComboBox>
-      <Button onAction="#onClickCreate" alignment="CENTER" contentDisplay="TOP" mnemonicParsing="false" prefHeight="25.0" prefWidth="65.0" text="Создать" GridPane.columnIndex="2" GridPane.rowIndex="5" />
-      <Button onAction="#onClickDelete" alignment="TOP_CENTER" contentDisplay="CENTER" mnemonicParsing="false" prefHeight="25.0" prefWidth="70.0" text="Удалить" GridPane.columnIndex="4" GridPane.rowIndex="5" />
+      <Button alignment="CENTER" contentDisplay="TOP" mnemonicParsing="false" onAction="#onClickCreate" prefHeight="25.0" prefWidth="65.0" text="Создать" GridPane.columnIndex="2" GridPane.rowIndex="5" />
+      <Button alignment="TOP_CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#onClickDelete" prefHeight="25.0" prefWidth="70.0" text="Удалить" GridPane.columnIndex="4" GridPane.rowIndex="5" />
       <Label alignment="TOP_LEFT" prefHeight="156.0" prefWidth="160.0" text="Генерация данных в БД" GridPane.columnIndex="3" GridPane.rowIndex="5" />
    </children>
 </GridPane>

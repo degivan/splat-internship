@@ -19,7 +19,7 @@ public class EventRepository
 
     private static final double CURRENT_KOEF = 1.5;
     private static final String STATUS = "NOT DESIGNED";
-    private static final int LIMIT = (Constant.REQUEST_COUNT * 8)/10;
+    private static final int LIMIT = ((Constant.PUNTER_COUNT2 - Constant.PUNTER_COUNT1) * 8)/10;
     private static final long LIMIT_TIME = 180000;
 
     public List<Integer> isExistEvent()

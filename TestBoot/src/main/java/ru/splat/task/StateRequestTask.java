@@ -16,7 +16,8 @@ public class StateRequestTask implements Runnable{
     private ConcurrentSkipListSet<NewResponseClone> trIdSet;
     private static Logger LOGGER = Logger.getLogger(StateRequestTask.class);
 
-    public StateRequestTask(ConcurrentSkipListSet<NewResponseClone> trIdSet) {
+    public StateRequestTask(ConcurrentSkipListSet<NewResponseClone> trIdSet)
+    {
         this.trIdSet = trIdSet;
     }
 
@@ -30,28 +31,31 @@ public class StateRequestTask implements Runnable{
             Iterator<NewResponseClone> iterator = trIdSet.iterator();
             while (iterator.hasNext())
             {
-                    NewResponseClone response = iterator.next();
+                NewResponseClone response = iterator.next();
 
-                    LOGGER.info(response.toString());
-                    CompletableFuture<Void> completableFuture = CompletableFuture.supplyAsync(new StateCheckService(response))
-                            .exceptionally( (ex) ->
-                            {
-                                if (ex.getClass() == InterruptedException.class) Thread.currentThread().interrupt();
-                                return null;
-                            })
-                            .thenAccept( (state)->
-                            {
-                                LOGGER.info(state + "");
-                                if (state == CheckResult.ACCEPTED.ordinal()) {
-                                    LOGGER.info("TrState for " + response.getTransactionId() + ": ACCEPTED");
-                                    iterator.remove();
-                                } else if (state == CheckResult.REJECTED.ordinal()) {
-                                    LOGGER.info("TrState for " + response.getTransactionId() + ": REJECTED");
-                                    iterator.remove();
-                                } else if (state == CheckResult.PENDING.ordinal())
-                                    LOGGER.info("TrState for " + response.getTransactionId() + ": PENDING");
-                            });
+                LOGGER.info(response.toString());
+                StateCheckService stateCheckService = new StateCheckService(response);
 
+                int state = 0;
+
+                try {
+                    state = stateCheckService.doRequest();
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                LOGGER.info(state + "");
+                if (state == CheckResult.ACCEPTED.ordinal()) {LOGGER.info("TrState for " + response.getTransactionId() + ": ACCEPTED");
+                    iterator.remove();
+                } else if (state == CheckResult.REJECTED.ordinal()) {
+                    LOGGER.info("TrState for " + response.getTransactionId() + ": REJECTED");
+                    iterator.remove();
+                } else if (state == CheckResult.PENDING.ordinal())
+                    LOGGER.info("TrState for " + response.getTransactionId() + ": PENDING");
+                else LOGGER.info("TrState for " + response.getTransactionId() + ": UNDEFINED");
             }
 
             try {

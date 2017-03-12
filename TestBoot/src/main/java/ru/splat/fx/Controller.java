@@ -9,12 +9,14 @@ import javafx.stage.Stage;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import ru.splat.Constant;
-import ru.splat.messages.proxyup.bet.NewResponse;
 import ru.splat.messages.proxyup.bet.NewResponseClone;
 import ru.splat.service.EventDefaultDataService;
 import ru.splat.task.RequestTask;
 import ru.splat.task.StateRequestTask;
+
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -27,39 +29,39 @@ public class Controller
     private Button button;
 
     @FXML
-    private TextField tfPunterCount;
+    private TextField tfPunterCount1;
     @FXML
     private ComboBox<String> timeCombo;
     @FXML
     private TextField tfRequestTimeout;
     @FXML
-    private TextField tfRequestCount;
+    private TextField tfPunterCount2;
 
     private EventDefaultDataService eventDefaultDataService;
 
-    private int punterCount;
+    private int punterCount1;
     private long requestTimeout;
-    private int requestCount;
+    private int punterCount2;
     private ConcurrentSkipListSet<NewResponseClone> trIdSet;
 
     private Alert alert;
 
-    private ExecutorService executorService;
+    private List<ExecutorService> threads;
 
     public void interruptThreads()
     {
-        if (executorService != null){ executorService.shutdownNow();}
-        executorService = null;
+        if (threads != null){ threads.stream().forEach(p -> p.shutdown());}
+        threads = null;
     }
 
     private void init()
     {
         try
         {
-            punterCount  = Integer.valueOf(tfPunterCount.getCharacters().toString());
+            punterCount1 = Integer.valueOf(tfPunterCount1.getCharacters().toString());
         }catch (NumberFormatException nfe)
         {
-            punterCount = Constant.PUNTER_COUNT;
+            punterCount1 = Constant.PUNTER_COUNT1;
         }
 
         try
@@ -84,11 +86,11 @@ public class Controller
 
         try
         {
-            requestCount = Integer.valueOf(tfRequestCount.getCharacters().toString());
+            punterCount2 = Integer.valueOf(tfPunterCount2.getCharacters().toString());
         }
         catch (NumberFormatException nfe)
         {
-            requestCount = Constant.REQUEST_COUNT;
+            punterCount2 = Constant.PUNTER_COUNT2;
         }
 
 
@@ -101,14 +103,20 @@ public class Controller
 
         alert.showAndWait();
 
-        if (executorService == null)
+        if (threads == null)
         {
             init();
-            executorService = Executors.newFixedThreadPool(2);
-            for (int i = 0; i < 1; i++) {
-                executorService.submit(new RequestTask(requestCount, requestTimeout, punterCount, this.trIdSet));
+            threads = new ArrayList<>(punterCount2 - punterCount1 + 1);
+
+            int j = 0;
+
+            for (int i = punterCount1; i <= punterCount2; i++)
+            {
+                threads.add(Executors.newSingleThreadExecutor());
+                threads.get(j).submit(new RequestTask(requestTimeout, i, this.trIdSet));
+                j++;
             }
-            executorService.submit(new StateRequestTask(this.trIdSet)); //проверка стейтов по trId
+           threads.get(threads.size() - 1).submit(new StateRequestTask(this.trIdSet));
 
         }
     }
@@ -133,8 +141,8 @@ public class Controller
             }
         });
         tfRequestTimeout.setText(String.valueOf(Constant.REQUEST_TIMEOUT));
-        tfPunterCount.setText(String.valueOf(Constant.PUNTER_COUNT));
-        tfRequestCount.setText(String.valueOf(Constant.REQUEST_COUNT));
+        tfPunterCount1.setText(String.valueOf(Constant.PUNTER_COUNT1));
+        tfPunterCount2.setText(String.valueOf(Constant.PUNTER_COUNT2));
         timeCombo.setValue("Сек");
 
         ApplicationContext appContext = new ClassPathXmlApplicationContext("spring-core.xml");

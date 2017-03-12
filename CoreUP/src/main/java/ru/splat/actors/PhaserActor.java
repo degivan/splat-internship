@@ -25,7 +25,7 @@ import java.util.function.Consumer;
 import static ru.splat.messages.Transaction.Builder.builder;
 
 /**
- * Created by Иван on 15.12.2016.
+ * Responsible for result of transaction.
  */
 public class PhaserActor extends LoggingActor {
     private final ActorRef tmActor;
@@ -81,7 +81,8 @@ public class PhaserActor extends LoggingActor {
                 break;
             default: //CANCEL OR DENIED
                 DBConnection.findTransactionState(transaction.getLowerBound(),
-                        tState -> execute(() -> cancelTransaction(transaction, tState)), log);
+                        tState -> cancelTransaction(transaction, tState),
+                        executor);
         }
     }
 
@@ -127,7 +128,7 @@ public class PhaserActor extends LoggingActor {
                         .state(state)
                         .build(),
                         () -> {},
-                        log);
+                executor);
     }
 
     private static void updateBetId(TransactionState o, Transaction transaction) {
@@ -137,13 +138,13 @@ public class PhaserActor extends LoggingActor {
 
     private void saveDBWithState(Transaction.State state, ru.splat.db.Procedure after) {
         transaction.nextState(state);
-        DBConnection.overwriteTransaction(transaction, () -> execute(after::process), log);
+        DBConnection.overwriteTransaction(transaction, after, executor);
     }
 
     private void saveDBWithStateCancel(Transaction.State state, TransactionState trState, ru.splat.db.Procedure after) {
         DBConnection.addTransactionState(trState,
-                tState -> execute(() -> saveDBWithState(state, after)),
-                log);
+                tState -> saveDBWithState(state, after),
+                executor);
     }
 
     private void sendResult(Transaction transaction) {
