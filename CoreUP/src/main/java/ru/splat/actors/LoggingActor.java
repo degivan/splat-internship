@@ -3,14 +3,12 @@ package ru.splat.actors;
 import akka.actor.AbstractActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
+import scala.concurrent.ExecutionContextExecutor;
 
 /**
- * Created by Иван on 17.02.2017.
+ * Contains common fields for different actor types.
  */
 public abstract class LoggingActor extends AbstractActor {
     protected final LoggingAdapter log = Logging.getLogger(getContext().system(), this);
-
-    protected void execute(Runnable runnable) {
-        context().dispatcher().execute(runnable);
-    }
+    final ExecutionContextExecutor executor = context().dispatcher();
 }

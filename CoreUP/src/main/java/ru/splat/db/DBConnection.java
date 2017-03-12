@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import ru.splat.LoggerGlobal;
 import ru.splat.messages.Transaction;
 import ru.splat.messages.uptm.trstate.TransactionState;
+import scala.concurrent.ExecutionContextExecutor;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -70,32 +71,33 @@ public class DBConnection {
      * Saves transactionState in the database.
      * @param trState TransactionState
      * @param after callback
+     * @param executor thread pool for callback execution
      */
-    public static void addTransactionState(TransactionState trState, Consumer<TransactionState> after) {
+    public static void addTransactionState(TransactionState trState, Consumer<TransactionState> after, ExecutionContextExecutor executor) {
         try {
             states.replaceOne(byTransactionId(trState.getTransactionId()),
                     Document.parse(MAPPER.writeValueAsString(trState)),
                     new UpdateOptions().upsert(true),
-                    (aVoid, throwable) -> {
+                    (aVoid, throwable) -> executor.execute(() -> {
                         after.accept(trState);
 
                         LOGGER.info(trState.toString() + " added to UP database.");
-                    });
+                    }));
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
     }
 
-    public static void findTransactionState(Long trId, Consumer<TransactionState> after) {
+    public static void findTransactionState(Long trId, Consumer<TransactionState> after, ExecutionContextExecutor executor) {
         states.find(byTransactionId(trId))
                 .limit(1)
                 .projection(Projections.excludeId())
-                .forEach(document -> {
-                            TransactionState tState = getObjectFromDocument(document,TransactionState.class);
-                            LOGGER.info(tState.toString() + " finded in the database.");
+                .forEach(document -> executor.execute(() -> {
+                    TransactionState tState = getObjectFromDocument(document,TransactionState.class);
+                    LOGGER.info(tState.toString() + " finded in the database.");
 
-                            after.accept(tState);
-                        },
+                    after.accept(tState);
+                }),
                         (result, t) -> {});
     }
 
@@ -130,16 +132,17 @@ public class DBConnection {
      * Put new transaction in database.
      * @param transaction information about bet
      * @param after what to do with transaction after inserting
+     * @param executor thread pool for callback execution
      */
-    public static void newTransaction(Transaction transaction, Consumer<Transaction> after) {
+    public static void newTransaction(Transaction transaction, Consumer<Transaction> after, ExecutionContextExecutor executor) {
         try {
             transactions.insertOne(Document.parse(MAPPER.writeValueAsString(transaction)),
-                    (aVoid, throwable) -> {
+                    (aVoid, throwable) -> executor.execute(() -> {
                         after.accept(transaction);
 
-                       LOGGER.info("New transaction in the database:"
+                        LOGGER.info("New transaction in the database:"
                                 + transaction.toString());
-                    });
+                    }));
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
@@ -149,15 +152,16 @@ public class DBConnection {
      * Overwrites existing transaction in database
      * @param transaction transaction to overwrite
      * @param after action after overwriting
+     * @param executor thread pool for callback execution
      */
-    public static void overwriteTransaction(Transaction transaction, Procedure after) {
+    public static void overwriteTransaction(Transaction transaction, Procedure after, ExecutionContextExecutor executor) {
         try {
             transactions.findOneAndReplace(Filters.eq("lowerBound", transaction.getLowerBound()),
                     Document.parse(MAPPER.writeValueAsString(transaction)),
-                    (o, throwable) -> {
+                    (o, throwable) -> executor.execute(() -> {
                         LOGGER.info(transaction.toString() + "is overwrited.");
                         after.process();
-                    });
+                    }));
 
         } catch (JsonProcessingException e) {
             e.printStackTrace();
