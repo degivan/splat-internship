@@ -48,7 +48,7 @@ public class BootService
         Set<BetOutcome> set = new HashSet<>(2);
         set.add(betOutcome1);
         set.add(betOutcome2);
-        BetInfo betInfo = new BetInfo(-1L,punterId, ThreadLocalRandom.current().nextInt(Constant.PUNTER_COUNT),set);
+        BetInfo betInfo = new BetInfo(-1L,punterId, ThreadLocalRandom.current().nextInt(Constant.BET_SUM) + 50 ,set);
         return betInfo;
     }
 

@@ -40,10 +40,13 @@ public class StateRequestTask implements Runnable{
 
                 try {
                     state = stateCheckService.doRequest();
-                } catch (Exception e) {
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                }
+                catch (Exception e) {
                     e.printStackTrace();
                 }
-                Thread.currentThread().interrupt();
+
                 LOGGER.info(state + "");
                 if (state == CheckResult.ACCEPTED.ordinal()) {LOGGER.info("TrState for " + response.getTransactionId() + ": ACCEPTED");
                     iterator.remove();
@@ -52,6 +55,7 @@ public class StateRequestTask implements Runnable{
                     iterator.remove();
                 } else if (state == CheckResult.PENDING.ordinal())
                     LOGGER.info("TrState for " + response.getTransactionId() + ": PENDING");
+                else LOGGER.info("TrState for " + response.getTransactionId() + ": UNDEFINED");
             }
 
             try {
