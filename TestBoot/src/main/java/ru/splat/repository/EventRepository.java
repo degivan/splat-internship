@@ -24,7 +24,7 @@ public class EventRepository
 
     public List<Integer> isExistEvent()
     {
-        return jdbcTemplate.query("SELECT id FROM event  LIMIT 1", new RowMapper<Integer>() {
+        return jdbcTemplate.query("SELECT id FROM event LIMIT 1", new RowMapper<Integer>() {
             @Override
             public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
                 return rs.getInt("id");

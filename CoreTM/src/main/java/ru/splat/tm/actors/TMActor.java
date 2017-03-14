@@ -138,9 +138,13 @@ public  class TMActor extends AbstractActor {
         states.remove(m.getTransactionId());
     }
     private void processSent(TaskSentMsg m) {
-        //log.info("task " + m.getService().toString() + " of " + m.getTransactionId() + " is sent");
         long trId = m.getTransactionId();
-        states.get(trId).getLocalStates()   //may there be null pointer?
+        //log.info("task " + m.getService().toString() + " of " + m.getTransactionId() + " is sent");
+        if (!states.containsKey(trId)) {
+            log.info("caught stale producer response: " + trId);
+            return;
+        }
+        states.get(trId).getLocalStates()
                 .get(m.getService()).setRequestSent(true);
         if (states.get(trId).getLocalStates()
                 .entrySet().stream().map(state -> state.getValue().isRequestSent())
