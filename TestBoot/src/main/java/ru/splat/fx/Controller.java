@@ -50,7 +50,7 @@ public class Controller
 
     public void interruptThreads()
     {
-        if (threads != null){ threads.stream().forEach(p -> p.shutdown());}
+        if (threads != null){ threads.stream().forEach(p -> p.shutdownNow());}
         threads = null;
     }
 

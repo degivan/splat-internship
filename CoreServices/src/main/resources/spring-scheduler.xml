@@ -32,10 +32,10 @@
 
     <task:scheduler id="cleanerSheduler"/>
     <task:scheduled-tasks scheduler="cleanerSheduler">
-        <task:scheduled ref="cleaningTablePunterIdemp" method="cleanTable" fixed-rate="60000"/>
-        <task:scheduled ref="cleaningTableBillingIdemp" method="cleanTable" fixed-rate="60000"/>
-        <task:scheduled ref="cleaningTableBetIdemp" method="cleanTable" fixed-rate="60000"/>
-        <task:scheduled ref="cleaningTableEventIdemp" method="cleanTable" fixed-rate="60000"/>
+        <task:scheduled ref="cleaningTablePunterIdemp" method="cleanTable" fixed-rate="1200000"/>
+        <task:scheduled ref="cleaningTableBillingIdemp" method="cleanTable" fixed-rate="1200000"/>
+        <task:scheduled ref="cleaningTableBetIdemp" method="cleanTable" fixed-rate="1200000"/>
+        <task:scheduled ref="cleaningTableEventIdemp" method="cleanTable" fixed-rate="1200000"/>
     </task:scheduled-tasks>
 
 </beans>

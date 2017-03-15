@@ -49,7 +49,7 @@ app.controller('customersCtrl', function ($http, $interval, $timeout) {
             betOutcomes.push(betOutcome);
         }
 
-        var betRequest = new BetRequest( ctrl.userId, ctrl.sum, betOutcomes);
+        var betRequest = new BetRequest(  ctrl.sum,ctrl.userId, betOutcomes);
 
         console.log(betRequest);
         $http.post("/SpringMVC/dobet", betRequest).then(function (response) {

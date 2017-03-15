@@ -47,7 +47,6 @@ public class EventRepository
                 ps.setInt(1, i);
                 ps.setString(2, i + " ");
             }
-
             public int getBatchSize() {
                 return eventCount;
             }

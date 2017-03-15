@@ -10,6 +10,4 @@ public final class Constant
     public static final int MARKET_COUNT = 5;
     public static final int OUTCOME_COUNT = 5;
     public static final int BET_SUM = 50;
-
-
 }
