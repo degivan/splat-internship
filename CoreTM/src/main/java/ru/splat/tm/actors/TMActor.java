@@ -96,8 +96,7 @@ public  class TMActor extends AbstractActor {
         //log.info("processTransaction took " + (System.currentTimeMillis() - startTime));
     }
     private void send(String topic, Long transactionId, Message message) {
-        //log.info("TMActor: sending " + transactionId + " to " + topic);
-        /*Future isSend = */producer.send(new ProducerRecord<>(topic, transactionId, message),
+        producer.send(new ProducerRecord<>(topic, transactionId, message),
                 (metadata, e) -> {
                     if (e != null) getSelf().tell(new RetrySendMsg(topic, transactionId, message), getSelf());
                     else getSelf().tell(new TaskSentMsg(transactionId, RequestTopicMapper.getService(topic)), getSelf());

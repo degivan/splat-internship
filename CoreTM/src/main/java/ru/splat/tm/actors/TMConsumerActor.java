@@ -34,6 +34,8 @@ public class TMConsumerActor extends AbstractActor{
     private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
     private final int MAX_POLL_INTERVAL = 100;
     private final long COMMIT_INTERVAL = 30000;
+    private boolean kafkaConnected = false;
+    private int seekCounter = 0;
 
     @Override
     public Receive createReceive() {
@@ -46,8 +48,15 @@ public class TMConsumerActor extends AbstractActor{
                     processCommitTopic(m);
                 })
                 .match(CommitTopicMsg.class, this::processCommitTopic)
+                .match(SeekSuccess.class, this::processSeekSucess)
                 .matchAny(this::unhandled)
                 .build();
+    }
+
+    private void processSeekSucess(SeekSuccess m) {
+        seekCounter++;
+        if (seekCounter == topics.length)
+            kafkaConnected = true;
     }
 
     public TMConsumerActor() {
@@ -63,9 +72,9 @@ public class TMConsumerActor extends AbstractActor{
         for (String topic : topics) {
             partitions.add(new TopicPartition(topic, 0));
         }
-        consumer.assign(partitions); log.info("assigned");
+        consumer.assign(partitions); log.info("consumer assigned to partitions");
         //consumer.commitSync();
-
+        //TODO почему-то по-другому не работает
         Set<TopicPartition> partitionSet = consumer.assignment();log.info("fetched assignment");partitionSet.forEach(partition -> log.info(partition.topic() + partition.partition()));
         resetToCommitedOffset(partitionSet);
         trackers.values().forEach(topicTracker -> {
@@ -92,6 +101,8 @@ public class TMConsumerActor extends AbstractActor{
             finally {
                 trackers.put(partition.topic(), new TopicTracker(partition, offset, this.log));
                 consumer.seek(partition, offset); log.info("seek");
+                getSelf().tell(new SeekSuccess(), getSelf());
+
                 log.info("created TopicTracker for topic " + partition.topic() + " with currentOffset on " + offset);
             }
         }
@@ -110,7 +121,7 @@ public class TMConsumerActor extends AbstractActor{
         log.info("commitTransaction " + m.getTransactionId() + "  took: " + (System.currentTimeMillis() - time));
         //log.info("Transaction " + m.getTransactionId() + " is commited");
     }
-
+    //коммит топиков кафки по данным, имеющимся в топиктрекерах
     private void processCommitTopic(CommitTopicMsg m) {
         //trackers.get(m.getTopic()).commitTracker(m);
         TopicTracker tracker = trackers.get(m.getTopic());
@@ -150,5 +161,12 @@ public class TMConsumerActor extends AbstractActor{
                 getSelf(), new PollMsg(), getContext().dispatcher(), null);
         //log.info("poll took: " + (System.currentTimeMillis() - time));
     }
+
+    private static class SeekSuccess {
+
+
+    }
+
+
 }
 
