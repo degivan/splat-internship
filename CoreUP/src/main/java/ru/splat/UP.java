@@ -125,7 +125,7 @@ public class UP {
                     checkResponsesPositive(responses);
 
                     DBConnection.getTransactionStates(states -> {
-                        LOGGER.info("TransactionsStates loaded: " + states.toString());
+                        LOGGER.info("TransactionsStates loaded: " + states.size());
 
                         Map<Long, List<ServicesEnum>> info = compareStatesAndTransactions(states, trList);
                         Future<Object> tmRecover = Patterns.ask(tmActor, new TMRecoverMsg(info), TIMEOUT);
@@ -182,6 +182,8 @@ public class UP {
         addUnsuccessfulToRecover(recoverInfo, statesAndTransactions);
         addIdsWithListToRecover(recoverInfo, firstPhaseSuccessful, MetadataPatterns.getPhase2Services());
         addIdsWithListToRecover(recoverInfo, lowerBoundIdList, MetadataPatterns.getPhase1Services());
+
+        LOGGER.info("States and transactions from database compared.");
 
         return recoverInfo;
     }
