@@ -46,6 +46,7 @@ public class UP {
     private static final String ID_GEN_NAME = "id_gen";
     private static final int REGISTRY_SIZE = 10;
     private static final Timeout TIMEOUT = Timeout.apply(10, TimeUnit.SECONDS);
+    private static final Timeout BIG_TIMEOUT = Timeout.apply(2, TimeUnit.DAYS);
     private static final Logger LOGGER = LoggerFactory.getLogger(UP.class);
 
     private final ActorSystem system;
@@ -128,7 +129,7 @@ public class UP {
                         LOGGER.info("TransactionsStates loaded: " + states.size());
 
                         Map<Long, List<ServicesEnum>> info = compareStatesAndTransactions(states, trList);
-                        Future<Object> tmRecover = Patterns.ask(tmActor, new TMRecoverMsg(info), TIMEOUT);
+                        Future<Object> tmRecover = Patterns.ask(tmActor, new TMRecoverMsg(info), BIG_TIMEOUT);
                         addOnSuccessToFuture(tmRecover, o -> {
                             afterRecover.process();
                             proxyFuture.complete(proxy);

@@ -59,11 +59,9 @@ public class ServiceResponse<T> {
 
     @Override
     public String toString() {
-        return "ServiceResponse{" +
-                "attachment=" + attachment +
-                ", result=" + result +
-                ", responseReceived=" + responseReceived +
-                ", requestSent=" + requestSent +
-                '}';
+        return "ServiceResponse{"
+                + "isPositive: "
+                + isPositive()
+                + '}';
     }
 }

@@ -189,6 +189,7 @@ public class DBConnection {
      * @param after processing transactions after creating
      */
     public static void createIdentifiers(Consumer<Bounds> after) {
+        LOGGER.info("Start creating identifiers.");
         counter.findOneAndUpdate(searchIdBoundsQuery, rangeQuery, ((document, throwable) -> {
             Long lower = document.getLong("lower");
             Long upper = document.getLong("upper");

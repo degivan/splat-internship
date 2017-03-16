@@ -198,6 +198,8 @@ public class Receiver extends LoggingActor {
     private void freeUser(Integer userId) {
         userIds.remove(userId);
         current.remove(userId);
+
+        log.info("User no more active: " + userId);
     }
 
     private void saveState(Transaction transaction) {
