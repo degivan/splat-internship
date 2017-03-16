@@ -50,6 +50,7 @@ public class DBConnection {
                 .build();
         ConnectionPoolSettings poolSettings = ConnectionPoolSettings.builder()
                 .maxSize(16)
+                .maxWaitQueueSize(300_000)
                 .build();
         MongoClientSettings clientSettings = MongoClientSettings.builder()
                 .clusterSettings(clusterSettings)
