@@ -24,6 +24,7 @@ import scala.concurrent.ExecutionContextExecutor;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -100,7 +101,7 @@ public class DBConnection {
                         LOGGER.info(trState.toString() + " added to UP database.");
                     }));
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            logIfNotNull(e);
         }
     }
 
@@ -113,8 +114,7 @@ public class DBConnection {
                     LOGGER.info(tState.toString() + " finded in the database.");
 
                     after.accept(tState);
-                }),
-                        (result, t) -> {});
+                }), (result, t) -> logIfNotNull(t));
     }
 
     public static void getTransactionStates(Consumer<List<TransactionState>> after) {
@@ -127,7 +127,10 @@ public class DBConnection {
                     LOGGER.info(tState.toString() + " finded in the database.");
 
                     trStates.add(tState);
-                }, (result, t) -> after.accept(trStates));
+                }, (result, t) -> {
+                    logIfNotNull(t);
+                    after.accept(trStates);
+                });
     }
 
 
@@ -154,13 +157,14 @@ public class DBConnection {
         try {
             transactions.insertOne(Document.parse(MAPPER.writeValueAsString(transaction)),
                     (aVoid, throwable) -> executor.execute(() -> {
+                        logIfNotNull(throwable);
                         after.accept(transaction);
 
                         LOGGER.info("New transaction in the database:"
                                 + transaction.toString());
                     }));
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            logIfNotNull(e);
         }
     }
 
@@ -175,12 +179,14 @@ public class DBConnection {
             transactions.findOneAndReplace(Filters.eq("lowerBound", transaction.getLowerBound()),
                     Document.parse(MAPPER.writeValueAsString(transaction)),
                     (o, throwable) -> executor.execute(() -> {
+                        logIfNotNull(throwable);
+
                         LOGGER.info(transaction.toString() + "is overwrited.");
                         after.process();
                     }));
 
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            logIfNotNull(e);
         }
     }
 
@@ -191,6 +197,8 @@ public class DBConnection {
     public static void createIdentifiers(Consumer<Bounds> after) {
         LOGGER.info("Start creating identifiers.");
         counter.findOneAndUpdate(searchIdBoundsQuery, rangeQuery, ((document, throwable) -> {
+            logIfNotNull(throwable);
+
             Long lower = document.getLong("lower");
             Long upper = document.getLong("upper");
 
@@ -232,6 +240,7 @@ public class DBConnection {
     private static SingleResultCallback<Void> createCallback(Consumer<List<Transaction>> processData, Procedure after,
                                                              List<Transaction> transactions) {
         return (aVoid, throwable) -> {
+            logIfNotNull(throwable);
             processData.accept(transactions);
             after.process();
         };
@@ -244,6 +253,12 @@ public class DBConnection {
              e.printStackTrace();
              throw new RuntimeJsonMappingException("Document is in inappropriate state: " + document.toString());
          }
+    }
+
+    private static void logIfNotNull(Throwable e) {
+        if(e != null) {
+            LOGGER.error(Arrays.toString(e.getStackTrace()));
+        }
     }
 
 }
