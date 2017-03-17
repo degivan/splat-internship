@@ -2,10 +2,9 @@
 
 
 
-    <!-- C:\Users\tmitri\IdeaProjects\betplacing\logs\appLog.log -->
     <appender name="FILE" class="ch.qos.logback.core.FileAppender">
-        <!-- <file>logs/appLog.log</file>-->
         <file>logs/appLog.log</file>
+        <!-- <file>C:\Users\tmitri\IdeaProjects\betplacing\logs\appLog.log</file>-->
         <append>true</append>
         <!-- set immediateFlush to false for much higher logging throughput -->
         <immediateFlush>false</immediateFlush>
