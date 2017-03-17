@@ -21,7 +21,7 @@ public class RecoverRequest implements InnerMessage {
     @Override
     public String toString() {
         return "RecoverRequest{" +
-                "transactions=" + transactions +
+                "transactions=" + transactions.size() +
                 '}';
     }
 }

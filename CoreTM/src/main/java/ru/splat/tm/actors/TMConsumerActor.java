@@ -34,11 +34,14 @@ public class TMConsumerActor extends AbstractActor{
     private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
     private final int MAX_POLL_INTERVAL = 100;
     private final long COMMIT_INTERVAL = 30000;
+    //private boolean kafkaConnected = false; //убрать
+    //private int seekCounter = 0;    //убрать
 
     @Override
     public Receive createReceive() {
         return receiveBuilder()
                 .match(PollMsg.class, m -> poll())
+                .match(TMConsumerRecoverMsg.class, this::processRecover)
                 .match(CommitTransactionMsg.class, this::commitTransaction)
                 .match(MarkSpareMsg.class, this::markSpareTransaction)
                 .match(RetryCommitMsg.class, m -> {
@@ -46,9 +49,28 @@ public class TMConsumerActor extends AbstractActor{
                     processCommitTopic(m);
                 })
                 .match(CommitTopicMsg.class, this::processCommitTopic)
+                //.match(SeekSuccess.class, this::processSeekSucess)
                 .matchAny(this::unhandled)
                 .build();
     }
+
+    private void processRecover(TMConsumerRecoverMsg m) {
+        log.info("processing recover");
+        Set<TopicPartition> partitionSet = consumer.assignment();log.info("fetched assignment");partitionSet.forEach(partition -> log.info(partition.topic() + partition.partition()));
+        resetToCommitedOffset(partitionSet);
+        trackers.values().forEach(topicTracker -> {
+            getContext().system().scheduler().scheduleOnce(Duration.create(COMMIT_INTERVAL, TimeUnit.MILLISECONDS),
+                    getSelf(), new CommitTopicMsg(topicTracker.getTopicName()), getContext().dispatcher(), null);
+        });
+        sender().tell(new TMConsumerRecoverResponse(true), getSelf());
+        log.info("TMConsumerActor is initialized");
+    }
+    /*TODO вероятно, что эта обработка не нужна */
+    /*private void processSeekSucess(SeekSuccess m) {
+        seekCounter++;
+        if (seekCounter == topics.length)
+            kafkaConnected = true;
+    }*/
 
     public TMConsumerActor() {
         this.tmActor = context().parent();
@@ -63,19 +85,16 @@ public class TMConsumerActor extends AbstractActor{
         for (String topic : topics) {
             partitions.add(new TopicPartition(topic, 0));
         }
-        consumer.assign(partitions); log.info("assigned");
+        consumer.assign(partitions); log.info("consumer assigned to partitions");
         //consumer.commitSync();
+        //TODO почему-то по-другому не работает
 
-        Set<TopicPartition> partitionSet = consumer.assignment();log.info("fetched assignment");partitionSet.forEach(partition -> log.info(partition.topic() + partition.partition()));
-        resetToCommitedOffset(partitionSet);
-        trackers.values().forEach(topicTracker -> {
-            getContext().system().scheduler().scheduleOnce(Duration.create(COMMIT_INTERVAL, TimeUnit.MILLISECONDS),
-                    getSelf(), new CommitTopicMsg(topicTracker.getTopicName()), getContext().dispatcher(), null);
-        });
-        log.info("TMConsumerActor is initialized");
     }
 
 
+
+
+    //consumer.seek - блокирует поток до тех пор, пока не станет доступным брокер, поэтому эту процедуру можно использовать как проверку соединения с кафкой при рекавере
     private void resetToCommitedOffset(Set<TopicPartition> partitionSet) {
         for (TopicPartition partition : partitionSet) {
             long offset = 0;
@@ -92,6 +111,7 @@ public class TMConsumerActor extends AbstractActor{
             finally {
                 trackers.put(partition.topic(), new TopicTracker(partition, offset, this.log));
                 consumer.seek(partition, offset); log.info("seek");
+                //getSelf().tell(new SeekSuccess(), getSelf());
                 log.info("created TopicTracker for topic " + partition.topic() + " with currentOffset on " + offset);
             }
         }
@@ -110,7 +130,7 @@ public class TMConsumerActor extends AbstractActor{
         log.info("commitTransaction " + m.getTransactionId() + "  took: " + (System.currentTimeMillis() - time));
         //log.info("Transaction " + m.getTransactionId() + " is commited");
     }
-
+    //коммит топиков кафки по данным, имеющимся в топиктрекерах
     private void processCommitTopic(CommitTopicMsg m) {
         //trackers.get(m.getTopic()).commitTracker(m);
         TopicTracker tracker = trackers.get(m.getTopic());
@@ -127,9 +147,6 @@ public class TMConsumerActor extends AbstractActor{
                 getSelf().tell(new RetryCommitMsg(m.getTopic()), getSelf());
             }
         });
-    }
-    public void start() {
-        poll();
     }
 
     private void poll() {
@@ -150,5 +167,12 @@ public class TMConsumerActor extends AbstractActor{
                 getSelf(), new PollMsg(), getContext().dispatcher(), null);
         //log.info("poll took: " + (System.currentTimeMillis() - time));
     }
+
+    private static class SeekSuccess {
+
+
+    }
+
+
 }
 

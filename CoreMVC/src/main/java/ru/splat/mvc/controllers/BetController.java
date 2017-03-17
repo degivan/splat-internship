@@ -70,5 +70,6 @@ public class BetController
     {
         UP up = UP.create();
         proxy = up.start();
+
     }
 }
