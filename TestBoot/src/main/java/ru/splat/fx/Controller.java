@@ -50,7 +50,13 @@ public class Controller
 
     public void interruptThreads()
     {
-        if (threads != null){ threads.stream().forEach(p -> p.shutdownNow());}
+        if (threads != null)
+        {
+            for (ExecutorService executorService: threads){
+                executorService.shutdownNow();
+            }
+           // threads.stream().forEach(p -> p.shutdownNow());
+        }
         threads = null;
     }
 
@@ -113,6 +119,7 @@ public class Controller
             for (int i = punterCount1; i <= punterCount2; i++)
             {
                 threads.add(Executors.newSingleThreadExecutor());
+
                 threads.get(j).submit(new RequestTask(requestTimeout, i, this.trIdSet));
                 j++;
             }

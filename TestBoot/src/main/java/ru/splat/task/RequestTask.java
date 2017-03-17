@@ -27,7 +27,7 @@ public class RequestTask implements Runnable {
     public void run() {
 
 
-        while (!Thread.currentThread().interrupted())
+        while (!Thread.currentThread().isInterrupted())
         {
             int i=0;
             long timeStart = System.currentTimeMillis();
