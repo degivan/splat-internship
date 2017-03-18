@@ -26,7 +26,10 @@ public class IdGenerator extends LoggingActor {
 
     @Override
     public Receive createReceive() {
-        return receiveBuilder().match(CreateIdRequest.class, m -> processCreateIdRequest(m, sender()))
+        return receiveBuilder().match(CreateIdRequest.class, m -> {
+                     log.info("CreateIdRequest delivered: " + m.toString());
+                     processCreateIdRequest(m, sender());
+                })
                 .match(NewIdsMessage.class, this::processNewIdsMessage)
                 .matchAny(this::unhandled).build();
     }
@@ -42,19 +45,18 @@ public class IdGenerator extends LoggingActor {
 
     private void processAdjournedRequests() {
         adjournedRequests.entrySet()
-                .forEach(e -> processCreateIdRequest(e.getKey(), e.getValue()));
-
-        adjournedRequests = new HashMap<>();
+                .forEach(e -> {
+                    adjournedRequests.remove(e.getKey());
+                    processCreateIdRequest(e.getKey(), e.getValue());
+                });
     }
 
     private boolean processCreateIdRequest(CreateIdRequest message, ActorRef receiver) {
-        log.info("Process CreateIdRequest: " + message.toString());
-
         if(outOfIndexes()) {
-            log.info("Out of indexes!");
-
             adjournedRequests.put(message, receiver);
             if(!messagesRequested) {
+                log.info("Out of indexes!");
+
                 requestBounds();
             }
 
