@@ -98,7 +98,7 @@ public  class TMActor extends AbstractActor {
             log.info("recover failure");
             sender().tell(TMRecoverResponse.rejectTMRecover("Consumer failed to connect to kafka: " + e.getMessage()), getSelf());
         }
-        
+
 
     }
 

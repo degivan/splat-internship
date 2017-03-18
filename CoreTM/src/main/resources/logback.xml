@@ -2,10 +2,10 @@
 
     <!--triggering policy не работает с TimeBasedRollingPolicy-->
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>C:\Users\tmitri\IdeaProjects\betplacing\logs\appLog.log</file>
-        <!--  <file>logs/appLog.log</file>-->
+        <!--  <file>C:\Users\tmitri\IdeaProjects\betplacing\logs\appLog.log</file>-->
+        <file>logs/appLog.log</file>
          <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
-             <fileNamePattern>C:\Users\tmitri\IdeaProjects\betplacing\logs\appLog.%i.log.zip</fileNamePattern>
+             <fileNamePattern>logs/appLog.%i.log.zip</fileNamePattern>
              <minIndex>1</minIndex>
              <maxIndex>20</maxIndex>
          </rollingPolicy>
