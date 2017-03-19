@@ -1,30 +1,30 @@
 <configuration>
 
-
-
-    <!-- C:\Users\tmitri\IdeaProjects\betplacing\logs\appLog.log -->
-    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
-        <!-- <file>logs/appLog.log</file>-->
+    <!--triggering policy не работает с TimeBasedRollingPolicy-->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!--  <file>C:\Users\tmitri\IdeaProjects\betplacing\logs\appLog.log</file>-->
         <file>logs/appLog.log</file>
-        <append>true</append>
-        <!-- set immediateFlush to false for much higher logging throughput -->
-        <immediateFlush>false</immediateFlush>
-        <layout class="ch.qos.logback.classic.PatternLayout">
-            <Pattern>
-                %d{yyyy-MM-dd HH:mm:ss.SSS} [%X{sourceThread}] %-5level %logger{36} - %msg%n
-            </Pattern>
-        </layout>
+         <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+             <fileNamePattern>logs/appLog.%i.log.zip</fileNamePattern>
+             <minIndex>1</minIndex>
+             <maxIndex>20</maxIndex>
+         </rollingPolicy>
+         <!--TODO после тестирования логгирования увеличить maxFileSize-->
         <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
-            <maxFileSize>10MB</maxFileSize>
+            <maxFileSize>200MB</maxFileSize>
         </triggeringPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%X{sourceThread}] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    <!--асинхронный логгер -->
+    <appender name="ASYNC" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="FILE" />
+        <discardingThreshold>0</discardingThreshold>
     </appender>
 
-    <logger name="betplacing.logger" level="info">
-        <appender-ref ref="FILE" />
-    </logger>
-
     <root level="info">
-        <appender-ref ref="FILE" />
+        <appender-ref ref="ASYNC" />
         <!--<appender-ref ref="STDOUT" />-->
     </root>
 

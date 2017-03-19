@@ -71,6 +71,7 @@ public  class TMActor extends AbstractActor {
     }
 
     private void processRecover(TMRecoverMsg m) {
+
         log.info("processing TMRecoverMsg with " + m.getTransactions().size() + " transactions");
         m.getTransactions().forEach((id, servicesList) -> {
             Map<ServicesEnum, ServiceResponse> responseMap = servicesList.stream()
@@ -97,6 +98,7 @@ public  class TMActor extends AbstractActor {
             log.info("recover failure");
             sender().tell(TMRecoverResponse.rejectTMRecover("Consumer failed to connect to kafka: " + e.getMessage()), getSelf());
         }
+
 
     }
 
