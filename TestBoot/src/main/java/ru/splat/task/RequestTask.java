@@ -26,31 +26,27 @@ public class RequestTask implements Runnable {
     @Override
     public void run() {
 
+        BootService bootService = new BootService(punterId);
 
         while (!Thread.currentThread().isInterrupted())
         {
-            int i=0;
             long timeStart = System.currentTimeMillis();
             long residual = 0;
-            BootService bootService = new BootService(punterId);
 
-            while (residual < requestTimeout)
-            {
-                NewResponseClone newResponse = new NewResponseClone();
-                try {
-                    newResponse = bootService.doRequest();
-                }catch (InterruptedException ie){
-                    Thread.currentThread().interrupt();
-                } catch (Exception e) {
-                    LOGGER.error("High level",e);
-                }
-                LOGGER.info("Response from server: " + newResponse.toString());
-                if (!newResponse.getActive()) trIdSet.add(newResponse);  //добавление нового id в сет
-                else LOGGER.info("Another transaction is active for userId = " + newResponse.getUserId());
 
-                residual = System.currentTimeMillis() - timeStart;
-                i++;
+            NewResponseClone newResponse = new NewResponseClone();
+            try {
+                newResponse = bootService.doRequest();
+            }catch (InterruptedException ie){
+                Thread.currentThread().interrupt();
+            } catch (Exception e) {
+                LOGGER.error("High level",e);
             }
+            LOGGER.info("Response from server: " + newResponse.toString());
+            if (!newResponse.getActive()) trIdSet.add(newResponse);  //добавление нового id в сет
+            else LOGGER.info("Another transaction is active for userId = " + newResponse.getUserId());
+
+            residual = System.currentTimeMillis() - timeStart;
 
 
             if (residual < requestTimeout)
