@@ -38,6 +38,7 @@ public class KafkaImpl<ProtobufRequest extends Message> implements Kafka<Protobu
 
         consumer = new KafkaConsumer(propsConsumer, new LongDeserializer(), new ProtoBufMessageDeserializer(defaultInstance));
         consumer.assign(Collections.singletonList(new TopicPartition(TOPIC_REQUEST,0)));
+        resetConsumerToCommitedOffset();
 //        consumer.subscribe(Arrays.asList(TOPIC_REQUEST));
 
         Properties propsProducer = new Properties();
@@ -73,7 +74,6 @@ public class KafkaImpl<ProtobufRequest extends Message> implements Kafka<Protobu
         {
             TopicPartition partition = new TopicPartition(TOPIC_REQUEST, 0);
             if (consumer.committed(partition) != null) {
-                System.out.println(consumer.committed(partition));
                 consumer.seek(partition, consumer.committed(partition).offset());
             }
         }
