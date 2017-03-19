@@ -1,6 +1,7 @@
 package ru.splat.actors;
 
 import akka.actor.ActorRef;
+import akka.japi.Pair;
 import ru.splat.db.Bounds;
 import ru.splat.db.DBConnection;
 import ru.splat.message.CreateIdRequest;
@@ -9,8 +10,8 @@ import ru.splat.message.NewIdsMessage;
 import ru.splat.messages.Transaction;
 import ru.splat.messages.Transaction.State;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.LinkedList;
+import java.util.Queue;
 
 import static ru.splat.messages.Transaction.Builder.builder;
 
@@ -20,7 +21,7 @@ import static ru.splat.messages.Transaction.Builder.builder;
 public class IdGenerator extends LoggingActor {
     static final Long RANGE = 50L;
 
-    private Map<CreateIdRequest, ActorRef> adjournedRequests = new HashMap<>();
+    private Queue<Pair<CreateIdRequest, ActorRef>> adjournedRequests = new LinkedList<>();
     private Bounds bounds = new Bounds(0L, 0L);
     private boolean messagesRequested = false;
 
@@ -44,16 +45,17 @@ public class IdGenerator extends LoggingActor {
     }
 
     private void processAdjournedRequests() {
-        adjournedRequests.entrySet()
-                .forEach(e -> {
-                    adjournedRequests.remove(e.getKey());
-                    processCreateIdRequest(e.getKey(), e.getValue());
-                });
+        while(adjournedRequests.peek() != null) {
+            Pair<CreateIdRequest, ActorRef> pair = adjournedRequests.poll();
+            if(!processCreateIdRequest(pair.first(), pair.second())) {
+                break;
+            }
+        }
     }
 
     private boolean processCreateIdRequest(CreateIdRequest message, ActorRef receiver) {
         if(outOfIndexes()) {
-            adjournedRequests.put(message, receiver);
+            adjournedRequests.add(new Pair<>(message, receiver));
             if(!messagesRequested) {
                 log.info("Out of indexes!");
 
