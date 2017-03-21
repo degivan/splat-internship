@@ -47,7 +47,14 @@ public class StateCheckService{
         }
         in.close();
 
-        int betState = g.fromJson(response.toString(), Integer.class);
+        int betState = 1;
+            try
+            {
+                betState = g.fromJson(response.toString(), Integer.class);
+            }catch (Exception e)
+            {
+                betState = 1;
+            }
         return betState;
     }
 }

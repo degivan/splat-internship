@@ -28,9 +28,8 @@ public class StateRequestTask implements Runnable{
 
         while (!Thread.currentThread().isInterrupted()) {    //настроить частоту обращений
 
-            System.out.println(trIdSet.toString());
             Iterator<NewResponseClone> iterator = trIdSet.iterator();
-            while (iterator.hasNext())
+            while (iterator.hasNext() && !Thread.currentThread().isInterrupted())
             {
                 NewResponseClone response = iterator.next();
 
@@ -64,20 +63,6 @@ public class StateRequestTask implements Runnable{
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
-
-            /*controller.getTrIdSet().forEach(trId -> {
-                try {
-                    BetState state = stateCheckService.makeRequest(trId);
-                    System.out.println("TrState for " + trId + ": " + state.toString());
-                    if (!state.equals(BetState.PROCESSING))
-                        controller.removeTransactionId(trId);
-                } catch (InterruptedException ie)
-                {
-                    Thread.currentThread().interrupt();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            });*/
 
         }
     }

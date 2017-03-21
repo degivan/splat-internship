@@ -112,7 +112,7 @@ public class Controller
         if (threads == null)
         {
             init();
-            threads = new ArrayList<>(punterCount2 - punterCount1 + 1);
+            threads = new ArrayList<>(punterCount2 - punterCount1 + 2);
 
             int j = 0;
 
@@ -123,8 +123,9 @@ public class Controller
                 threads.get(j).submit(new RequestTask(requestTimeout, i, this.trIdSet));
                 j++;
             }
-           threads.get(threads.size() - 1).submit(new StateRequestTask(this.trIdSet));
 
+            threads.add(Executors.newSingleThreadExecutor());
+            threads.get(threads.size() - 1).submit(new StateRequestTask(this.trIdSet));
         }
     }
 
