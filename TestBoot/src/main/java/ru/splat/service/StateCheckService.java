@@ -18,7 +18,7 @@ import java.util.function.Supplier;
  */
 public class StateCheckService{
 
-    private static final String URL_ADRESS = "http://172.17.51.54:8080/SpringMVC/checkbet?transactionId=";   //заглушка, узнать и Ивана форму запроса стейта
+    private static final String URL_ADRESS = "http://172.17.51.54:8080/SpringMVC/checkbet?transactionId=";
     private NewResponseClone trdata;
 
     public StateCheckService(NewResponseClone trdata)
@@ -41,7 +41,7 @@ public class StateCheckService{
         BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
         String inputLine;
         response = new StringBuilder();
-        while((null != (inputLine = in.readLine())))
+        while((null != (inputLine = in.readLine())) && !(Thread.currentThread().isInterrupted()))
         {
             response.append(inputLine);
         }

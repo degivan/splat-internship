@@ -28,6 +28,7 @@ public class StateRequestTask implements Runnable{
 
         while (!Thread.currentThread().isInterrupted()) {    //настроить частоту обращений
 
+            System.out.println(trIdSet.toString());
             Iterator<NewResponseClone> iterator = trIdSet.iterator();
             while (iterator.hasNext())
             {

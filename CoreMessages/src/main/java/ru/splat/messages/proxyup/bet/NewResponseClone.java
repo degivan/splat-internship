@@ -33,4 +33,13 @@ public class NewResponseClone
     public void setTransactionId(long transactionId) {
         this.transactionId = transactionId;
     }
+
+    @Override
+    public String toString() {
+        return "NewResponseClone{" +
+                "active=" + active +
+                ", userId=" + userId +
+                ", transactionId=" + transactionId +
+                '}';
+    }
 }

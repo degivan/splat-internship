@@ -78,7 +78,7 @@ public class BootService
         String inputLine;
         StringBuilder response = new StringBuilder();
 
-        while ((null != (inputLine = in.readLine()))) {
+        while ((null != (inputLine = in.readLine())) && !(Thread.currentThread().isInterrupted())) {
             response.append(inputLine);
         }
         in.close();
