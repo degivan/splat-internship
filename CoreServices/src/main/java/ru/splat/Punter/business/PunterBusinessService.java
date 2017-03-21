@@ -16,9 +16,11 @@ import ru.splat.messages.Response;
 import ru.splat.messages.conventions.ServiceResult;
 import ru.splat.messages.conventions.TaskTypesEnum;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
 
-@ManagedResource(objectName = "Punter Limit Winodw:name=Resource")
+@ManagedResource(objectName = "Punter Limit Window:name=Resource")
 public class PunterBusinessService implements BusinessService<PunterInfo>, LimitService<PunterInfo>
 {
 
@@ -31,8 +33,11 @@ public class PunterBusinessService implements BusinessService<PunterInfo>, Limit
 
     private List<Integer> commitCancelDequeList;
 
+    private ConcurrentMap<Integer,Proxy> dequeMap;
+
     public PunterBusinessService()
     {
+        dequeMap = new ConcurrentHashMap<>();
         lastDeleteTime = System.currentTimeMillis();
     }
 
@@ -49,6 +54,11 @@ public class PunterBusinessService implements BusinessService<PunterInfo>, Limit
         else if (timeType.equals("min")) {limitTime *= 60*1000;}
         else return;
         JmxUtil.set(new Limit(id, lim,limitTime),punterRepository,dequeMap);
+    }
+
+    @Override
+    public ConcurrentMap<Integer, Proxy> getDequeMap() {
+        return dequeMap;
     }
 
     @Override

@@ -15,17 +15,27 @@ import ru.splat.messages.Response;
 import ru.splat.messages.conventions.ServiceResult;
 import ru.splat.messages.conventions.TaskTypesEnum;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
 
-@ManagedResource(objectName = "Event Limit Winodw:name=Resource")
+@ManagedResource(objectName = "Event Limit Window:name=Resource")
 public class EventBusinessService implements BusinessService<EventInfo>,LimitService<EventInfo>
 {
 
-    private long lastDeleteTime = 0;
+    private long lastDeleteTime;
 
     private Map<Integer,List<Long>> commitAddDequeMap;
 
     private Map<Integer, Integer> commitCancelDequeMap;
+
+    private ConcurrentMap<Integer,Proxy> dequeMap;
+
+    public EventBusinessService()
+    {
+        dequeMap = new ConcurrentHashMap<>();
+        lastDeleteTime = 0;
+    }
 
 
     @Autowired
@@ -44,6 +54,11 @@ public class EventBusinessService implements BusinessService<EventInfo>,LimitSer
     public String getSelectionFreeLimitFrom(int id)
     {
         return JmxUtil.getLimit(id,eventRepository,dequeMap);
+    }
+
+    @Override
+    public ConcurrentMap<Integer, Proxy> getDequeMap() {
+        return dequeMap;
     }
 
     @Override

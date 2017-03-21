@@ -40,7 +40,8 @@ app.controller('customersCtrl', function ($http, $interval, $timeout) {
 
         var betOutcomes = [];
         for (var key in ctrl.selects) {
-            var betOutcome = new BetOutcome(
+            if (key != null)
+              var betOutcome = new BetOutcome(
                 ctrl.selects[key].marketId,
                 key,
                 ctrl.selects[key].id,

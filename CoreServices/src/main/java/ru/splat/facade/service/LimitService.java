@@ -21,13 +21,14 @@ public interface LimitService<Request extends  TransactionRequest> {
 
     Logger LOGGER = getLogger(LimitService.class);
 
-
-    ConcurrentMap<Integer,Proxy> dequeMap = new ConcurrentHashMap<>();
+    ConcurrentMap<Integer,Proxy> getDequeMap();
 
     Set<Integer> convertToSet(List<Request> requestList);
 
     default void addInDeque(List<Request> infoList, LimitRepository repository)
     {
+
+        ConcurrentMap<Integer,Proxy> dequeMap = getDequeMap();
 
         Set<Integer> integerSet = convertToSet(infoList);
 
@@ -52,6 +53,8 @@ public interface LimitService<Request extends  TransactionRequest> {
 
     default long scanDeque(long lastDeleteTime)
     {
+
+        ConcurrentMap<Integer,Proxy> dequeMap = getDequeMap();
 
         long currentTime = System.currentTimeMillis();
 
