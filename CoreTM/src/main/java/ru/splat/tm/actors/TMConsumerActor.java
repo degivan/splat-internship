@@ -34,6 +34,7 @@ public class TMConsumerActor extends AbstractActor{
     private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
     private final int MAX_POLL_INTERVAL = 100;
     private final long COMMIT_INTERVAL = 30000;
+    private final long RETRY_COMMIT_INTERVAL = 30000;
     //private boolean kafkaConnected = false; //убрать
     //private int seekCounter = 0;    //убрать
 
@@ -144,7 +145,8 @@ public class TMConsumerActor extends AbstractActor{
                         getSelf(), new CommitTopicMsg(tracker.getTopicName()), getContext().dispatcher(), null);
             }
             else {
-                getSelf().tell(new RetryCommitMsg(m.getTopic()), getSelf());
+                getContext().system().scheduler().scheduleOnce(Duration.create(RETRY_COMMIT_INTERVAL, TimeUnit.MILLISECONDS),
+                        getSelf(), new CommitTopicMsg(tracker.getTopicName()), getContext().dispatcher(), null);
             }
         });
     }
@@ -161,7 +163,7 @@ public class TMConsumerActor extends AbstractActor{
                 tmActor.tell(srm, getSelf());
             }
         }
-              //коммит всех трекеров
+        //коммит всех трекеров
 
         getContext().system().scheduler().scheduleOnce(Duration.create(MAX_POLL_INTERVAL - System.currentTimeMillis() + time, TimeUnit.MILLISECONDS),
                 getSelf(), new PollMsg(), getContext().dispatcher(), null);

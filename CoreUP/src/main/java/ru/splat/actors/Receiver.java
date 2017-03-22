@@ -27,6 +27,8 @@ import static ru.splat.messages.Transaction.State;
  * Actor which receives messages from users and from id_generator.
  */
 public class Receiver extends LoggingActor {
+    private static final int MAX_ACTIVE_PHASERS = 10_000;
+
     private final ActorRef registry;
     private final ActorRef idGenerator;
     private final ActorRef tmActor;
@@ -97,8 +99,9 @@ public class Receiver extends LoggingActor {
         boolean alreadyActive = userIds.contains(userId);
 
         if(alreadyActive) {
-            log.info("Already active: " + userId);
-            answer(new NewResponse(userId));    //отказ от приема новой транзакции
+            logAndDecline("Already active: " + userId, userId);    //отказ от приема новой транзакции
+        } else if(current.size() > MAX_ACTIVE_PHASERS) {
+            logAndDecline("Too many phasers.", userId);
         } else {
             log.info("User now active: " + userId);
 
@@ -106,6 +109,11 @@ public class Receiver extends LoggingActor {
             current.put(userId, sender());
             idGenerator.tell(new CreateIdRequest(betInfo), self());
         }
+    }
+
+    private void logAndDecline(String logMessage, Integer userId) {
+        log.info(logMessage);
+        answer(new NewResponse(userId));
     }
 
     private void processDoRecover(RecoverRequest request) {
@@ -211,7 +219,7 @@ public class Receiver extends LoggingActor {
     }
 
     private ActorRef newPhaser(String name) {
-        return context().actorOf(Props.create(PhaserActor.class, tmActor, self())
+        return context().actorOf(Props.create(PhaserActor.class, tmActor, self(), registry)
                 .withDispatcher("my-settings.akka.actor.phaser-dispatcher"), name);
     }
 

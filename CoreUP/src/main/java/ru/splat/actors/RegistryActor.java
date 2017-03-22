@@ -2,15 +2,14 @@ package ru.splat.actors;
 
 import akka.actor.ActorRef;
 import ru.splat.db.Bounds;
+import ru.splat.message.DeleteRefMsg;
 import ru.splat.message.RegisterRequest;
 import ru.splat.message.RegisterResponse;
 import ru.splat.messages.uptm.TMResponse;
 import ru.splat.messages.uptm.trstate.TransactionStateMsg;
-import scala.concurrent.duration.Duration;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Buffer between UP phasers and TMActor.
@@ -23,6 +22,7 @@ public class RegistryActor extends LoggingActor {
         return receiveBuilder().match(RegisterRequest.class, this::processRegisterRequest)
                 .match(TMResponse.class, m -> sendToPhaser(m, m.getTransactionId()))
                 .match(TransactionStateMsg.class, m -> sendToPhaser(m, m.getTransactionState().getTransactionId()))
+                .match(DeleteRefMsg.class, m -> actors.remove(m.getBounds()))
                 .matchAny(this::unhandled).build();
 
     }
@@ -37,9 +37,7 @@ public class RegistryActor extends LoggingActor {
         ActorRef phaser = actors.get(boundsFromTrId(transactionId));
 
         if(phaser == null) {
-            log.info("Phaser for transactionId: " + transactionId + " wasn't created yet.");
-
-            resendOverDelay(message);
+            log.info("Phaser for transactionId: " + transactionId + " already dead.");
         } else {
             phaser.tell(message, self());
         }
@@ -57,15 +55,5 @@ public class RegistryActor extends LoggingActor {
 
         actors.put(request.getBounds(), request.getActor());
         sender().tell(new RegisterResponse(), self());
-    }
-
-    private void resendOverDelay(Object o) {
-        log.info("Resending over delay: " + o.toString());
-
-        context().system()
-                .scheduler()
-                .scheduleOnce(
-                        Duration.create(500L, TimeUnit.MILLISECONDS),
-                        self(), o, context().dispatcher(), sender());
     }
 }
