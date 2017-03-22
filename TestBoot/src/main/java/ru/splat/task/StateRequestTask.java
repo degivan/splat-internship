@@ -47,7 +47,6 @@ public class StateRequestTask implements Runnable{
                     e.printStackTrace();
                 }
 
-                LOGGER.info(state + "");
                 if (state == CheckResult.ACCEPTED.ordinal()) {LOGGER.info("TrState for " + response.getTransactionId() + ": ACCEPTED");
                     iterator.remove();
                 } else if (state == CheckResult.REJECTED.ordinal()) {
