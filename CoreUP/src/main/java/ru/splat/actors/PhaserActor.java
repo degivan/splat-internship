@@ -4,6 +4,7 @@ import akka.actor.ActorRef;
 import akka.actor.ReceiveTimeout;
 import akka.japi.pf.UnitPFBuilder;
 import ru.splat.db.DBConnection;
+import ru.splat.message.DeleteRefMsg;
 import ru.splat.message.PhaserConfirm;
 import ru.splat.message.PhaserRequest;
 import ru.splat.message.PhaserResponse;
@@ -30,6 +31,7 @@ import static ru.splat.messages.Transaction.Builder.builder;
 public class PhaserActor extends LoggingActor {
     private final ActorRef tmActor;
     private final ActorRef receiver;
+    private final ActorRef registry;
 
     private Transaction transaction;
 
@@ -42,15 +44,17 @@ public class PhaserActor extends LoggingActor {
                 .matchAny(this::unhandled).build();
     }
 
-    public PhaserActor(ActorRef tmActor, ActorRef receiver) {
+    public PhaserActor(ActorRef tmActor, ActorRef receiver, ActorRef registry) {
         this.tmActor = tmActor;
         this.receiver = receiver;
+        this.registry = registry;
     }
 
     //TODO: stop correctly
     @Override
     public void postStop() throws Exception {
         super.postStop();
+        registry.tell(new DeleteRefMsg(transaction), self());
 
         log.info("Phaser stopped.");
     }
