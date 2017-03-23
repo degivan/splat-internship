@@ -2,6 +2,7 @@ package ru.splat.tm.actors;
 
 import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
+import akka.actor.PoisonPill;
 import akka.actor.Props;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
@@ -27,8 +28,9 @@ import ru.splat.tm.util.RequestTopicMapper;
 import scala.concurrent.Await;
 import scala.concurrent.Future;
 import scala.concurrent.duration.Duration;
-
+import java.net.SocketTimeoutException;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 
@@ -42,6 +44,10 @@ public  class TMActor extends AbstractActor {
     private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
     private final ActorRef consumerActor;
     private static final String TM_CONSUMER_NAME = "tm_consumer";
+    private static final long RETRY_SEND_INTERVAL = 2000;
+    private int initCount = 0;
+    private int commitCount = 0;
+    private static final long LOG_COUNTERS_INTERVAL = 30; //в секундах
 
     @Override
     public Receive createReceive() {
@@ -55,8 +61,18 @@ public  class TMActor extends AbstractActor {
                 .match(ServiceResponseMsg.class, this::processResponse)
                 .match(TMRecoverMsg.class, this::processRecover)
                 .match(TMCommitTransactionMsg.class, this::commitTransaction)
+                .match(LogCountersMsg.class, this::logCounters)
                 .matchAny(this::unhandled)
                 .build();
+    }
+    //Вывод числа отправленных и завершенных транзакций
+    private void logCounters(LogCountersMsg m) {
+        log.info("Processed transaction phases: " + (initCount / LOG_COUNTERS_INTERVAL) + " ph/sec");
+        log.info("Finished transaction phases: " + (commitCount/ LOG_COUNTERS_INTERVAL) + " ph/sec");
+        initCount = 0;
+        commitCount = 0;
+        getContext().system().scheduler().scheduleOnce(Duration.create(LOG_COUNTERS_INTERVAL, TimeUnit.SECONDS),
+                getSelf(), new LogCountersMsg(), getContext().dispatcher(), null);
     }
 
     //создание стейта транзакции из метадаты
@@ -71,7 +87,6 @@ public  class TMActor extends AbstractActor {
     }
 
     private void processRecover(TMRecoverMsg m) {
-
         log.info("processing TMRecoverMsg with " + m.getTransactions().size() + " transactions");
         m.getTransactions().forEach((id, servicesList) -> {
             Map<ServicesEnum, ServiceResponse> responseMap = servicesList.stream()
@@ -81,22 +96,26 @@ public  class TMActor extends AbstractActor {
         Timeout timeout = new Timeout(Duration.create(20, "seconds"));
         Future<Object> recoverFuture = Patterns.ask(consumerActor,
                 new TMConsumerRecoverMsg(), timeout);
-
         try {
             TMConsumerRecoverResponse consumerRecoverResponse = (TMConsumerRecoverResponse) Await.result(recoverFuture,  timeout.duration());
             if (consumerRecoverResponse.isSuccessful()) {
                 log.info("successful recover");
                 sender().tell(TMRecoverResponse.confirmTMRecover(), getSelf()); //а сендера-то нету
                 consumerActor.tell(new PollMsg(), getSelf());
+                getSelf().tell(new LogCountersMsg(), getSelf());
             }
             else {
                 log.info("recover failure");
                 sender().tell(TMRecoverResponse.rejectTMRecover("Consumer failed to connect to kafka"), getSelf());
+                consumerActor.tell(PoisonPill.getInstance(), ActorRef.noSender());
+                producer.close();
+                getSelf().tell(PoisonPill.getInstance(), ActorRef.noSender());
             }
         } catch (Exception e) {
             e.printStackTrace();
             log.info("recover failure");
             sender().tell(TMRecoverResponse.rejectTMRecover("Consumer failed to connect to kafka: " + e.getMessage()), getSelf());
+            consumerActor.tell(PoisonPill.getInstance(), ActorRef.noSender());
         }
 
 
@@ -105,7 +124,7 @@ public  class TMActor extends AbstractActor {
 
 
     private void processTransaction(TransactionMetadata trMetadata) {
-        long startTime = System.currentTimeMillis();
+        initCount++;
         createTransactionState(trMetadata);
         List<LocalTask> taskList = trMetadata.getLocalTasks();
         long transactionId = trMetadata.getTransactionId();
@@ -116,12 +135,18 @@ public  class TMActor extends AbstractActor {
             Message message = ProtobufFactory.buildProtobuf(task, services);
             send(RequestTopicMapper.getTopic(task.getService()), transactionId, message);
         });
-        //log.info("processTransaction took " + (System.currentTimeMillis() - startTime));
     }
     private void send(String topic, Long transactionId, Message message) {
         producer.send(new ProducerRecord<>(topic, transactionId, message),
                 (metadata, e) -> {
-                    if (e != null) getSelf().tell(new RetrySendMsg(topic, transactionId, message), getSelf());
+                    if (e != null)
+                        if (e instanceof SocketTimeoutException) {
+                            log.info("kafka connection issues");
+                            getContext().system().scheduler().scheduleOnce(Duration.create(RETRY_SEND_INTERVAL, TimeUnit.MILLISECONDS),
+                                    getSelf(), new RetrySendMsg(topic, transactionId, message), getContext().dispatcher(), null);
+                        }
+                        else
+                            getSelf().tell(new RetrySendMsg(topic, transactionId, message), getSelf());
                     else getSelf().tell(new TaskSentMsg(transactionId, RequestTopicMapper.getService(topic)), getSelf());
                 });
     }
@@ -144,6 +169,7 @@ public  class TMActor extends AbstractActor {
     }
     //сообщить консюмеру, что можно коммитить транзакцию trId в топиках
     private void commitTransaction(TMCommitTransactionMsg m) {
+        commitCount++;
         log.info("commitTransaction " + m.getTransactionId());
         if (!states.containsKey(m.getTransactionId())) {
             return;
