@@ -49,10 +49,11 @@ public class BetController
     NewResponse getTransactionId(@RequestBody BetInfo betInfo) throws Exception
     {
         //System.out.println(betInfo.toString());
-        NewResponse newResponse = proxy.sendNewRequest(betInfo);
-        LOGGER.info("/dobet request: " + betInfo.toString() + " response: " + newResponse.toString());
-        return newResponse;
-        //return new NewResponse(betInfo.getUserId());
+//        NewResponse newResponse = proxy.sendNewRequest(betInfo);
+        LOGGER.info("/dobet request: " + betInfo.toString() + " response: ");
+//                + newResponse.toString());
+//        return newResponse;
+        return new NewResponse(betInfo.getUserId());
     }
 
     @RequestMapping(value = "/checkbet", method = RequestMethod.GET)
