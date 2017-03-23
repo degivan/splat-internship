@@ -40,8 +40,8 @@ public class BootService
             eventId2 = ThreadLocalRandom.current().nextInt(Constant.EVENT_COUNT);
         }
 
-        int outcomeId1 = ThreadLocalRandom.current().nextInt(Constant.OUTCOME_COUNT-1) + eventId1*Constant.EVENT_COUNT;
-        int outcomeId2 =ThreadLocalRandom.current().nextInt(Constant.OUTCOME_COUNT-1) + eventId2*Constant.EVENT_COUNT;
+        int outcomeId1 = ThreadLocalRandom.current().nextInt(Constant.OUTCOME_COUNT-1) + eventId1*Constant.MARKET_COUNT*Constant.OUTCOME_COUNT;
+        int outcomeId2 = ThreadLocalRandom.current().nextInt(Constant.OUTCOME_COUNT-1) + eventId2*Constant.MARKET_COUNT*Constant.OUTCOME_COUNT;
 
         BetOutcome betOutcome1 = new BetOutcome(null,eventId1,outcomeId1,Math.random() + 1);
         BetOutcome betOutcome2 = new BetOutcome(null,eventId2,outcomeId2,Math.random() + 1);

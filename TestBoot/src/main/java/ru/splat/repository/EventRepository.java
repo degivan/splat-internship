@@ -62,7 +62,7 @@ public class EventRepository
             {
                 ps.setInt(1, i);
                 ps.setString(2, i + " ");
-                ps.setInt(3,i%Constant.EVENT_COUNT);
+                ps.setInt(3, i/Constant.MARKET_COUNT);
             }
 
             public int getBatchSize() {
@@ -82,7 +82,7 @@ public class EventRepository
                 ps.setString(2, i + " ");
                 ps.setDouble(3,CURRENT_KOEF);
                 ps.setString(4, STATUS);
-                ps.setInt(5,i%(Constant.MARKET_COUNT*Constant.EVENT_COUNT));
+                ps.setInt(5,i/Constant.OUTCOME_COUNT);
                 ps.setInt(6,LIMIT );
                 ps.setLong(7, LIMIT_TIME);
             }

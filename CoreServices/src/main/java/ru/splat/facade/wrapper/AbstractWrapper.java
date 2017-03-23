@@ -46,6 +46,8 @@ public abstract class AbstractWrapper<KafkaRecord extends Message, InternalTrTyp
         offset = 0;
         commitOffset = 0;
 
+        kafka.resetConsumerToCommitedOffset();
+
         while (!Thread.interrupted())
         {
             try {
