@@ -12,10 +12,10 @@ import org.apache.log4j.Logger;
  * Created by Дмитрий on 03.03.2017.
  */
 
-public class TopicTracker { //TODO написать несколько юнит тестов.
+public class TopicTracker {
     private Map<Long, Long> records = new HashMap<>();
     private final String topicName;
-    private final TopicPartition partition; //TODO убрать избыточное поле, добиться устранения exception-в при использованиии новых экземляров TopicPartition
+    private final TopicPartition partition;
     private long currentOffset;   //текущий коммитабельный оффсет консюмера
     private Set<Long> commitedTransactions= new HashSet<>();
     private final LoggingAdapter log;
