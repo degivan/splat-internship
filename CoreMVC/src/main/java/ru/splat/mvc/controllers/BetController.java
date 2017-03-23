@@ -61,10 +61,11 @@ public class BetController
     int chekBet(@RequestParam(value="transactionId", defaultValue="false") long transactionId,@RequestParam(value="userId", defaultValue="false") int userId) throws Exception
     {
 
-        int check = proxy.sendCheckRequest(transactionId, userId).ordinal();
-        LOGGER.info("/checkbet request: " + transactionId + " " + userId + " response: " + check);
-        return check;
-        //return 1;
+       // int check = proxy.sendCheckRequest(transactionId, userId).ordinal();
+        LOGGER.info("/checkbet request: " + transactionId + " " + userId + " response: ");
+        //+ check);
+        //return check;
+        return 1;
     }
 
     public void init()
