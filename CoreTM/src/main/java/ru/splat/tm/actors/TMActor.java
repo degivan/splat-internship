@@ -44,10 +44,10 @@ public  class TMActor extends AbstractActor {
     private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
     private final ActorRef consumerActor;
     private static final String TM_CONSUMER_NAME = "tm_consumer";
-    private static final long RETRY_SEND_INTERVAL = 2000;
+    private static final long RETRY_SEND_INTERVAL = 1000;   //in millis
     private int initCount = 0;
     private int commitCount = 0;
-    private static final long LOG_COUNTERS_INTERVAL = 30; //в секундах
+    private static final int LOG_COUNTERS_INTERVAL = 30; //в секундах
 
     @Override
     public Receive createReceive() {
@@ -66,9 +66,10 @@ public  class TMActor extends AbstractActor {
                 .build();
     }
     //Вывод числа отправленных и завершенных транзакций
-    private void logCounters(LogCountersMsg m) {
+    private void logCounters(LogCountersMsg m)
+    {
         log.info("Processed transaction phases: " + (initCount / LOG_COUNTERS_INTERVAL) + " ph/sec");
-        log.info("Finished transaction phases: " + (commitCount/ LOG_COUNTERS_INTERVAL) + " ph/sec");
+        log.info("Finished transaction phases: " + (commitCount / LOG_COUNTERS_INTERVAL) + " ph/sec");
         initCount = 0;
         commitCount = 0;
         getContext().system().scheduler().scheduleOnce(Duration.create(LOG_COUNTERS_INTERVAL, TimeUnit.SECONDS),
@@ -93,7 +94,7 @@ public  class TMActor extends AbstractActor {
                     .collect(Collectors.toMap((servicesEnum) -> servicesEnum,  (servicesEnum) ->  (new ServiceResponse())));
             states.put(id, new TransactionState(id, responseMap));
         });
-        Timeout timeout = new Timeout(Duration.create(20, "seconds"));
+        Timeout timeout = new Timeout(Duration.create(120, "seconds"));
         Future<Object> recoverFuture = Patterns.ask(consumerActor,
                 new TMConsumerRecoverMsg(), timeout);
         try {
@@ -140,13 +141,11 @@ public  class TMActor extends AbstractActor {
         producer.send(new ProducerRecord<>(topic, transactionId, message),
                 (metadata, e) -> {
                     if (e != null)
-                        if (e instanceof SocketTimeoutException) {
-                            log.info("kafka connection issues");
-                            getContext().system().scheduler().scheduleOnce(Duration.create(RETRY_SEND_INTERVAL, TimeUnit.MILLISECONDS),
-                                    getSelf(), new RetrySendMsg(topic, transactionId, message), getContext().dispatcher(), null);
-                        }
-                        else
-                            getSelf().tell(new RetrySendMsg(topic, transactionId, message), getSelf());
+                    {
+                        log.info("kafkaproducer exception while sending: " + e.getClass().toString());
+                        getContext().system().scheduler().scheduleOnce(Duration.create(RETRY_SEND_INTERVAL, TimeUnit.MILLISECONDS),
+                                getSelf(), new RetrySendMsg(topic, transactionId, message), getContext().dispatcher(), null);
+                    }
                     else getSelf().tell(new TaskSentMsg(transactionId, RequestTopicMapper.getService(topic)), getSelf());
                 });
     }
@@ -201,7 +200,7 @@ public  class TMActor extends AbstractActor {
         propsProducer.put("acks", "all");
         propsProducer.put("retries", 0);
         propsProducer.put("batch.size", 16384);
-        propsProducer.put("linger.ms", 1);
+        propsProducer.put("linger.ms", 50);
         propsProducer.put("buffer.memory", 33554432);
         producer = new KafkaProducer(propsProducer, new LongSerializer(), new ProtoBufMessageSerializer());
         this.registry = registry;

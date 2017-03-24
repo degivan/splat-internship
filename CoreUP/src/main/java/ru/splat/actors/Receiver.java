@@ -101,7 +101,8 @@ public class Receiver extends LoggingActor {
         if(alreadyActive) {
             logAndDecline("Already active: " + userId, userId);    //отказ от приема новой транзакции
         } else if(current.size() > MAX_ACTIVE_PHASERS) {
-            logAndDecline("Too many phasers.", userId);
+            log.info("Too many phasers.");
+            answer(new NewResponse(userId));
         } else {
             log.info("User now active: " + userId);
 
@@ -222,6 +223,4 @@ public class Receiver extends LoggingActor {
         return context().actorOf(Props.create(PhaserActor.class, tmActor, self(), registry)
                 .withDispatcher("my-settings.akka.actor.phaser-dispatcher"), name);
     }
-
-
 }
