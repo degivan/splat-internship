@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import static com.mongodb.client.model.Filters.*;
@@ -75,7 +76,8 @@ public class DBConnection {
         findFinishedTransactions()
                 .forEach(processResult(finished),
                         createCallback(
-                                finishedTransactions -> {
+                                (finishedTransactions, thr) -> {
+                                    logIfNotNull(thr);
                                     transactions.deleteMany(finishedFilter(), (result, t) -> {});
                                     finishedTransactions.forEach(transaction ->
                                             states.deleteOne(eq("transactionId", transaction.getLowerBound()),
@@ -140,7 +142,7 @@ public class DBConnection {
      * @param processData process list of transactions
      * @param after make some action after list processing finished
      */
-    public static void processUnfinishedTransactions(Consumer<List<Transaction>> processData, Procedure after) {
+    public static void processUnfinishedTransactions(BiConsumer<List<Transaction>, Throwable> processData, Procedure after) {
         List<Transaction> list = new ArrayList<>();
         findUnfinishedTransactions()
                 .forEach(processResult(list), createCallback(processData, after, list));
@@ -238,11 +240,11 @@ public class DBConnection {
         return (Block<Document>) document -> list.add(getObjectFromDocument(document, Transaction.class));
     }
 
-    private static SingleResultCallback<Void> createCallback(Consumer<List<Transaction>> processData, Procedure after,
+    private static SingleResultCallback<Void> createCallback(BiConsumer<List<Transaction>, Throwable> processData, Procedure after,
                                                              List<Transaction> transactions) {
         return (aVoid, throwable) -> {
             logIfNotNull(throwable);
-            processData.accept(transactions);
+            processData.accept(transactions, throwable);
             after.process();
         };
     }
