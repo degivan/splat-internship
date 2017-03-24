@@ -19,7 +19,7 @@ public class PunterRepository implements LimitRepository
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    private static final int DEFAULT_LIMIT = 3;
+    private static final int DEFAULT_LIMIT = 30;
     private static final int DEFAULT_LIMIT_TIME = 3 * 60 * 1000;
 
     @Override
