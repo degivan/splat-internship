@@ -115,7 +115,10 @@ public class UP {
     private Proxy doRecover(Proxy proxy, Procedure afterRecover) throws Exception {
         CompletableFuture<Proxy> proxyFuture = new CompletableFuture<>();
 
-        DBConnection.processUnfinishedTransactions(trList -> {
+        DBConnection.processUnfinishedTransactions((trList, thr) -> {
+            if(thr != null) {
+                throw new Error(thr.getMessage());
+            }
             ExecutionContext ec = getSystem().dispatcher();
             Future<Iterable<Object>> allAnswers = Futures.sequence(sendRecoverRequests(trList), ec);
 
