@@ -60,7 +60,7 @@ public class Receiver extends LoggingActor {
     }
 
     private void processCheckRequest(CheckRequest message) {
-        log.info("Processing CheckRequest: " + message.toString());
+//        log.info("Processing CheckRequest: " + message.toString());
 
         State state = results.get(message.getTransactionId());
         if(state == null) {
