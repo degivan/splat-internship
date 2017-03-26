@@ -19,7 +19,7 @@ import static ru.splat.messages.Transaction.Builder.builder;
  * Puts transaction in DB and generates unique identifier for it.
  */
 public class IdGenerator extends LoggingActor {
-    static final Long RANGE = 50L;
+    static final Long RANGE = 5L;
 
     private Queue<Pair<CreateIdRequest, ActorRef>> adjournedRequests = new LinkedList<>();
     private Bounds bounds = new Bounds(0L, 0L);
@@ -98,6 +98,6 @@ public class IdGenerator extends LoggingActor {
     }
 
     private boolean outOfIndexes() {
-        return (bounds.getUpperBound() - bounds.getLowerBound() < RANGE);
+        return (bounds.getUpperBound() - bounds.getLowerBound() < RANGE * 20);
     }
 }
