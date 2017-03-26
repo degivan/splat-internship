@@ -123,7 +123,6 @@ public  class TMActor extends AbstractActor {
     }
 
 
-
     private void processTransaction(TransactionMetadata trMetadata) {
         initCount++;
         createTransactionState(trMetadata);

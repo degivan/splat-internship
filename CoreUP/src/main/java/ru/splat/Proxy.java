@@ -28,7 +28,6 @@ public class Proxy {
     private final static Logger LOGGER = LoggerFactory.getLogger(Proxy.class);
 
     private final UP up;
-
     private Proxy(UP up) {
         this.up = up;
     }
