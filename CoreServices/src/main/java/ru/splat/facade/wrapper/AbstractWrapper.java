@@ -9,11 +9,14 @@ import ru.splat.facade.service.ServiceFacade;
 import ru.splat.facade.feautures.TransactionRequest;
 import ru.splat.kafka.Kafka;
 import ru.splat.kafka.feautures.TransactionResult;
+import ru.splat.messages.Response;
 import ru.splat.messages.proxyup.bet.NewResponseClone;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+
 import static org.slf4j.LoggerFactory.getLogger;
 
 public abstract class AbstractWrapper<KafkaRecord extends Message, InternalTrType extends TransactionRequest>
@@ -55,9 +58,13 @@ public abstract class AbstractWrapper<KafkaRecord extends Message, InternalTrTyp
                 // конверитруем
                 Set<InternalTrType> transactionRequest = read();
                 // обрабатываем с учётом идемпотентности
-                List<TransactionResult> transactionResults = service.customProcessMessage(transactionRequest);
+             //   List<TransactionResult> transactionResults = service.customProcessMessage(transactionRequest);
                  // TODO подумать как завернуть через AOP
-                service.commitService();
+                List<TransactionResult> transactionResults = transactionRequest.stream().map(p -> new TransactionResult(
+                        p.getTransactionId(),
+                        Response.ServiceResponse.newBuilder().setResult(1).addAllServices(p.getServices()).build()))
+                        .collect(Collectors.toList());
+               // service.commitService();
                 kafka.writeToKafka(transactionResults);
                 kafka.commitKafka(commitOffset);
             }
