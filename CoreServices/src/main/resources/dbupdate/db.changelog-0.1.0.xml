@@ -15,6 +15,7 @@
             <column name="record_timestamp" type="bigint"/>
         </createTable>
 
+        <addPrimaryKey tableName="punter_idemp" columnNames="transaction_id"/>
 
         <createTable tableName="punter">
             <column name="id" type="bigint"/>
@@ -111,6 +112,8 @@
             <column name="record_timestamp" type="bigint"/>
         </createTable>
 
+        <addPrimaryKey tableName="billing_idemp" columnNames="transaction_id"/>
+
         <createTable tableName="bet">
             <column autoIncrement="true" name="id" type="int"/>
             <column name="blob" type="bytea"/>
@@ -124,6 +127,8 @@
             <column name="blob" type="bytea"/>
             <column name="record_timestamp" type="bigint"/>
         </createTable>
+
+        <addPrimaryKey tableName="bet_idemp" columnNames="transaction_id"/>
 
     </changeSet>
 
